@@ -167,7 +167,7 @@ final class ALBNoSQLDB {
     }
     
     /**
-    Returns an array of keys from the given table sorted in the way specified matching the given conditions.
+    Returns an array of keys from the given table sorted in the way specified matching the given conditions. All conditions in the same set are ANDed together. Separate sets are ORed against each other.  (set:0 AND set:0 AND set:0) OR (set:1 AND set:1 AND set:1) OR (set:2)
     
     Unsorted Example:
     

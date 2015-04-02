@@ -31,6 +31,16 @@ if let tableKeys = ALBNoSQLDB.keysInTable(table:"categories", sortOrder:"name") 
 }
 ```
 
+Return an array of keys in a given table matching a set of conditions. (see class documentation for more information)
+```swift
+let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
+if let keys = ALBNoSQLDB.keysInTableForConditions("accounts", sortOrder: nil, conditions: [accountCondition]) {
+    // process keys
+} else {
+    // handle error
+}
+
+
 ### Values ###
 Set value in table
 ```swift
