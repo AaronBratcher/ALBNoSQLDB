@@ -84,7 +84,11 @@ ALBNoSQLDB allows you to do standard SQL selects for more complex queries. Becau
 ```swift
 let db = ALBNoSQLDB.sharedInstance
 let sql = "select name from accounts a inner join categories c on c.accountKey = a.key order by a.name"
-let results = db.sqlSelect(sql)
+if let results = db.sqlSelect(sql) {
+    // process results
+} else {
+    // handle error
+}
 ```
 
 ## Syncing ##
