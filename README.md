@@ -42,6 +42,7 @@ if let keys = ALBNoSQLDB.keysInTableForConditions("accounts", sortOrder: nil, co
 ```
 
 
+
 ### Values ###
 Set value in table
 ```swift
