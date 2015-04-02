@@ -1,4 +1,6 @@
 # ALBNoSQLDB
+**This class uses Swift 1.2**
+
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use
 
 All public methods are class-level methods, so no instance of the class is needed.
@@ -14,7 +16,7 @@ If a method returns an optional, that value is nil if an error occured and could
 
 See if a given table holds a given key.
 ```swift
-if let hasKey = ALBNoSQLDB.tableHasKey(table:"categories", key:"category1") {
+if let hasKey = ALBNoSQLDB.tableHasKey(table:"categories", key:"category1") where hasKey {
     // process here
 } else {
     // handle error
