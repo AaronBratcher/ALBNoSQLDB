@@ -6,7 +6,7 @@ All public methods are class-level methods, so no instance of the class is neede
 ## Getting Started ##
 ALBNoSQLDB acts as a key/value database allowing you to set a JSON value in a table for a specific key or getting keys from a table.
 
-Supported values are string, int, double, and arrays of these types from the base object.
+Supported types in the JSON are string, int, double, and arrays of these types off the base object.
 
 If a method returns an optional, that value is nil if an error occured and could not return a proper value
 
