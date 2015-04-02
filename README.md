@@ -2,7 +2,7 @@
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use
 
 All public methods are class-level methods, so no instance of the class is needed.
-See my Shopping repository for a sample use of the app.
+See my Shopping repository for a sample use of the class.
 
 ## Getting Started ##
 ALBNoSQLDB acts as a key/value database allowing you to set a JSON value in a table for a specific key or getting keys from a table.
