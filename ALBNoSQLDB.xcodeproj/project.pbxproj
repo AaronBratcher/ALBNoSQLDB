@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		898581891ABC350A0088C126 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581881ABC350A0088C126 /* AppDelegate.swift */; };
+		8985818B1ABC350A0088C126 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8985818A1ABC350A0088C126 /* ViewController.swift */; };
+		8985818E1ABC350A0088C126 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8985818C1ABC350A0088C126 /* Main.storyboard */; };
+		898581901ABC350A0088C126 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8985818F1ABC350A0088C126 /* Images.xcassets */; };
+		898581931ABC350A0088C126 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 898581911ABC350A0088C126 /* LaunchScreen.xib */; };
+		8985819F1ABC350A0088C126 /* ALBNoSQLDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8985819E1ABC350A0088C126 /* ALBNoSQLDBTests.swift */; };
+		898581A91ABC35460088C126 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581A81ABC35460088C126 /* ALBNoSQLDB.swift */; };
+		898581AB1ABC35750088C126 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 898581AA1ABC35750088C126 /* libsqlite3.dylib */; };
+		898581AD1ABC379F0088C126 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581A81ABC35460088C126 /* ALBNoSQLDB.swift */; };
+		898581AE1ABC37C40088C126 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 898581AA1ABC35750088C126 /* libsqlite3.dylib */; };
+		898581B01ABC38030088C126 /* ALBNoSQLDBSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581AF1ABC38030088C126 /* ALBNoSQLDBSyncTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		898581991ABC350A0088C126 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8985817B1ABC350A0088C126 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 898581821ABC350A0088C126;
+			remoteInfo = ALBNoSQLDB;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		898581831ABC350A0088C126 /* ALBNoSQLDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ALBNoSQLDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		898581871ABC350A0088C126 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		898581881ABC350A0088C126 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		8985818A1ABC350A0088C126 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8985818D1ABC350A0088C126 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		8985818F1ABC350A0088C126 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		898581921ABC350A0088C126 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		898581981ABC350A0088C126 /* ALBNoSQLDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALBNoSQLDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8985819D1ABC350A0088C126 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8985819E1ABC350A0088C126 /* ALBNoSQLDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDBTests.swift; sourceTree = "<group>"; };
+		898581A81ABC35460088C126 /* ALBNoSQLDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDB.swift; sourceTree = "<group>"; };
+		898581AA1ABC35750088C126 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		898581AC1ABC35CB0088C126 /* ALBNoSQLDB-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ALBNoSQLDB-Bridging-Header.h"; sourceTree = "<group>"; };
+		898581AF1ABC38030088C126 /* ALBNoSQLDBSyncTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDBSyncTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		898581801ABC350A0088C126 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				898581AB1ABC35750088C126 /* libsqlite3.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		898581951ABC350A0088C126 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				898581AE1ABC37C40088C126 /* libsqlite3.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8985817A1ABC350A0088C126 = {
+			isa = PBXGroup;
+			children = (
+				898581AC1ABC35CB0088C126 /* ALBNoSQLDB-Bridging-Header.h */,
+				898581AA1ABC35750088C126 /* libsqlite3.dylib */,
+				898581851ABC350A0088C126 /* ALBNoSQLDB */,
+				8985819B1ABC350A0088C126 /* ALBNoSQLDBTests */,
+				898581841ABC350A0088C126 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		898581841ABC350A0088C126 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				898581831ABC350A0088C126 /* ALBNoSQLDB.app */,
+				898581981ABC350A0088C126 /* ALBNoSQLDBTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		898581851ABC350A0088C126 /* ALBNoSQLDB */ = {
+			isa = PBXGroup;
+			children = (
+				898581881ABC350A0088C126 /* AppDelegate.swift */,
+				8985818A1ABC350A0088C126 /* ViewController.swift */,
+				8985818C1ABC350A0088C126 /* Main.storyboard */,
+				8985818F1ABC350A0088C126 /* Images.xcassets */,
+				898581911ABC350A0088C126 /* LaunchScreen.xib */,
+				898581861ABC350A0088C126 /* Supporting Files */,
+				898581A81ABC35460088C126 /* ALBNoSQLDB.swift */,
+			);
+			path = ALBNoSQLDB;
+			sourceTree = "<group>";
+		};
+		898581861ABC350A0088C126 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				898581871ABC350A0088C126 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8985819B1ABC350A0088C126 /* ALBNoSQLDBTests */ = {
+			isa = PBXGroup;
+			children = (
+				8985819E1ABC350A0088C126 /* ALBNoSQLDBTests.swift */,
+				898581AF1ABC38030088C126 /* ALBNoSQLDBSyncTests.swift */,
+				8985819C1ABC350A0088C126 /* Supporting Files */,
+			);
+			path = ALBNoSQLDBTests;
+			sourceTree = "<group>";
+		};
+		8985819C1ABC350A0088C126 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8985819D1ABC350A0088C126 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		898581821ABC350A0088C126 /* ALBNoSQLDB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 898581A21ABC350A0088C126 /* Build configuration list for PBXNativeTarget "ALBNoSQLDB" */;
+			buildPhases = (
+				8985817F1ABC350A0088C126 /* Sources */,
+				898581801ABC350A0088C126 /* Frameworks */,
+				898581811ABC350A0088C126 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ALBNoSQLDB;
+			productName = ALBNoSQLDB;
+			productReference = 898581831ABC350A0088C126 /* ALBNoSQLDB.app */;
+			productType = "com.apple.product-type.application";
+		};
+		898581971ABC350A0088C126 /* ALBNoSQLDBTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 898581A51ABC350A0088C126 /* Build configuration list for PBXNativeTarget "ALBNoSQLDBTests" */;
+			buildPhases = (
+				898581941ABC350A0088C126 /* Sources */,
+				898581951ABC350A0088C126 /* Frameworks */,
+				898581961ABC350A0088C126 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8985819A1ABC350A0088C126 /* PBXTargetDependency */,
+			);
+			name = ALBNoSQLDBTests;
+			productName = ALBNoSQLDBTests;
+			productReference = 898581981ABC350A0088C126 /* ALBNoSQLDBTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8985817B1ABC350A0088C126 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Aaron Bratcher";
+				TargetAttributes = {
+					898581821ABC350A0088C126 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+					898581971ABC350A0088C126 = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = 898581821ABC350A0088C126;
+					};
+				};
+			};
+			buildConfigurationList = 8985817E1ABC350A0088C126 /* Build configuration list for PBXProject "ALBNoSQLDB" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8985817A1ABC350A0088C126;
+			productRefGroup = 898581841ABC350A0088C126 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				898581821ABC350A0088C126 /* ALBNoSQLDB */,
+				898581971ABC350A0088C126 /* ALBNoSQLDBTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		898581811ABC350A0088C126 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8985818E1ABC350A0088C126 /* Main.storyboard in Resources */,
+				898581931ABC350A0088C126 /* LaunchScreen.xib in Resources */,
+				898581901ABC350A0088C126 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		898581961ABC350A0088C126 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8985817F1ABC350A0088C126 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8985818B1ABC350A0088C126 /* ViewController.swift in Sources */,
+				898581891ABC350A0088C126 /* AppDelegate.swift in Sources */,
+				898581A91ABC35460088C126 /* ALBNoSQLDB.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		898581941ABC350A0088C126 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				898581B01ABC38030088C126 /* ALBNoSQLDBSyncTests.swift in Sources */,
+				8985819F1ABC350A0088C126 /* ALBNoSQLDBTests.swift in Sources */,
+				898581AD1ABC379F0088C126 /* ALBNoSQLDB.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8985819A1ABC350A0088C126 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 898581821ABC350A0088C126 /* ALBNoSQLDB */;
+			targetProxy = 898581991ABC350A0088C126 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		8985818C1ABC350A0088C126 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8985818D1ABC350A0088C126 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		898581911ABC350A0088C126 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				898581921ABC350A0088C126 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		898581A01ABC350A0088C126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		898581A11ABC350A0088C126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		898581A31ABC350A0088C126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = ALBNoSQLDB/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		898581A41ABC350A0088C126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = ALBNoSQLDB/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		898581A61ABC350A0088C126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = ALBNoSQLDBTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
+			};
+			name = Debug;
+		};
+		898581A71ABC350A0088C126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = ALBNoSQLDBTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8985817E1ABC350A0088C126 /* Build configuration list for PBXProject "ALBNoSQLDB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				898581A01ABC350A0088C126 /* Debug */,
+				898581A11ABC350A0088C126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		898581A21ABC350A0088C126 /* Build configuration list for PBXNativeTarget "ALBNoSQLDB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				898581A31ABC350A0088C126 /* Debug */,
+				898581A41ABC350A0088C126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		898581A51ABC350A0088C126 /* Build configuration list for PBXNativeTarget "ALBNoSQLDBTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				898581A61ABC350A0088C126 /* Debug */,
+				898581A71ABC350A0088C126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8985817B1ABC350A0088C126 /* Project object */;
+}
