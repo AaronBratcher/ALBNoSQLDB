@@ -924,8 +924,7 @@ final class ALBNoSQLDB {
         sqlExecute("ANALYZE")
         autoDelete()
         
-        let queue = dispatch_queue_create("com.AaronLBratcher.SwiftNoSQLTimer", nil)
-        let timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue)
+        let timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _dbQueue)
         dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC); // every 60 seconds, with leeway of 1 second
         dispatch_source_set_event_handler(timer) {
             self.autoDelete()
