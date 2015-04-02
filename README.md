@@ -16,8 +16,13 @@ If a method returns an optional, that value is nil if an error occured and could
 
 See if a given table holds a given key.
 ```swift
-if let hasKey = ALBNoSQLDB.tableHasKey(table:"categories", key:"category1") where hasKey {
+if let hasKey = ALBNoSQLDB.tableHasKey(table:"categories", key:"category1") {
     // process here
+    if hasKey {
+        // table has key
+    } else {
+        // table didn't have key
+    }
 } else {
     // handle error
 }
