@@ -78,6 +78,7 @@ final class ALBNoSQLDB {
     private var _syncingEnabled = false
     private var _unsyncedTables = [String]()
     private let _dateFormatter:NSDateFormatter
+    private let _autoDeleteTimer:dispatch_source_t
     
     private let SQLITE_TRANSIENT = sqlite3_destructor_type(COpaquePointer(bitPattern: -1))
     
@@ -881,6 +882,7 @@ final class ALBNoSQLDB {
         _dateFormatter = NSDateFormatter()
         _dateFormatter.calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
         _dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
+        _autoDeleteTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _dbQueue)
     }
     
     private func openDB() -> Bool {
@@ -924,12 +926,11 @@ final class ALBNoSQLDB {
         sqlExecute("ANALYZE")
         autoDelete()
         
-        let timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _dbQueue)
-        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC); // every 60 seconds, with leeway of 1 second
-        dispatch_source_set_event_handler(timer) {
+        dispatch_source_set_timer(_autoDeleteTimer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC); // every 60 seconds, with leeway of 1 second
+        dispatch_source_set_event_handler(_autoDeleteTimer) {
             self.autoDelete()
         }
-        dispatch_resume(timer)
+        dispatch_resume(_autoDeleteTimer)
         
         return true
     }
