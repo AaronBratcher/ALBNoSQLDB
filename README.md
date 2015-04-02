@@ -34,7 +34,7 @@ if let tableKeys = ALBNoSQLDB.keysInTable(table:"categories", sortOrder:"name") 
 ### Values ###
 Set value in table
 ```swift
-let jsonValue = "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}"
+let jsonValue = "{\"numValue\":1,\"name\":\"Account Category\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}"
 if ALBNoSQLDB.setValue(table:"categories", key:"category1", value:jsonValue, autoDeleteAfter:nil) {
     // value was set properly
 } else {
