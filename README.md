@@ -58,11 +58,13 @@ if let dictValue = ALBNoSQLDB.dictValueForKey(table:"categories", key:"category1
 ```
 
 Delete the value for a given key
+```swift
 if ALBNoSQLDB.deleteForKey(table:"categories", key:"category1") {
     // value was deleted
 } else {
     // handle error
 }
+```
 
 ## SQL Queries ##
 ALBNoSQLDB allows you to do standard SQL selects for more complex queries. Because the values given are actually broken into separate columns in the tables, a standard SQL statement can be passed in and an array of rows (arrays of values) will be optioanlly returned.
