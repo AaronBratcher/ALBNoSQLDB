@@ -57,7 +57,6 @@ class ALBNoSQLDBObject {
 }
 
 // MARK: - Class Definition
-// autodelete timer requires that this is an NSObject class
 final class ALBNoSQLDB {
     enum ValueType:String {
         case stringArray = "stringArray"
@@ -78,6 +77,7 @@ final class ALBNoSQLDB {
     private var _syncingEnabled = false
     private var _unsyncedTables = [String]()
     private let _dateFormatter:NSDateFormatter
+    private let _deletionQueue = dispatch_queue_create("com.AaronLBratcher.ALBNoSQLDBDeletionQueue", nil)
     private let _autoDeleteTimer:dispatch_source_t
     
     private let SQLITE_TRANSIENT = sqlite3_destructor_type(COpaquePointer(bitPattern: -1))
@@ -882,7 +882,7 @@ final class ALBNoSQLDB {
         _dateFormatter = NSDateFormatter()
         _dateFormatter.calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
         _dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
-        _autoDeleteTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _dbQueue)
+        _autoDeleteTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _deletionQueue)
     }
     
     private func openDB() -> Bool {
