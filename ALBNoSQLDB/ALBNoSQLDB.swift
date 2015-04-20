@@ -621,6 +621,11 @@ final class ALBNoSQLDB {
         if !db.openDB() {
             return false
         }
+
+        if !db._syncingEnabled {
+            println("syncing must be enabled before setting unsynced tables")
+            return false
+        }
         
         db._unsyncedTables = [String]()
         for tableName in tables {
@@ -643,6 +648,11 @@ final class ALBNoSQLDB {
     class func createSyncFileAtURL(localURL:NSURL!,lastSequence:Int, targetDBInstanceKey:String)->(Bool,Int) {
         let db = ALBNoSQLDB.sharedInstance
         if !db.openDB() {
+            return (false,lastSequence)
+        }
+        
+        if !db._syncingEnabled {
+            println("syncing must be enabled before creating sync file")
             return (false,lastSequence)
         }
         
@@ -713,11 +723,20 @@ final class ALBNoSQLDB {
     :param: filePath The path to the sync file.
     :param: syncProgress Optional function that will be called periodically giving the percent complete.
     
-    :returns: (Bool,String,Int)  If the sync file was successfully processed,the instanceKey of the submiting DB, and the lastSequence that should be used in subsequent calls to the createSyncFile method of the instance that was used to create this file.
+    :returns: (Bool,String,Int)  If the sync file was successfully processed,the instanceKey of the submiting DB, and the lastSequence that should be used in subsequent calls to the createSyncFile method of the instance that was used to create this file. If the database couldn't be opened or syncing hasn't been enabled, then the instanceKey will be empty and the lastSequence will be equal to zero.
     */
     typealias syncProgressUpdate = (percentComplete: Double)->()
     class func processSyncFileAtURL(localURL:NSURL!, syncProgress:syncProgressUpdate?)->(Bool,String,Int) {
         let db = ALBNoSQLDB.sharedInstance
+        if !db.openDB() {
+            return (false,"",0)
+        }
+        
+        if !db._syncingEnabled {
+            println("syncing must be enabled before creating sync file")
+            return (false,"",0)
+        }
+        
         db.autoDelete()
         
         let filePath = localURL.path!
@@ -790,6 +809,17 @@ final class ALBNoSQLDB {
     
     
     // MARK: - Misc
+    /**
+    Close the database.
+    */
+    class func close() {
+        let db = ALBNoSQLDB.sharedInstance
+        dispatch_suspend(db._autoDeleteTimer)
+        sqlite3_close_v2(db._sqliteDB)
+        db._sqliteDB = nil
+    }
+	
+	
     /**
     The instanceKey for this database instance.
     
