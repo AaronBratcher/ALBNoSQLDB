@@ -73,6 +73,7 @@ final class ALBNoSQLDB {
     private var _tables = [String]()
     private var _sqliteDB: COpaquePointer = nil
     private var _indexes = [String:[String]]()
+    private let _dbSemaphore = dispatch_semaphore_create(0)
     private let _dbQueue = dispatch_queue_create("com.AaronLBratcher.ALBNoSQLDBQueue", nil)
     private var _syncingEnabled = false
     private var _unsyncedTables = [String]()
@@ -130,9 +131,9 @@ final class ALBNoSQLDB {
     Example:
     
     if let keys = ALBNoSQLDB.keysInTable("table1",sortOrder:"date desc, amount asc") {
-        // use keys
+    // use keys
     } else {
-        // handle error
+    // handle error
     }
     
     :param: table The table to return keys from.
@@ -332,7 +333,7 @@ final class ALBNoSQLDB {
         }
         
         let sql = selectClause + whereClause
-        println(sql)
+//        println(sql)
         if let results = db.sqlSelect(sql) {
             return results.map({$0.values[0] as! String})
         }
@@ -669,7 +670,7 @@ final class ALBNoSQLDB {
         NSFileManager.defaultManager().createFileAtPath(filePath, contents: nil, attributes: nil)
         if let fileHandle = NSFileHandle(forWritingAtPath: filePath) {
             if let results = db.sqlSelect("select rowid,timestamp,originalDB,tableName,activity,key from __synclog where rowid > \(lastSequence) and sourceDB <> '\(targetDBInstanceKey)' and originalDB <> '\(targetDBInstanceKey)' order by rowid") {
-                var lastRowID = 0
+                var lastRowID = lastSequence
                 fileHandle.writeData("{\"sourceDB\":\"\(db._dbInstanceKey)\",\"logEntries\":[\n".dataValue())
                 var firstEntry = true
                 for row in results {
@@ -922,7 +923,7 @@ final class ALBNoSQLDB {
         
         var dbFilePath = ""
         
-        if let _dbFileLocation = _dbFileLocation {
+        if let _dbFileLocation = self._dbFileLocation {
             dbFilePath = _dbFileLocation.path!
         } else {
             let searchPaths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
@@ -930,39 +931,32 @@ final class ALBNoSQLDB {
             dbFilePath = documentFolderPath+"/ABNoSQLDB.db"
         }
         
-        println(dbFilePath)
+        //          println(dbFilePath)
         let fileExists = NSFileManager.defaultManager().fileExistsAtPath(dbFilePath)
         
         var openDBSuccessful = true
-        
-        //create task closure
-        let openFile:() = {
+        dispatch_async(_dbQueue) {
             openDBSuccessful = self.openDBFile(dbFilePath)
-            }()
-        
-        dispatch_sync(_dbQueue) {
-            openFile
+            dispatch_semaphore_signal(self._dbSemaphore)
         }
         
-        if !openDBSuccessful {
-            return false
+        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
+        
+        if openDBSuccessful {
+            if !fileExists {
+                self.makeDB()
+            }
+            self.checkSchema()
+            self.sqlExecute("ANALYZE")
+            
+            dispatch_source_set_timer(_autoDeleteTimer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC); // every 60 seconds, with leeway of 1 second
+            dispatch_source_set_event_handler(_autoDeleteTimer) {
+                self.autoDelete()
+            }
+            dispatch_resume(_autoDeleteTimer)
         }
         
-        if !fileExists {
-            makeDB()
-        }
-        
-        checkSchema()
-        sqlExecute("ANALYZE")
-        autoDelete()
-        
-        dispatch_source_set_timer(_autoDeleteTimer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC); // every 60 seconds, with leeway of 1 second
-        dispatch_source_set_event_handler(_autoDeleteTimer) {
-            self.autoDelete()
-        }
-        dispatch_resume(_autoDeleteTimer)
-        
-        return true
+        return openDBSuccessful
     }
     
     private func openDBFile(dbFilePath:String) -> Bool {
@@ -1486,23 +1480,20 @@ final class ALBNoSQLDB {
     
     
     private func sqlExecute(sql:String)->Bool {
-        var successful = true
+        var successful = false
         
         //create task closure
-        let command:() = {
+        dispatch_async(_dbQueue) {
             successful = self.runCommand(sql)
-            }()
-        
-        dispatch_sync(_dbQueue) {
-            command
+            dispatch_semaphore_signal(self._dbSemaphore)
         }
+        
+        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
         
         return successful
     }
     
     private func runCommand(sql:String)->Bool {
-        //		println(sql)
-        
         var dbps: COpaquePointer = nil
         var status = sqlite3_prepare_v2(self._sqliteDB, sql, -1, &dbps, nil)
         if status != SQLITE_OK {
@@ -1525,19 +1516,18 @@ final class ALBNoSQLDB {
     func sqlSelect(sql:String)->[DBRow]? {
         var recordset:[DBRow]?
         
-        let query:() = {
+        dispatch_async(_dbQueue) {
             recordset = self.runSelect(sql)
-            }()
-        
-        dispatch_sync(_dbQueue) {
-            query
+            dispatch_semaphore_signal(self._dbSemaphore)
         }
+        
+        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
         
         return recordset
     }
     
     private func runSelect(sql:String)->[DBRow]? {
-        //        explain(sql)
+//        explain(sql)
         
         var dbps: COpaquePointer = nil
         var rows = [DBRow]()
