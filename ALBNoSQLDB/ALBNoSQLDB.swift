@@ -284,7 +284,7 @@ final class ALBNoSQLDB {
                             break
                         }
                     } else {
-                        whereClause += " \(condition.objectKey) like '%%\(condition.value as! String)%%'"
+                        whereClause += " \(condition.objectKey) like '%%\(db.esc(condition.value as! String))%%'"
                     }
                 case .inList:
                     whereClause += " \(condition.objectKey)  in ("
