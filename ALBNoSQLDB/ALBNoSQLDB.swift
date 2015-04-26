@@ -275,7 +275,7 @@ final class ALBNoSQLDB {
                     if arrayColumns.filter({$0 == condition.objectKey}).count > 0 {
                         switch valueType {
                         case .string:
-                            whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(condition.value)'"
+                            whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(db.esc(condition.value as! String))'"
                         case .int:
                             whereClause += "b.objectKey = '\(condition.objectKey)' and b.intValue = \(condition.value)"
                         case .double:
