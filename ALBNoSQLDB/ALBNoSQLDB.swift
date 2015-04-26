@@ -1277,7 +1277,7 @@ final class ALBNoSQLDB {
         sql += " from \(table) where key = '\(esc(key))'"
         var results = sqlSelect(sql)
         
-        if results != nil && results?.count == 0 {
+        if results == nil || (results != nil && results?.count == 0) {
             return nil
         }
         
