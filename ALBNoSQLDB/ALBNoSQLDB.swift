@@ -73,7 +73,6 @@ final class ALBNoSQLDB {
     private var _tables = [String]()
     private var _sqliteDB: COpaquePointer = nil
     private var _indexes = [String:[String]]()
-    private let _dbSemaphore = dispatch_semaphore_create(0)
     private let _dbQueue = dispatch_queue_create("com.AaronLBratcher.ALBNoSQLDBQueue", nil)
     private var _syncingEnabled = false
     private var _unsyncedTables = [String]()
@@ -935,12 +934,9 @@ final class ALBNoSQLDB {
         let fileExists = NSFileManager.defaultManager().fileExistsAtPath(dbFilePath)
         
         var openDBSuccessful = true
-        dispatch_async(_dbQueue) {
+        dispatch_sync(_dbQueue) {
             openDBSuccessful = self.openDBFile(dbFilePath)
-            dispatch_semaphore_signal(self._dbSemaphore)
         }
-        
-        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
         
         if openDBSuccessful {
             if !fileExists {
@@ -1483,12 +1479,9 @@ final class ALBNoSQLDB {
         var successful = false
         
         //create task closure
-        dispatch_async(_dbQueue) {
+        dispatch_sync(_dbQueue) {
             successful = self.runCommand(sql)
-            dispatch_semaphore_signal(self._dbSemaphore)
         }
-        
-        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
         
         return successful
     }
@@ -1516,12 +1509,9 @@ final class ALBNoSQLDB {
     func sqlSelect(sql:String)->[DBRow]? {
         var recordset:[DBRow]?
         
-        dispatch_async(_dbQueue) {
+        dispatch_sync(_dbQueue) {
             recordset = self.runSelect(sql)
-            dispatch_semaphore_signal(self._dbSemaphore)
         }
-        
-        dispatch_semaphore_wait(_dbSemaphore, DISPATCH_TIME_FOREVER)
         
         return recordset
     }
