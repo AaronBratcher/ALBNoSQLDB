@@ -32,7 +32,7 @@ if let hasKey = ALBNoSQLDB.tableHasKey(table:"categories", key:"category1") {
 
 Return an array of keys in a given table. Optionally specify sort order based on a value at the root level
 ```swift
-if let tableKeys = ALBNoSQLDB.keysInTable(table:"categories", sortOrder:"name") }
+if let tableKeys = ALBNoSQLDB.keysInTable(table:"categories", sortOrder:"name, date desc") }
     // process keys
 } else {
     // handle error
@@ -41,7 +41,7 @@ if let tableKeys = ALBNoSQLDB.keysInTable(table:"categories", sortOrder:"name") 
 
 Return an array of keys in a given table matching a set of conditions. (see class documentation for more information)
 ```swift
-let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
+let accountCondition = DBCondition(set:0,objectKey:"account", conditionOperator:.equal, value:"ACCT1")
 if let keys = ALBNoSQLDB.keysInTableForConditions("accounts", sortOrder: nil, conditions: [accountCondition]) {
     // process keys
 } else {
