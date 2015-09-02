@@ -873,22 +873,22 @@ final class ALBNoSQLDB {
     private func typeOfValue(value:AnyObject) -> ValueType {
         var valueType = ValueType.unknown
         
-        if let stringArray = value as? [String] {
+        if value is [String] {
             valueType = .stringArray
         } else {
-            if let intArray = value as? [Int] {
+            if value is [Int] {
                 valueType = .intArray
             } else {
-                if let doubleArray = value as? [Double] {
+                if value is [Double] {
                     valueType = .doubleArray
                 } else {
-                    if let stringValue = value as? String {
+                    if value is String {
                         valueType = .string
                     } else {
-                        if let intValue = value as? Int {
+                        if value is Int {
                             valueType = .int
                         } else {
-                            if let doubleValue = value as? Double {
+                            if value is Double {
                                 valueType = .double
                             }
                         }
@@ -1175,7 +1175,7 @@ final class ALBNoSQLDB {
             status = SQLITE_OK
         }
         
-        return SQLITE_OK
+        return status
     }
     
     private func setArrayValues(#table:String, arrayValues:[AnyObject], valueType:ValueType, key:String, objectKey:String) -> Bool {
