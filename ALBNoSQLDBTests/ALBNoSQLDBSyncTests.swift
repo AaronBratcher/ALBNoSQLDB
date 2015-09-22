@@ -14,10 +14,10 @@ class ALBNoSQLDBSyncTests: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         let searchPaths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-        let documentFolderPath = searchPaths[0] as! String
+        let documentFolderPath = searchPaths[0] 
         let dbFilePath = documentFolderPath+"/TestDB.db"
         
-        ALBNoSQLDB.setFileLocation(NSURL(fileURLWithPath: dbFilePath)!)
+        ALBNoSQLDB.setFileLocation(NSURL(fileURLWithPath: dbFilePath))
     }
     
     override func tearDown() {
@@ -57,9 +57,9 @@ class ALBNoSQLDBSyncTests: XCTestCase {
         ALBNoSQLDB.dropTable("table9")
         
         let searchPaths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-        let documentFolderPath = searchPaths[0] as! String
+        let documentFolderPath = searchPaths[0] 
         let logFilePath = documentFolderPath+"/testSyncLog.txt"
-        println(logFilePath)
+        print(logFilePath)
         let fileURL = NSURL(fileURLWithPath: logFilePath)
         
         let (complete,lastSequence) = ALBNoSQLDB.createSyncFileAtURL(fileURL, lastSequence: 0, targetDBInstanceKey: "TEST-DB-INSTANCE")
@@ -70,7 +70,7 @@ class ALBNoSQLDBSyncTests: XCTestCase {
         // read in file and make sure it is valid JSON
         if let fileHandle = NSFileHandle(forReadingAtPath: logFilePath) {
             let dataValue = fileHandle.readDataToEndOfFile()
-            if let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject] {
+            if let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject] {
                 
             } else {
                 XCTAssert(false, "invalid sync file format")
@@ -103,7 +103,7 @@ class ALBNoSQLDBSyncTests: XCTestCase {
         let syncFileContents = "{\"sourceDB\":\"58D200A048F9\",\"lastSequence\":1000,\"logEntries\":[{\"timeStamp\":\"2020-01-15T16:22:55.231-05:00\",\"key\":\"testKey1\",\"activity\":\"D\",\"tableName\":\"table8\"},{\"timeStamp\":\"2010-01-15T16:22:55.262-05:00\",\"value\":{\"addedDateTime\":\"2015-01-15T16:22:55.246-05:00\",\"dateValue\":\"2014-10-19T18:23:42.434-05:00\",\"numValue\":3,\"updatedDateTime\":\"2015-01-15T16:22:55.258-05:00\",\"arrayValue\":[11,12]},\"key\":\"testKey3\",\"activity\":\"U\",\"tableName\":\"table10\"},{\"timeStamp\":\"2015-01-15T16:22:55.276-05:00\",\"key\":\"testKey4\",\"activity\":\"D\",\"tableName\":\"table11\"},{\"timeStamp\":\"2020-01-15T16:22:55.288-05:00\",\"value\":{\"addedDateTime\":\"2015-01-15T16:22:55.277-05:00\",\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"numValue\":5,\"updatedDateTime\":\"2015-01-15T16:22:55.277-05:00\",\"arrayValue\":[21,22,23,24,25]},\"key\":\"testKey5\",\"activity\":\"U\",\"tableName\":\"table12\"},{\"tableName\":\"table9\",\"activity\":\"X\",\"timeStamp\":\"2020-01-15T16:22:55.290-05:00\"}]}"
         
         let searchPaths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-        let documentFolderPath = searchPaths[0] as! String
+        let documentFolderPath = searchPaths[0] 
         let logFilePath = documentFolderPath+"/testSyncLog2.txt"
         
         NSFileManager.defaultManager().createFileAtPath(logFilePath, contents: nil, attributes: nil)
@@ -127,7 +127,7 @@ class ALBNoSQLDBSyncTests: XCTestCase {
             // compare dict values
             if let jsonValue = jsonValue {
                 let dataValue = jsonValue.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-                let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+                let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
                 let numValue = objectValues!["numValue"] as! Int
                 
                 XCTAssert(numValue == 13, "number unexpectedly got changed")
@@ -137,7 +137,7 @@ class ALBNoSQLDBSyncTests: XCTestCase {
             // compare dict values
             if let jsonValue = jsonValue {
                 let dataValue = jsonValue.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-                let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+                let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
                 let numValue = objectValues!["numValue"] as! Int
                 
                 XCTAssert(numValue == 5, "number was not changed")
