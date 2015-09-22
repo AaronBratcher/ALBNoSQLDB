@@ -14,10 +14,10 @@ class ALBNoSQLDBTests: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         let searchPaths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-        let documentFolderPath = searchPaths[0] as! String
+        let documentFolderPath = searchPaths[0] 
         let dbFilePath = documentFolderPath+"/TestDB.db"
         
-        ALBNoSQLDB.setFileLocation(NSURL(fileURLWithPath: dbFilePath)!)
+        ALBNoSQLDB.setFileLocation(NSURL(fileURLWithPath: dbFilePath))
     }
     
     override func tearDown() {
@@ -39,7 +39,7 @@ class ALBNoSQLDBTests: XCTestCase {
         let key = "SIMPLEINSERTKEY"
         let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
         let sampleData = sample.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-        let sampleDict = NSJSONSerialization.JSONObjectWithData(sampleData, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+        let sampleDict = (try? NSJSONSerialization.JSONObjectWithData(sampleData, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
         let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: nil)
         
         XCTAssert(successful, "setValueFailed")
@@ -51,7 +51,7 @@ class ALBNoSQLDBTests: XCTestCase {
         // compare dict values
         if let jsonValue = jsonValue {
             let dataValue = jsonValue.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-            let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+            let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
             let equalDicts = objectValues?.count == sampleDict?.count
             XCTAssert(equalDicts, "Dictionaries don't match")
         }
@@ -62,7 +62,7 @@ class ALBNoSQLDBTests: XCTestCase {
         let key = "ARRAYINSERTKEY"
         let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5],\"array2Value\":[\"1\",\"b\"]}"
         let sampleData = sample.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-        let sampleDict = NSJSONSerialization.JSONObjectWithData(sampleData, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+        let sampleDict = (try? NSJSONSerialization.JSONObjectWithData(sampleData, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
         let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: nil)
         
         XCTAssert(successful, "setValueFailed")
@@ -74,7 +74,7 @@ class ALBNoSQLDBTests: XCTestCase {
         // compare dict values
         if let jsonValue = jsonValue {
             let dataValue = jsonValue.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-            let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+            let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
             let equalDicts = objectValues?.count == sampleDict?.count
             XCTAssert(equalDicts, "Dictionaries don't match")
             
@@ -99,8 +99,6 @@ class ALBNoSQLDBTests: XCTestCase {
         XCTAssert(successful, "setValueFailed")
         
         let sample = "{\"numValue\":2,\"arrayValue\":[6,7,8,9,10]}"
-        let sampleData = sample.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-        let sampleDict = NSJSONSerialization.JSONObjectWithData(sampleData, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
         successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: nil)
         
         XCTAssert(successful, "setValueFailed")
@@ -112,7 +110,7 @@ class ALBNoSQLDBTests: XCTestCase {
         // compare dict values
         if let jsonValue = jsonValue {
             let dataValue = jsonValue.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-            let objectValues = NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers, error: nil) as? [String:AnyObject]
+            let objectValues = (try? NSJSONSerialization.JSONObjectWithData(dataValue, options: NSJSONReadingOptions.MutableContainers)) as? [String:AnyObject]
             let numValue = objectValues!["numValue"] as! Int
             
             XCTAssert(numValue == 2, "number didn't change properly")
@@ -283,7 +281,7 @@ class ALBNoSQLDBTests: XCTestCase {
         ALBNoSQLDB.setValue(table: "table7", key: "testKey4", value: "{\"numValue\":4,\"account\":\"TEST3\",\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"arrayValue\":[16,17,18,19,20]}", autoDeleteAfter: nil)
         ALBNoSQLDB.setValue(table: "table7", key: "testKey5", value: "{\"numValue\":5,\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"arrayValue\":[21,22,23,24,25]}", autoDeleteAfter: nil)
         
-        let successful = ALBNoSQLDB.dropTable("table7")
+        _ = ALBNoSQLDB.dropTable("table7")
         if let keys = ALBNoSQLDB.keysInTable("table7", sortOrder: nil) {
             XCTAssert(keys.count == 0, "keys were returned when table should be empty")
         } else {
@@ -298,7 +296,7 @@ class ALBNoSQLDBTests: XCTestCase {
         ALBNoSQLDB.setValue(table: "table11", key: "testKey4", value: "{\"numValue\":4,\"account\":\"TEST3\",\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"arrayValue\":[16,17,18,19,20]}", autoDeleteAfter: nil)
         ALBNoSQLDB.setValue(table: "table12", key: "testKey5", value: "{\"numValue\":5,\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"arrayValue\":[21,22,23,24,25]}", autoDeleteAfter: nil)
         
-        let successful = ALBNoSQLDB.dropAllTables()
+        _ = ALBNoSQLDB.dropAllTables()
         if let keys = ALBNoSQLDB.keysInTable("table8", sortOrder: nil) {
             XCTAssert(keys.count == 0, "keys were returned when table should be empty")
         } else {

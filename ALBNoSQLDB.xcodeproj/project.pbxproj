@@ -171,6 +171,8 @@
 		8985817B1ABC350A0088C126 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Aaron Bratcher";
 				TargetAttributes = {
@@ -433,6 +435,7 @@
 				898581A41ABC350A0088C126 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		898581A51ABC350A0088C126 /* Build configuration list for PBXNativeTarget "ALBNoSQLDBTests" */ = {
 			isa = XCConfigurationList;
@@ -441,6 +444,7 @@
 				898581A71ABC350A0088C126 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
