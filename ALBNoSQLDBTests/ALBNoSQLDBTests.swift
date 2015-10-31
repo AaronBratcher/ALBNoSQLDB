@@ -214,13 +214,13 @@ class ALBNoSQLDBTests: XCTestCase {
     }
     
     func testSimpleConditionKeyFetch() {
-        ALBNoSQLDB.setValue(table: "table5", key: "testKey1", value: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil)
-        ALBNoSQLDB.setValue(table: "table5", key: "testKey2", value: "{\"numValue\":2,\"account\":\"ACCT1\",\"dateValue\":\"2014-9-19T18:23:42.434-05:00\",\"arrayValue\":[6,7,8,9,10]}", autoDeleteAfter: nil)
+        ALBNoSQLDB.setValue(table: "table5", key: "testKey1", value: "{\"numValue\":1,\"account\":\"ACCT's 1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil)
+        ALBNoSQLDB.setValue(table: "table5", key: "testKey2", value: "{\"numValue\":2,\"account\":\"ACCT's 1\",\"dateValue\":\"2014-9-19T18:23:42.434-05:00\",\"arrayValue\":[6,7,8,9,10]}", autoDeleteAfter: nil)
         ALBNoSQLDB.setValue(table: "table5", key: "testKey3", value: "{\"numValue\":3,\"account\":\"ACCT2\",\"dateValue\":\"2014-10-19T18:23:42.434-05:00\",\"arrayValue\":[11,12,13,14,15]}", autoDeleteAfter: nil)
         ALBNoSQLDB.setValue(table: "table5", key: "testKey4", value: "{\"numValue\":4,\"account\":\"ACCT2\",\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"arrayValue\":[16,17,18,19,20]}", autoDeleteAfter: nil)
         ALBNoSQLDB.setValue(table: "table5", key: "testKey5", value: "{\"numValue\":5,\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"arrayValue\":[21,22,23,24,25]}", autoDeleteAfter: nil)
         
-        let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
+        let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT's 1")
         let numCondition = DBCondition(set:0,objectKey:"numValue",conditionOperator:.greaterThan,value:1)
         
         if let keys = ALBNoSQLDB.keysInTableForConditions("table5", sortOrder: nil, conditions: [accountCondition,numCondition]) {

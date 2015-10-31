@@ -289,7 +289,7 @@ final class ALBNoSQLDB {
 					whereClause += " \(condition.objectKey)  in ("
 					if let stringArray = condition.value as? [String] {
 						for value in stringArray {
-							whereClause += "'\(value)'"
+							whereClause += "'\(db.esc(value))'"
 						}
 						whereClause += ")"
 					} else {
@@ -308,7 +308,7 @@ final class ALBNoSQLDB {
 					
 				default:
 					if let _ = condition.value as? String {
-						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(condition.value)'"
+						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(db.esc(condition.value as! String))'"
 					} else {
 						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) \(condition.value)"
 					}
@@ -1429,6 +1429,7 @@ final class ALBNoSQLDB {
 		// determine missing columns and add them
 		for (objectKey,value) in objectValues {
 			assert(!reservedColumn(objectKey as String), "Reserved column")
+			assert((objectKey as String).rangeOfString("'") == nil, "Single quote not allowed in column names")
 			var found = false
 			for column in columns {
 				if column.name == objectKey {
