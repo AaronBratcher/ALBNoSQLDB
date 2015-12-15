@@ -13,11 +13,11 @@
 		898581901ABC350A0088C126 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8985818F1ABC350A0088C126 /* Images.xcassets */; };
 		898581931ABC350A0088C126 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 898581911ABC350A0088C126 /* LaunchScreen.xib */; };
 		8985819F1ABC350A0088C126 /* ALBNoSQLDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8985819E1ABC350A0088C126 /* ALBNoSQLDBTests.swift */; };
-		898581A91ABC35460088C126 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581A81ABC35460088C126 /* ALBNoSQLDB.swift */; };
 		898581AB1ABC35750088C126 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 898581AA1ABC35750088C126 /* libsqlite3.dylib */; };
-		898581AD1ABC379F0088C126 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581A81ABC35460088C126 /* ALBNoSQLDB.swift */; };
 		898581AE1ABC37C40088C126 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 898581AA1ABC35750088C126 /* libsqlite3.dylib */; };
 		898581B01ABC38030088C126 /* ALBNoSQLDBSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898581AF1ABC38030088C126 /* ALBNoSQLDBSyncTests.swift */; };
+		8989AA431BEE32A300E3C870 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8989AA421BEE32A300E3C870 /* ALBNoSQLDB.swift */; };
+		8989AA441BEE36E900E3C870 /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8989AA421BEE32A300E3C870 /* ALBNoSQLDB.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,10 +41,10 @@
 		898581981ABC350A0088C126 /* ALBNoSQLDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALBNoSQLDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8985819D1ABC350A0088C126 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8985819E1ABC350A0088C126 /* ALBNoSQLDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDBTests.swift; sourceTree = "<group>"; };
-		898581A81ABC35460088C126 /* ALBNoSQLDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDB.swift; sourceTree = "<group>"; };
 		898581AA1ABC35750088C126 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		898581AC1ABC35CB0088C126 /* ALBNoSQLDB-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ALBNoSQLDB-Bridging-Header.h"; sourceTree = "<group>"; };
 		898581AF1ABC38030088C126 /* ALBNoSQLDBSyncTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDBSyncTests.swift; sourceTree = "<group>"; };
+		8989AA421BEE32A300E3C870 /* ALBNoSQLDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDB.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,8 +95,8 @@
 				8985818C1ABC350A0088C126 /* Main.storyboard */,
 				8985818F1ABC350A0088C126 /* Images.xcassets */,
 				898581911ABC350A0088C126 /* LaunchScreen.xib */,
+				8989AA421BEE32A300E3C870 /* ALBNoSQLDB.swift */,
 				898581861ABC350A0088C126 /* Supporting Files */,
-				898581A81ABC35460088C126 /* ALBNoSQLDB.swift */,
 			);
 			path = ALBNoSQLDB;
 			sourceTree = "<group>";
@@ -173,7 +173,7 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Aaron Bratcher";
 				TargetAttributes = {
 					898581821ABC350A0088C126 = {
@@ -230,8 +230,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8985818B1ABC350A0088C126 /* ViewController.swift in Sources */,
+				8989AA431BEE32A300E3C870 /* ALBNoSQLDB.swift in Sources */,
 				898581891ABC350A0088C126 /* AppDelegate.swift in Sources */,
-				898581A91ABC35460088C126 /* ALBNoSQLDB.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +241,7 @@
 			files = (
 				898581B01ABC38030088C126 /* ALBNoSQLDBSyncTests.swift in Sources */,
 				8985819F1ABC350A0088C126 /* ALBNoSQLDBTests.swift in Sources */,
-				898581AD1ABC379F0088C126 /* ALBNoSQLDB.swift in Sources */,
+				8989AA441BEE36E900E3C870 /* ALBNoSQLDB.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +296,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -364,6 +365,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ALBNoSQLDB/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
 			};
@@ -375,6 +377,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ALBNoSQLDB/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
 			};
@@ -394,6 +397,7 @@
 				);
 				INFOPLIST_FILE = ALBNoSQLDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
@@ -410,6 +414,7 @@
 				);
 				INFOPLIST_FILE = ALBNoSQLDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
