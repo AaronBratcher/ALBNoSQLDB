@@ -82,7 +82,8 @@ final class ALBNoSQLDB {
 	private var _syncingEnabled = false
 	private var _unsyncedTables = [String]()
 	private let _dateFormatter: NSDateFormatter
-	private var _autoDeleteTimer: NSTimer?
+	private let _deletionQueue = dispatch_queue_create("com.AaronLBratcher.ALBNoSQLDBDeletionQueue", nil)
+	private var _autoDeleteTimer: dispatch_source_t
 	
 	// MARK: - File Location
 	/**
@@ -822,7 +823,7 @@ final class ALBNoSQLDB {
 	 */
 	class func close() {
 		let db = ALBNoSQLDB.sharedInstance
-		db._autoDeleteTimer?.invalidate()
+		dispatch_source_cancel(db._autoDeleteTimer)
 		dispatch_sync(db._dbQueue) {() -> Void in
 			db._SQLiteCore.close()
 		}
@@ -895,6 +896,7 @@ final class ALBNoSQLDB {
 		_dateFormatter = NSDateFormatter()
 		_dateFormatter.calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)
 		_dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
+		_autoDeleteTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _deletionQueue)
 		_SQLiteCore.start()
 	}
 	
@@ -934,11 +936,20 @@ final class ALBNoSQLDB {
 			}
 			checkSchema()
 			sqlExecute("ANALYZE")
-			
-			_autoDeleteTimer = NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: Selector("autoDelete"), userInfo: nil, repeats: true)
+			startAutoDelete()
 		}
 		
 		return openDBSuccessful
+	}
+	
+	private func startAutoDelete() {
+		// every 60 seconds, with leeway of 1 second
+		dispatch_source_set_timer(_autoDeleteTimer, DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC)
+		dispatch_source_set_event_handler(_autoDeleteTimer) {
+			self.autoDelete()
+		}
+		
+		dispatch_resume(_autoDeleteTimer)
 	}
 	
 	private func makeDB() {
@@ -1175,7 +1186,7 @@ extension ALBNoSQLDB {
 		return true
 	}
 	
-	func autoDelete() {
+	private func autoDelete() {
 		let now = ALBNoSQLDB.stringValueForDate(NSDate())
 		for table in _tables {
 			if !reservedTable(table) {
@@ -1724,7 +1735,7 @@ extension ALBNoSQLDB {
 				while queuedBlocks.count > 0 {
 					if let block = queuedBlocks.first as? () -> () {
 						queuedBlocks.removeFirst()
-						block()
+						block() ;
 					}
 				}
 				
