@@ -1175,7 +1175,7 @@ extension ALBNoSQLDB {
 		return true
 	}
 	
-	private func autoDelete() {
+	func autoDelete() {
 		let now = ALBNoSQLDB.stringValueForDate(NSDate())
 		for table in _tables {
 			if !reservedTable(table) {
