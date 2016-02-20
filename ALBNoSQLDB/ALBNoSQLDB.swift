@@ -814,6 +814,22 @@ final class ALBNoSQLDB {
 
 	// MARK: - Misc
 	/**
+	 Opens the database file.
+
+	 - parameter location: The file location if different than the default.
+
+	 - returns: Bool Returns if the database could be successfully opened
+	 */
+	class func open(location: NSURL? = nil) -> Bool {
+		let db = ALBNoSQLDB.sharedInstance
+		if let location = location {
+			db._dbFileLocation = location
+		}
+
+		return db.openDB()
+	}
+
+	/**
 	 Close the database.
 	 */
 	class func close() {
