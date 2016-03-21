@@ -839,6 +839,12 @@ final class ALBNoSQLDB {
 	 */
 	class func open(location: NSURL? = nil) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
+
+		// if we already have a db file open at a different location, close it first
+		if db._SQLiteCore._sqliteDB != nil && db._dbFileLocation != location {
+			close()
+		}
+
 		if let location = location {
 			db._dbFileLocation = location
 		}
@@ -942,7 +948,7 @@ final class ALBNoSQLDB {
 			dbFilePath = documentFolderPath + "/ABNoSQLDB.db"
 		}
 
-		print(dbFilePath)
+//		print(dbFilePath)
 		let fileExists = NSFileManager.defaultManager().fileExistsAtPath(dbFilePath)
 
 		var openDBSuccessful = false
