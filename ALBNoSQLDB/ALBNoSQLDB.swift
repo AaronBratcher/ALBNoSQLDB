@@ -70,6 +70,23 @@ final class ALBNoSQLDB {
 		, int = "int"
 		, double = "double"
 		, unknown = "unknown"
+
+		static func fromRaw(rawValue: String) -> ValueType {
+			if let valueType = ValueType(rawValue: rawValue) {
+				return valueType
+			}
+
+			switch rawValue {
+			case "text", "Text":
+				return .string
+			case "int", "Int":
+				return .int
+			case "double", "Double":
+				return .double
+			default:
+				return .unknown
+			}
+		}
 	}
 
 	private var _SQLiteCore = SQLiteCore()
@@ -1380,7 +1397,9 @@ extension ALBNoSQLDB {
 		for info in tableInfo! {
 			let columnName = info.values[1] as! String
 			if !reservedColumn(columnName) {
-				columns.append(TableColumn(name: columnName, type: ValueType(rawValue: info.values[2] as! String)!))
+				let rawValue = info.values[2] as! String
+				let valueType = ValueType.fromRaw(rawValue)
+				columns.append(TableColumn(name: columnName, type: valueType))
 			}
 		}
 
@@ -1676,28 +1695,21 @@ extension ALBNoSQLDB {
 		class func typeOfValue(value: AnyObject) -> ValueType {
 			var valueType = ValueType.unknown
 
-			if value is [String] {
+			switch value {
+			case is [String]:
 				valueType = .stringArray
-			} else {
-				if value is [Int] {
-					valueType = .intArray
-				} else {
-					if value is [Double] {
-						valueType = .doubleArray
-					} else {
-						if value is String {
-							valueType = .string
-						} else {
-							if value is Int {
-								valueType = .int
-							} else {
-								if value is Double {
-									valueType = .double
-								}
-							}
-						}
-					}
-				}
+			case is [Int]:
+				valueType = .intArray
+			case is [Double]:
+				valueType = .doubleArray
+			case is String:
+				valueType = .string
+			case is Int:
+				valueType = .int
+			case is Double:
+				valueType = .double
+			default:
+				valueType = .unknown
 			}
 
 			return valueType
