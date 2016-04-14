@@ -1570,8 +1570,8 @@ extension ALBNoSQLDB {
 		}
 
 		func openDBFile(dbFilePath: String, autoCloseTimeout: Int, completion: (successful: Bool) -> Void) {
-			self._autoCloseTimeout = autoCloseTimeout
-			self._dbFilePath = dbFilePath
+			_autoCloseTimeout = autoCloseTimeout
+			_dbFilePath = dbFilePath
 
 			let block = { [unowned self] in
 				if autoCloseTimeout > 0 {
