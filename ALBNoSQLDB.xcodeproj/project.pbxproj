@@ -173,14 +173,18 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Aaron Bratcher";
 				TargetAttributes = {
 					898581821ABC350A0088C126 = {
 						CreatedOnToolsVersion = 6.3;
+						DevelopmentTeam = BJL688BZ75;
+						DevelopmentTeamName = "Aaron Bratcher";
+						LastSwiftMigration = 0800;
 					};
 					898581971ABC350A0088C126 = {
 						CreatedOnToolsVersion = 6.3;
+						LastSwiftMigration = 0800;
 						TestTargetID = 898581821ABC350A0088C126;
 					};
 				};
@@ -368,6 +372,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -380,6 +385,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -400,6 +407,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
 			};
 			name = Debug;
@@ -417,6 +425,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AaronLBratcher.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ALBNoSQLDB-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ALBNoSQLDB.app/ALBNoSQLDB";
 			};
 			name = Release;
