@@ -830,7 +830,7 @@ final class ALBNoSQLDB {
 
 						// for entry activity U,D only process log entry if no local entry for same table/key that is greater than one received
 						if activity == "D" || activity == "U" {
-							if let key = entry["key"] as? String, results = db.sqlSelect("select 1 from __synclog where tableName = '\(tableName)' and key = '\(key)' and timestamp > '\(timeStamp)'") {
+							if let key = entry["key"] as? String, let results = db.sqlSelect("select 1 from __synclog where tableName = '\(tableName)' and key = '\(key)' and timestamp > '\(timeStamp)'") {
 								if results.count == 0 {
 									if activity == "U" {
 										// strip out the dates to send separately
@@ -989,7 +989,7 @@ final class ALBNoSQLDB {
 	private func startAutoDelete() {
 		// every 60 seconds
 		
-		_autoDeleteTimer.setTimer(start: .now(), interval: .milliseconds(60000))
+		_autoDeleteTimer.scheduleRepeating(deadline: .now(), interval: .milliseconds(60000), leeway: .milliseconds(1000))
 		_autoDeleteTimer.setEventHandler {
 			self.autoDelete()
 		}
@@ -1567,7 +1567,7 @@ extension ALBNoSQLDB {
 
 			let block = { [unowned self] in
 				if autoCloseTimeout > 0 {
-					self._autoCloseTimer.setTimer(start: .now(), interval: .milliseconds(autoCloseTimeout * 1000))
+					self._autoCloseTimer.scheduleRepeating(deadline: .now(), interval: .milliseconds(autoCloseTimeout * 1000), leeway: .milliseconds(1000))
 					self._autoCloseTimer.setEventHandler {
 						self.closeFile(true)
 					}
