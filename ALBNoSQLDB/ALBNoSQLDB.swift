@@ -936,7 +936,7 @@ final class ALBNoSQLDB {
 		_dateFormatter = DateFormatter()
 		_dateFormatter.calendar = Calendar(calendarIdentifier: Calendar.Identifier.gregorian)
 		_dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
-		_autoDeleteTimer = DispatchSource.timer(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _deletionQueue)
+		_autoDeleteTimer = DispatchSource.timer(flags: [], queue: _deletionQueue)
 		_SQLiteCore.start()
 	}
 
@@ -1534,7 +1534,7 @@ extension ALBNoSQLDB {
 		private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 		override init() {
-			_autoCloseTimer = DispatchSource.timer(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _closeQueue)
+			_autoCloseTimer = DispatchSource.timer(flags: [], queue: _closeQueue)
 			super.init()
 		}
 
