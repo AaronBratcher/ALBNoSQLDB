@@ -1,5 +1,5 @@
 # ALBNoSQLDB
-**This class uses Swift 2.0. If you need Swift 1.2, use Tag v1.01**
+**This class uses Swift 3.0. If you need Swift 1.2, use Tag 2.2**
 
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
 
