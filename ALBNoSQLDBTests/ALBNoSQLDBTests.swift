@@ -320,6 +320,32 @@ class ALBNoSQLDBTests: XCTestCase {
 			XCTAssert(false, "keys not returned")
 		}
 	}
+	
+	func testAutoDelete() {
+		// create the expectation with a nice descriptive message
+		let deleteExpectation = expectation(description: "Value deleted")
+
+		let key = "SimpleDeleteKey"
+		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
+		let sampleData = sample.data(using: String.Encoding.utf8, allowLossyConversion: false)!
+		let sampleDict = (try? JSONSerialization.jsonObject(with: sampleData, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
+		let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: Date())
+		
+		XCTAssert(successful, "setValueFailed")
+
+		delay(90) { 
+			if var keys = ALBNoSQLDB.keysInTable("table1", sortOrder: nil) {
+				keys = keys.filter({ $0 == "SimpleDeleteKey" })
+				XCTAssert(keys.count == 0, "keys were returned when table should be empty")
+			} else {
+				XCTAssert(false, "keys not returned")
+			}
+			
+			deleteExpectation.fulfill()
+		}
+		
+		waitForExpectations(timeout: 120, handler: nil)
+	}
 
 	// func testPerformanceExample() {
 	// // This is an example of a performance test case.
@@ -327,4 +353,12 @@ class ALBNoSQLDBTests: XCTestCase {
 	// // Put the code you want to measure the time of here.
 	// }
 	// }
+}
+
+
+
+
+func delay(_ seconds: Double, closure: @escaping () -> Void) {
+	DispatchQueue.main.asyncAfter(
+		deadline: DispatchTime.now() + Double(Int64(seconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
 }
