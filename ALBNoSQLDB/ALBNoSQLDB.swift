@@ -936,7 +936,7 @@ final class ALBNoSQLDB {
 		_dateFormatter = DateFormatter()
 		_dateFormatter.calendar = Calendar(identifier:.gregorian)
 		_dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
-		_autoDeleteTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _deletionQueue) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
+		_autoDeleteTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _deletionQueue)
 		_SQLiteCore.start()
 	}
 	
@@ -1222,7 +1222,7 @@ extension ALBNoSQLDB {
 				sql = "delete from __synclog where tableName = '\(table)' and key = '\(esc(key))' and rowid < \(lastID)"
 				_ = sqlExecute(sql)
 			} else {
-				sql = "delete from __synclog where tableName = '\(table)' and key = '\(esc(key))"
+				sql = "delete from __synclog where tableName = '\(table)' and key = '\(esc(key))'"
 				_ = sqlExecute(sql)
 			}
 		}
