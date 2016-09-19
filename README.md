@@ -1,7 +1,9 @@
 # ALBNoSQLDB
-**This class uses Swift 3.0. If you need Swift 1.2, use Tag 2.2**
+**This class uses Swift 3.0. If you need Swift 2.2, use Tag 2.2**
 
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
+
+Completely thread safe since it uses it's own Thread subclass.
 
 All public methods are class-level methods, so no instance of the class is needed.
 
