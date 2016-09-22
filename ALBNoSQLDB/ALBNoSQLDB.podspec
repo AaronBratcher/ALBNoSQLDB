@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "ALBNoSQLDB"
   s.version      = "4.0"
-  s.summary      = "Easily hide and show UITableView Rows"
+  s.summary      = "A thread safe SQLite database wrapper written in Swift 3"
   s.homepage	 = "https://github.com/AaronBratcher/ALBNoSQLDB"
 
   s.license      = "MIT"
@@ -11,5 +11,5 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "9.0"
   s.source       = { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => "4.0" }
   s.source_files  = "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
-  s.framework    = "libsqlite3.tbd"
+  s.framework    = "libsqlite3"
 end
