@@ -15,7 +15,7 @@ extension String {
 }
 
 // MARK: - Definitions
-enum DBConditionOperator: String {
+public enum DBConditionOperator: String {
 	case equal = "="
 	case notEqual = "<>"
 	case lessThan = "<"
@@ -26,34 +26,41 @@ enum DBConditionOperator: String {
 	case inList = "()"
 }
 
-struct DBCondition {
-	var set = 0
-	var objectKey = ""
-	var conditionOperator = DBConditionOperator.equal
-	var value: AnyObject
-}
-
-struct DBRow {
-	var values = [AnyObject?]()
-}
-
-class ALBNoSQLDBObject {
-	var key: String
+public struct DBCondition {
+	public var set = 0
+	public var objectKey = ""
+	public var conditionOperator = DBConditionOperator.equal
+	public var value: AnyObject
 	
-	convenience init() {
+	public init(set: Int, objectKey: String, conditionOperator: DBConditionOperator, value: AnyObject) {
+		self.set = set
+		self.objectKey = objectKey
+		self.conditionOperator = conditionOperator
+		self.value = value
+	}
+}
+
+public struct DBRow {
+	public var values = [AnyObject?]()
+}
+
+open class ALBNoSQLDBObject {
+	public var key: String
+	
+	public convenience init() {
 		self.init(keyValue: ALBNoSQLDB.guid(), dictValue: nil)
 	}
 	
-	init(keyValue: String, dictValue: [String: AnyObject]? = nil) {
+	public init(keyValue: String, dictValue: [String: AnyObject]? = nil) {
 		key = keyValue
 	}
 	
-	func dictionaryValue() -> [String: AnyObject] {
+	open func dictionaryValue() -> [String: AnyObject] {
 		let emptyDict = [String: AnyObject]()
 		return emptyDict
 	}
 	
-	func jsonValue() -> String {
+	public func jsonValue() -> String {
 		let dataValue = try? JSONSerialization.data(withJSONObject: dictionaryValue(), options: JSONSerialization.WritingOptions(rawValue: 0))
 		let stringValue = NSString(data: dataValue!, encoding: String.Encoding.utf8.rawValue)
 		return stringValue! as String
@@ -61,7 +68,7 @@ class ALBNoSQLDBObject {
 }
 
 // MARK: - Class Definition
-final class ALBNoSQLDB {
+public final class ALBNoSQLDB {
 	// These enum case entries are lowercase to avoid conflict with data types
 	enum ValueType: String {
 		case stringArray
@@ -101,7 +108,7 @@ final class ALBNoSQLDB {
 	
 	- parameter location: The file location.
 	*/
-	class func setFileLocation(_ location: URL) {
+	public class func setFileLocation(_ location: URL) {
 		let db = ALBNoSQLDB.sharedInstance
 		db._dbFileLocation = location
 	}
@@ -113,7 +120,7 @@ final class ALBNoSQLDB {
 	- parameter seconds: The number of seconds after activity before closing
 	*/
 	
-	class func setAutoCloseTimeout(_ seconds: Int) {
+	public class func setAutoCloseTimeout(_ seconds: Int) {
 		let db = ALBNoSQLDB.sharedInstance
 		db._autoCloseTimeout = seconds
 	}
@@ -126,7 +133,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool Returns if the database could be successfully opened
 	*/
-	class func open(_ location: URL? = nil) -> Bool {
+	public class func open(_ location: URL? = nil) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		
 		// if we already have a db file open at a different location, close it first
@@ -144,7 +151,7 @@ final class ALBNoSQLDB {
 	/**
 	Close the database.
 	*/
-	class func close() {
+	public class func close() {
 		let db = ALBNoSQLDB.sharedInstance
 		db._autoDeleteTimer.cancel()
 		db._dbQueue.sync { () -> Void in
@@ -161,7 +168,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool? Returns if the key exists in the table. Is nil when database could not be opened or other error occured.
 	*/
-	class func tableHasKey(table: String, key: String) -> Bool? {
+	public class func tableHasKey(table: String, key: String) -> Bool? {
 		let db = ALBNoSQLDB.sharedInstance
 		assert(table != "", "table name must be provided")
 		assert(!db.reservedTable(table), "reserved table")
@@ -199,7 +206,7 @@ final class ALBNoSQLDB {
 	
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
-	class func keysInTable(_ table: String, sortOrder: String?) -> [String]? {
+	public class func keysInTable(_ table: String, sortOrder: String? = nil) -> [String]? {
 		let db = ALBNoSQLDB.sharedInstance
 		assert(table != "", "table name must be provided")
 		assert(!db.reservedTable(table), "reserved table")
@@ -244,7 +251,7 @@ final class ALBNoSQLDB {
 	
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
-	class func keysInTableForConditions(_ table: String, sortOrder: String?, conditions: [DBCondition]) -> [String]? {
+	public class func keysInTableForConditions(_ table: String, sortOrder: String?, conditions: [DBCondition]) -> [String]? {
 		let db = ALBNoSQLDB.sharedInstance
 		
 		assert(table != "", "table name must be provided")
@@ -410,7 +417,7 @@ final class ALBNoSQLDB {
 	- parameter table: The table to return keys from.
 	- parameter indexes: An array of table properties to be indexed. An array can be compound.
 	*/
-	class func setTableIndexes(table: String, indexes: [String]) {
+	public class func setTableIndexes(table: String, indexes: [String]) {
 		let db = ALBNoSQLDB.sharedInstance
 		db._indexes[table] = indexes
 		if db.openDB() {
@@ -435,7 +442,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool If the value was set successfully.
 	*/
-	class func setValue(table: String, key: String, value: String, autoDeleteAfter: Date? = nil) -> Bool {
+	public class func setValue(table: String, key: String, value: String, autoDeleteAfter: Date? = nil) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		assert(table != "", "table name must be provided")
 		assert(!db.reservedTable(table), "reserved table")
@@ -468,7 +475,7 @@ final class ALBNoSQLDB {
 	
 	- returns: String? JSON value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
-	class func valueForKey(table: String, key: String) -> String? {
+	public class func valueForKey(table: String, key: String) -> String? {
 		if let dictionaryValue = dictValueForKey(table: table, key: key) {
 			let dataValue = try? JSONSerialization.data(withJSONObject: dictionaryValue, options: JSONSerialization.WritingOptions(rawValue: 0))
 			let jsonValue = NSString(data: dataValue!, encoding: String.Encoding.utf8.rawValue)
@@ -493,7 +500,7 @@ final class ALBNoSQLDB {
 	
 	- returns: [String:AnyObject]? Dictionary value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
-	class func dictValueForKey(table: String, key: String) -> [String: AnyObject]? {
+	public class func dictValueForKey(table: String, key: String) -> [String: AnyObject]? {
 		let db = ALBNoSQLDB.sharedInstance
 		
 		assert(table != "", "table name must be provided")
@@ -512,7 +519,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool Value was successfuly removed.
 	*/
-	class func deleteForKey(table: String, key: String) -> Bool {
+	public class func deleteForKey(table: String, key: String) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		
 		assert(table != "", "table name must be provided")
@@ -529,7 +536,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool Table was successfuly removed.
 	*/
-	class func dropTable(_ table: String) -> Bool {
+	public class func dropTable(_ table: String) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		assert(table != "", "table name must be provided")
 		assert(!db.reservedTable(table), "reserved table")
@@ -567,7 +574,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool Tables were successfuly removed.
 	*/
-	class func dropAllTables() -> Bool {
+	public class func dropAllTables() -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return false
@@ -592,7 +599,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool? If syncing is enabled. Is nil when database could not be opened.
 	*/
-	class func syncingEnabled() -> Bool? {
+	public class func syncingEnabled() -> Bool? {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return nil
@@ -606,7 +613,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool If syncing was successfully enabled.
 	*/
-	class func enableSyncing() -> Bool {
+	public class func enableSyncing() -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return false
@@ -639,7 +646,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool If syncing was successfully disabled.
 	*/
-	class func disableSyncing() -> Bool {
+	public class func disableSyncing() -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return false
@@ -663,7 +670,7 @@ final class ALBNoSQLDB {
 	
 	- returns: [String] Array of table names.
 	*/
-	class func unsyncedTables() -> [String] {
+	public class func unsyncedTables() -> [String] {
 		return ALBNoSQLDB.sharedInstance._unsyncedTables
 	}
 	
@@ -674,7 +681,7 @@ final class ALBNoSQLDB {
 	
 	- returns: Bool If list was set successfully.
 	*/
-	class func setUnsyncedTables(_ tables: [String]) -> Bool {
+	public class func setUnsyncedTables(_ tables: [String]) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return false
@@ -703,7 +710,7 @@ final class ALBNoSQLDB {
 	
 	- returns: (Bool,Int) If the file was successfully created and the lastSequence that should be used in subsequent calls to this instance for the given targetDBInstanceKey.
 	*/
-	class func createSyncFileAtURL(_ localURL: URL!, lastSequence: Int, targetDBInstanceKey: String) -> (Bool, Int) {
+	public class func createSyncFileAtURL(_ localURL: URL!, lastSequence: Int, targetDBInstanceKey: String) -> (Bool, Int) {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return (false, lastSequence)
@@ -787,8 +794,8 @@ final class ALBNoSQLDB {
 	
 	- returns: (Bool,String,Int)  If the sync file was successfully processed,the instanceKey of the submiting DB, and the lastSequence that should be used in subsequent calls to the createSyncFile method of the instance that was used to create this file. If the database couldn't be opened or syncing hasn't been enabled, then the instanceKey will be empty and the lastSequence will be equal to zero.
 	*/
-	typealias syncProgressUpdate = (_ percentComplete: Double) -> Void
-	class func processSyncFileAtURL(_ localURL: URL!, syncProgress: syncProgressUpdate?) -> (Bool, String, Int) {
+	public typealias syncProgressUpdate = (_ percentComplete: Double) -> Void
+	public class func processSyncFileAtURL(_ localURL: URL!, syncProgress: syncProgressUpdate?) -> (Bool, String, Int) {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
 			return (false, "", 0)
@@ -875,7 +882,7 @@ final class ALBNoSQLDB {
 	
 	- returns: String? the instanceKey.  Is nil when database could not be opened.
 	*/
-	class func dbInstanceKey() -> String? {
+	public class func dbInstanceKey() -> String? {
 		let db = ALBNoSQLDB.sharedInstance
 		if db.openDB() {
 			return db._dbInstanceKey
@@ -889,7 +896,7 @@ final class ALBNoSQLDB {
 	
 	- returns: An escaped string.
 	*/
-	func esc(_ source: String) -> String {
+	public func esc(_ source: String) -> String {
 		return source.replacingOccurrences(of: "'", with: "''")
 	}
 	
@@ -898,7 +905,7 @@ final class ALBNoSQLDB {
 	
 	- returns: String Unique string.
 	*/
-	class func guid() -> String {
+	public class func guid() -> String {
 		let uuid = CFUUIDCreate(kCFAllocatorDefault)
 		let uuidString = String(CFUUIDCreateString(kCFAllocatorDefault, uuid))
 		
@@ -912,7 +919,7 @@ final class ALBNoSQLDB {
 	
 	- returns: String Date presented as a string
 	*/
-	class func stringValueForDate(_ date: Date) -> String {
+	public class func stringValueForDate(_ date: Date) -> String {
 		let db = ALBNoSQLDB.sharedInstance
 		return db._dateFormatter.string(from: date)
 	}
@@ -924,13 +931,13 @@ final class ALBNoSQLDB {
 	
 	- returns: NSDate? Date value. Is nil if the string could not be converted to date.
 	*/
-	class func dateValueForString(_ stringValue: String) -> Date? {
+	public class func dateValueForString(_ stringValue: String) -> Date? {
 		let db = ALBNoSQLDB.sharedInstance
 		return db._dateFormatter.date(from: stringValue)
 	}
 	
 	// MARK: - Initialization Methods
-	static let sharedInstance = ALBNoSQLDB()
+	public static let sharedInstance = ALBNoSQLDB()
 	
 	init() {
 		_dateFormatter = DateFormatter()
@@ -1500,7 +1507,7 @@ extension ALBNoSQLDB {
 		return lastID
 	}
 	
-	func sqlSelect(_ sql: String) -> [DBRow]? {
+	public func sqlSelect(_ sql: String) -> [DBRow]? {
 		var rows: [DBRow]?
 		
 		_dbQueue.sync { [unowned self]() -> Void in

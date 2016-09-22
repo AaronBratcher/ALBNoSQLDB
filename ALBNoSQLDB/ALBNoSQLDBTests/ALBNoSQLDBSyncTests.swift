@@ -8,6 +8,7 @@
 
 import Foundation
 import XCTest
+@testable import ALBNoSQLDB
 
 class ALBNoSQLDBSyncTests: XCTestCase {
     override func setUp() {

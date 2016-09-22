@@ -8,6 +8,7 @@
 
 import UIKit
 import XCTest
+@testable import ALBNoSQLDB
 
 class ALBNoSQLDBTests: XCTestCase {
 	override func setUp() {
