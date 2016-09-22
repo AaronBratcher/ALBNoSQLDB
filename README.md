@@ -9,6 +9,10 @@ All public methods are class-level methods, so no instance of the class is neede
 
 See the Shopping project for an example of using this class to sync between instances of an app.
 
+## Installation ##
+- Cocoapods (use version 4)
+- Include ALBNoSQLDB.swift in your project
+
 ## Getting Started ##
 ALBNoSQLDB acts as a key/value database allowing you to set a JSON value in a table for a specific key or getting keys from a table.
 
