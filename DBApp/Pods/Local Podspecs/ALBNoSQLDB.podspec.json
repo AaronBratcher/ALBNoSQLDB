@@ -1,0 +1,22 @@
+{
+  "name": "ALBNoSQLDB",
+  "version": "2.0",
+  "summary": "Easily hide and show UITableView Rows",
+  "homepage": "https://github.com/AaronBratcher/ALBNoSQLDB",
+  "license": "MIT",
+  "authors": {
+    "Aaron Bratcher": "aaronbratcher1@gmail.com"
+  },
+  "social_media_url": "http://twitter.com/AaronLBratcher",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/AaronBratcher/ALBNoSQLDB.git",
+    "tag": "3.0"
+  },
+  "source_files": [
+    "ALBNoSQLDB",
+    "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
+  ]
+}

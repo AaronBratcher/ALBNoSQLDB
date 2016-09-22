@@ -1,0 +1,550 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0B087191C6003D44E5ED35AEAC56D01B /* Pods-DBApp-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = BF02CB32E81978E160FF8D282308973F /* Pods-DBApp-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5B25E1A843C832469921F3984096C37A /* Pods-DBApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B6729B2819D86ADBF5B6CEB5C4E9BD44 /* Pods-DBApp-dummy.m */; };
+		66DB943031066C7CF4A007CD57F52739 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = E15A9AD8BE8BABBF5317EAE3CF6D9E1D /* sqlite3.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		93EBF1160120D739F61D8785A1861807 /* ALBNoSQLDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C86194354C4AAC07D729865BE34D4A /* ALBNoSQLDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA17EDF14E4D3D7789FE1F6090DDEB1E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		C8A60ED200C5077888582598BA3D40F2 /* ALBNoSQLDB-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 222ACFF631EBA2F6D03A8A5E234EAD6F /* ALBNoSQLDB-dummy.m */; };
+		CCDA99D67DA743395D2810EC231F6706 /* ALBNoSQLDB-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CF1FB890483BE29086CBE36B67DDCAD /* ALBNoSQLDB-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D7E42A7CC8333A3EA0F75976E8C2A1DF /* ALBNoSQLDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89202029D506FB16405ABE0648427ED /* ALBNoSQLDB.swift */; };
+		E7B0F69A6F4DDD0662CBEB9C75629FF7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4C07DA712A961FA6890A38AAAFF5E80E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 60AD7A1A7D848DB9C28BAB01BD33902E;
+			remoteInfo = ALBNoSQLDB;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02C86194354C4AAC07D729865BE34D4A /* ALBNoSQLDB.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ALBNoSQLDB.h; sourceTree = "<group>"; };
+		0CF1FB890483BE29086CBE36B67DDCAD /* ALBNoSQLDB-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ALBNoSQLDB-umbrella.h"; sourceTree = "<group>"; };
+		222ACFF631EBA2F6D03A8A5E234EAD6F /* ALBNoSQLDB-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ALBNoSQLDB-dummy.m"; sourceTree = "<group>"; };
+		22D1E755C79ECF78C725558E354FD825 /* Pods-DBApp-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DBApp-acknowledgements.plist"; sourceTree = "<group>"; };
+		24E19FC2CA70D35EED63E920389F2DD0 /* Pods_DBApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DBApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		310BD9F11A27FA31668DA711C32053D6 /* ALBNoSQLDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ALBNoSQLDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		470AEAFDEC78E61CA799052541326CA9 /* ALBNoSQLDB-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ALBNoSQLDB-prefix.pch"; sourceTree = "<group>"; };
+		61AE068306A6411F3B3EFE8A7E926D8B /* Pods-DBApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DBApp.release.xcconfig"; sourceTree = "<group>"; };
+		84B9AF90DAF35F44DB969DCA98D8D274 /* Pods-DBApp-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DBApp-resources.sh"; sourceTree = "<group>"; };
+		850437960150D813DDD1F32B82689A3C /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		990AF74712C4000A97051608476F0B63 /* ALBNoSQLDB.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ALBNoSQLDB.xcconfig; sourceTree = "<group>"; };
+		A89202029D506FB16405ABE0648427ED /* ALBNoSQLDB.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDB.swift; sourceTree = "<group>"; };
+		B6729B2819D86ADBF5B6CEB5C4E9BD44 /* Pods-DBApp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DBApp-dummy.m"; sourceTree = "<group>"; };
+		BF02CB32E81978E160FF8D282308973F /* Pods-DBApp-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DBApp-umbrella.h"; sourceTree = "<group>"; };
+		C128AA7C5C12EF68094781B9AEF95B3A /* Pods-DBApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DBApp-acknowledgements.markdown"; sourceTree = "<group>"; };
+		C80C2952AA4A93F67A34580B32895B0C /* Pods-DBApp-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DBApp-frameworks.sh"; sourceTree = "<group>"; };
+		CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		D3F3F5728A4534B8F4E8A44D6B865EEA /* Pods-DBApp.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-DBApp.modulemap"; sourceTree = "<group>"; };
+		DD23A4A5425DEFE32987195056414079 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E15A9AD8BE8BABBF5317EAE3CF6D9E1D /* sqlite3.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
+		F131FF2EDE80B02F017BAC3325E4C93F /* Pods-DBApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DBApp.debug.xcconfig"; sourceTree = "<group>"; };
+		FB931B73D990789BEA18093F9A9ADD83 /* ALBNoSQLDB.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = ALBNoSQLDB.modulemap; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		30BB37B33B7DFDCCB7F5ADDC7E678C68 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA17EDF14E4D3D7789FE1F6090DDEB1E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4781BE4BE867B069AB60B5C14CE0FE15 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7B0F69A6F4DDD0662CBEB9C75629FF7 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D69681452F12C23EE3AAA9DB5758646 /* ALBNoSQLDB */ = {
+			isa = PBXGroup;
+			children = (
+				6F1E2B96AD8766CCA8468921ED6E081F /* ALBNoSQLDB */,
+				54F9754DD9C5EA7DCE21F79B780DA48F /* Support Files */,
+			);
+			name = ALBNoSQLDB;
+			path = ../../ALBNoSQLDB;
+			sourceTree = "<group>";
+		};
+		3A1C9342A84D7CECF7B844FD85324189 /* Pods-DBApp */ = {
+			isa = PBXGroup;
+			children = (
+				850437960150D813DDD1F32B82689A3C /* Info.plist */,
+				D3F3F5728A4534B8F4E8A44D6B865EEA /* Pods-DBApp.modulemap */,
+				C128AA7C5C12EF68094781B9AEF95B3A /* Pods-DBApp-acknowledgements.markdown */,
+				22D1E755C79ECF78C725558E354FD825 /* Pods-DBApp-acknowledgements.plist */,
+				B6729B2819D86ADBF5B6CEB5C4E9BD44 /* Pods-DBApp-dummy.m */,
+				C80C2952AA4A93F67A34580B32895B0C /* Pods-DBApp-frameworks.sh */,
+				84B9AF90DAF35F44DB969DCA98D8D274 /* Pods-DBApp-resources.sh */,
+				BF02CB32E81978E160FF8D282308973F /* Pods-DBApp-umbrella.h */,
+				F131FF2EDE80B02F017BAC3325E4C93F /* Pods-DBApp.debug.xcconfig */,
+				61AE068306A6411F3B3EFE8A7E926D8B /* Pods-DBApp.release.xcconfig */,
+			);
+			name = "Pods-DBApp";
+			path = "Target Support Files/Pods-DBApp";
+			sourceTree = "<group>";
+		};
+		3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		460959623009A597FE2BEA2D6BC46048 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				310BD9F11A27FA31668DA711C32053D6 /* ALBNoSQLDB.framework */,
+				24E19FC2CA70D35EED63E920389F2DD0 /* Pods_DBApp.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		54F55410E806B4DAC85B135A29E9E1C5 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0D69681452F12C23EE3AAA9DB5758646 /* ALBNoSQLDB */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		54F9754DD9C5EA7DCE21F79B780DA48F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				FB931B73D990789BEA18093F9A9ADD83 /* ALBNoSQLDB.modulemap */,
+				990AF74712C4000A97051608476F0B63 /* ALBNoSQLDB.xcconfig */,
+				222ACFF631EBA2F6D03A8A5E234EAD6F /* ALBNoSQLDB-dummy.m */,
+				470AEAFDEC78E61CA799052541326CA9 /* ALBNoSQLDB-prefix.pch */,
+				0CF1FB890483BE29086CBE36B67DDCAD /* ALBNoSQLDB-umbrella.h */,
+				DD23A4A5425DEFE32987195056414079 /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../DBApp/Pods/Target Support Files/ALBNoSQLDB";
+			sourceTree = "<group>";
+		};
+		6F1E2B96AD8766CCA8468921ED6E081F /* ALBNoSQLDB */ = {
+			isa = PBXGroup;
+			children = (
+				02C86194354C4AAC07D729865BE34D4A /* ALBNoSQLDB.h */,
+				A89202029D506FB16405ABE0648427ED /* ALBNoSQLDB.swift */,
+				E15A9AD8BE8BABBF5317EAE3CF6D9E1D /* sqlite3.h */,
+			);
+			path = ALBNoSQLDB;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				54F55410E806B4DAC85B135A29E9E1C5 /* Development Pods */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				460959623009A597FE2BEA2D6BC46048 /* Products */,
+				D68BD9A9477FB1D48AEA758A54D92317 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D68BD9A9477FB1D48AEA758A54D92317 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C9342A84D7CECF7B844FD85324189 /* Pods-DBApp */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2B3E3BF4BB525CB6B94A9BA6F6B69DC4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CCDA99D67DA743395D2810EC231F6706 /* ALBNoSQLDB-umbrella.h in Headers */,
+				93EBF1160120D739F61D8785A1861807 /* ALBNoSQLDB.h in Headers */,
+				66DB943031066C7CF4A007CD57F52739 /* sqlite3.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		948604B85837B0DB848798DED89BAD2B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B087191C6003D44E5ED35AEAC56D01B /* Pods-DBApp-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		60AD7A1A7D848DB9C28BAB01BD33902E /* ALBNoSQLDB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 656DE26693161F5DB6318F25014B73E3 /* Build configuration list for PBXNativeTarget "ALBNoSQLDB" */;
+			buildPhases = (
+				3B88AD561D4763DBB01FA779BF881BB8 /* Sources */,
+				4781BE4BE867B069AB60B5C14CE0FE15 /* Frameworks */,
+				2B3E3BF4BB525CB6B94A9BA6F6B69DC4 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ALBNoSQLDB;
+			productName = ALBNoSQLDB;
+			productReference = 310BD9F11A27FA31668DA711C32053D6 /* ALBNoSQLDB.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		6C8CFFDA33E5809F30D8533E262380EA /* Pods-DBApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C6A21B9AA6A8BBAE4BBB59D609449F0 /* Build configuration list for PBXNativeTarget "Pods-DBApp" */;
+			buildPhases = (
+				FC8E46E9856BCE99151E99DC8CDEE7E5 /* Sources */,
+				30BB37B33B7DFDCCB7F5ADDC7E678C68 /* Frameworks */,
+				948604B85837B0DB848798DED89BAD2B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				964A6F6070BD5028407BA212EC17F588 /* PBXTargetDependency */,
+			);
+			name = "Pods-DBApp";
+			productName = "Pods-DBApp";
+			productReference = 24E19FC2CA70D35EED63E920389F2DD0 /* Pods_DBApp.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 460959623009A597FE2BEA2D6BC46048 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				60AD7A1A7D848DB9C28BAB01BD33902E /* ALBNoSQLDB */,
+				6C8CFFDA33E5809F30D8533E262380EA /* Pods-DBApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B88AD561D4763DBB01FA779BF881BB8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8A60ED200C5077888582598BA3D40F2 /* ALBNoSQLDB-dummy.m in Sources */,
+				D7E42A7CC8333A3EA0F75976E8C2A1DF /* ALBNoSQLDB.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC8E46E9856BCE99151E99DC8CDEE7E5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B25E1A843C832469921F3984096C37A /* Pods-DBApp-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		964A6F6070BD5028407BA212EC17F588 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ALBNoSQLDB;
+			target = 60AD7A1A7D848DB9C28BAB01BD33902E /* ALBNoSQLDB */;
+			targetProxy = 4C07DA712A961FA6890A38AAAFF5E80E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2E9267EF09D794927D651598968AEC3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 990AF74712C4000A97051608476F0B63 /* ALBNoSQLDB.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/ALBNoSQLDB/ALBNoSQLDB-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/ALBNoSQLDB/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/ALBNoSQLDB/ALBNoSQLDB.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = ALBNoSQLDB;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		3DD14AE295DF6E4E07B16F3B9C0CEB18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F131FF2EDE80B02F017BAC3325E4C93F /* Pods-DBApp.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DBApp/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DBApp/Pods-DBApp.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_DBApp;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		544593D5320B91E7EEB8C07FCC1DD7A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 61AE068306A6411F3B3EFE8A7E926D8B /* Pods-DBApp.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DBApp/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DBApp/Pods-DBApp.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_DBApp;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		59B042A655B7C20CBAB90E385BF4E4C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		B7324857C38B065FEB1EEE3105C2367A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FB3B88B9F79F01122CEED469F7AE4C41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 990AF74712C4000A97051608476F0B63 /* ALBNoSQLDB.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/ALBNoSQLDB/ALBNoSQLDB-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/ALBNoSQLDB/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/ALBNoSQLDB/ALBNoSQLDB.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = ALBNoSQLDB;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C6A21B9AA6A8BBAE4BBB59D609449F0 /* Build configuration list for PBXNativeTarget "Pods-DBApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3DD14AE295DF6E4E07B16F3B9C0CEB18 /* Debug */,
+				544593D5320B91E7EEB8C07FCC1DD7A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				59B042A655B7C20CBAB90E385BF4E4C7 /* Debug */,
+				B7324857C38B065FEB1EEE3105C2367A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		656DE26693161F5DB6318F25014B73E3 /* Build configuration list for PBXNativeTarget "ALBNoSQLDB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E9267EF09D794927D651598968AEC3B /* Debug */,
+				FB3B88B9F79F01122CEED469F7AE4C41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}
