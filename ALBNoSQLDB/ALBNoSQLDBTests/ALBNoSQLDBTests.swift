@@ -38,7 +38,7 @@ class ALBNoSQLDBTests: XCTestCase {
 
 	func testSimpleInsert() {
 		let key = "SIMPLEINSERTKEY"
-		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
+		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"link\":true}"
 		let sampleData = sample.data(using: String.Encoding.utf8, allowLossyConversion: false)!
 		let sampleDict = (try? JSONSerialization.jsonObject(with: sampleData, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
 		let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: nil)
@@ -54,6 +54,10 @@ class ALBNoSQLDBTests: XCTestCase {
 			let dataValue = jsonValue.data(using: String.Encoding.utf8, allowLossyConversion: false)!
 			let objectValues = (try? JSONSerialization.jsonObject(with: dataValue, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
 			let equalDicts = objectValues?.count == sampleDict?.count
+			let linked = objectValues!["link"] as! Bool
+			
+			XCTAssert(linked, "Should be link of true")
+			
 			XCTAssert(equalDicts, "Dictionaries don't match")
 		}
 	}
@@ -328,8 +332,6 @@ class ALBNoSQLDBTests: XCTestCase {
 
 		let key = "SimpleDeleteKey"
 		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
-		let sampleData = sample.data(using: String.Encoding.utf8, allowLossyConversion: false)!
-		let sampleDict = (try? JSONSerialization.jsonObject(with: sampleData, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
 		let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: Date())
 		
 		XCTAssert(successful, "setValueFailed")
