@@ -70,7 +70,7 @@ open class ALBNoSQLDBObject {
 // MARK: - Class Definition
 public final class ALBNoSQLDB {
 	enum ValueType: String {
-		case textArray
+		case textArray = "stringArray"
 		case intArray
 		case doubleArray
 		case text
