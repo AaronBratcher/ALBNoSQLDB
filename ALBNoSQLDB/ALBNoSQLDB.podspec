@@ -5,10 +5,12 @@ Pod::Spec.new do |s|
   s.homepage	 = "https://github.com/AaronBratcher/ALBNoSQLDB"
 
   s.license      = "MIT"
-  s.author             = { "Aaron Bratcher" => "aaronbratcher1@gmail.com" }
+  s.author             = { "Aaron Bratcher" => "aaronlbratcher@yahoo.com" }
   s.social_media_url   = "http://twitter.com/AaronLBratcher"
 
-  s.platform     = :ios, "9.0"
+  s.ios.deplyoment_target = "9.0"
+  s.osx.deployment_target = "10.10"
+  
   s.source       = { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => "4.1.1" }
   s.source_files  = "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
   s.library      = "sqlite3"
