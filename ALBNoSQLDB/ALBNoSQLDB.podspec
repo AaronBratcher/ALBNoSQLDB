@@ -13,9 +13,10 @@ Pod::Spec.new do |s|
   
   s.osx.frameworks = 'AppKit', 'Foundation'
   s.ios.frameworks = 'UIKit', 'Foundation'
-
   
-  s.source       = { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => s.version }
-  s.source_files  = "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
-  s.library      = "sqlite3"
+  s.source				= { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => s.version }
+  s.ios.source_files	= "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
+  s.osx.source_files	= "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
+  
+  s.library				= "sqlite3"
 end
