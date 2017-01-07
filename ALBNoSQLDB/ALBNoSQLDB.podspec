@@ -8,10 +8,14 @@ Pod::Spec.new do |s|
   s.author             = { "Aaron Bratcher" => "aaronlbratcher@yahoo.com" }
   s.social_media_url   = "http://twitter.com/AaronLBratcher"
 
-  s.ios.deplyoment_target = "9.0"
   s.osx.deployment_target = "10.10"
+  s.ios.deployment_target = "9.0"
   
-  s.source       = { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => "4.1.1" }
+  s.osx.frameworks = 'AppKit', 'Foundation'
+  s.ios.frameworks = 'UIKit', 'Foundation'
+
+  
+  s.source       = { :git => "https://github.com/AaronBratcher/ALBNoSQLDB.git", :tag => s.version }
   s.source_files  = "ALBNoSQLDB", "ALBNoSQLDB/ALBNoSQLDB/**/*.{h,m,swift}"
   s.library      = "sqlite3"
 end

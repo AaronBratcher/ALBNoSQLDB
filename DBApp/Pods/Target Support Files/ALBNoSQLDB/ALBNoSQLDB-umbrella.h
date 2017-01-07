@@ -1,5 +1,3 @@
-#import <UIKit/UIKit.h>
-
 #import "ALBNoSQLDB.h"
 #import "sqlite3.h"
 

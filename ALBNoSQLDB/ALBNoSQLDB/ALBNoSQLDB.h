@@ -6,7 +6,6 @@
 //  Copyright © 2016 Aaron Bratcher. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #include <stdio.h>
 #import "sqlite3.h"
 
