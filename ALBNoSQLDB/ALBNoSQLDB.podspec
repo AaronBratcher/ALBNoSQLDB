@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "ALBNoSQLDB"
-  s.version      = "4.1.1"
+  s.version      = "4.1.2"
   s.summary      = "A thread safe SQLite database wrapper written in Swift 3"
   s.homepage	 = "https://github.com/AaronBratcher/ALBNoSQLDB"
 
