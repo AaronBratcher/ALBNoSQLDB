@@ -1,6 +1,0 @@
-framework module ALBNoSQLDB {
-  umbrella header "ALBNoSQLDB-umbrella.h"
-
-  export *
-  module * { export * }
-}

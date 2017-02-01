@@ -1,6 +1,0 @@
-framework module Pods_DBApp {
-  umbrella header "Pods-DBApp-umbrella.h"
-
-  export *
-  module * { export * }
-}
