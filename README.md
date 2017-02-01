@@ -1,4 +1,6 @@
 # ALBNoSQLDB
+[![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
+
 
 **This class uses Swift 3.0. If you need Swift 2.2, use Tag 2.2**
 
@@ -10,7 +12,7 @@ All public methods are class-level methods, so no instance of the class is neede
 
 See the Shopping project for an example of using this class to sync between instances of an app.
 
-## Installation ##
+## Installation Options ##
 - Cocoapods
 - Include ALBNoSQLDB.swift in your project
 
