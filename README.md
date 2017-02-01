@@ -10,7 +10,7 @@ Completely thread safe since it uses it's own Thread subclass.
 
 All public methods are class-level methods, so no instance of the class is needed.
 
-See the Shopping project for an example of using this class to sync between instances of an app.
+See the Money Trak project for an example of using this class to sync between instances of an app.
 
 ## Installation Options ##
 - Cocoapods
