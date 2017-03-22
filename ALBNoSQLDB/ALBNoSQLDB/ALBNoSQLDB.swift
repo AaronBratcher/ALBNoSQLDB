@@ -44,6 +44,7 @@ public struct DBRow {
 	public var values = [AnyObject?]()
 }
 
+@available( *, deprecated)
 open class ALBNoSQLDBObject {
 	public var key: String
 
