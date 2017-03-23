@@ -1557,19 +1557,19 @@ extension ALBNoSQLDB {
 }
 
 //MARK: - SQLiteCore
-extension ALBNoSQLDB {
+fileprivate extension ALBNoSQLDB {
 	final class SQLiteCore: Thread {
-		fileprivate var _sqliteDB: OpaquePointer? = nil
-		fileprivate var _threadLock = DispatchSemaphore(value: 0)
-		fileprivate var _queuedBlocks = [Any]()
-		fileprivate let _closeQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBCloseQueue", attributes: [])
-		fileprivate var _autoCloseTimer: DispatchSourceTimer
-		fileprivate var _dbFilePath = ""
-		fileprivate var _autoCloseTimeout = 0
-		fileprivate var _lastActivity: Double = 0
-		fileprivate var _automaticallyClosed = false
+		var _sqliteDB: OpaquePointer? = nil
+		private var _threadLock = DispatchSemaphore(value: 0)
+		private var _queuedBlocks = [Any]()
+		private let _closeQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBCloseQueue", attributes: [])
+		private var _autoCloseTimer: DispatchSourceTimer
+		private var _dbFilePath = ""
+		private var _autoCloseTimeout = 0
+		private var _lastActivity: Double = 0
+		private var _automaticallyClosed = false
 
-		fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+		private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 		override init() {
 			_autoCloseTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _closeQueue)
