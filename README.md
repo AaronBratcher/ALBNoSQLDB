@@ -2,15 +2,17 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
 
 
-**This class uses Swift 3.0. If you need Swift 2.2, use Tag 2.2**
+**This class uses Swift 3.0.
 
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
+
+No need to keep track of columns used in the database; it's automatic.
 
 Completely thread safe since it uses it's own Thread subclass.
 
 All public methods are class-level methods, so no instance of the class is needed.
 
-See the Money Trak project for an example of using this class to sync between instances of an app.
+See the ALBPeerConnect project for an example of using this class to sync between instances of an app.
 
 ## Installation Options ##
 - Cocoapods
