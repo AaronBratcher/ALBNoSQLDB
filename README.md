@@ -2,7 +2,7 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
 
 
-**This class uses Swift 3.0.
+**This class uses Swift 3.0.**
 
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
 
