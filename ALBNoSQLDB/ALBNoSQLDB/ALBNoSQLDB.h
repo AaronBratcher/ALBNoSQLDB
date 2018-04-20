@@ -10,10 +10,10 @@
 #import "sqlite3.h"
 
 //! Project version number for ALBNoSQLDB.
-FOUNDATION_EXPORT double ALBNoSQLDBVersionNumber;
+extern double ALBNoSQLDBVersionNumber;
 
 //! Project version string for ALBNoSQLDB.
-FOUNDATION_EXPORT const unsigned char ALBNoSQLDBVersionString[];
+extern const unsigned char ALBNoSQLDBVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <ALBNoSQLDB/PublicHeader.h>
 

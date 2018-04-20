@@ -2,7 +2,7 @@
 // ALBNoSQLDB.swift
 //
 // Created by Aaron Bratcher on 01/08/2015.
-// Copyright (c) 2015 Aaron L. Bratcher. All rights reserved.
+// Copyright (c) 2015-2018 Aaron L. Bratcher. All rights reserved.
 //
 
 import Foundation
@@ -44,7 +44,7 @@ public struct DBRow {
 	public var values = [AnyObject?]()
 }
 
-@available( *, deprecated)
+@available(*, deprecated)
 open class ALBNoSQLDBObject {
 	public var key: String
 
@@ -106,7 +106,7 @@ public final class ALBNoSQLDB {
 	// MARK: - File Location
 	/**
 	Sets the location of the database file.
-	
+
 	- parameter location: The file location.
 	*/
 	public class func setFileLocation(_ location: URL) {
@@ -116,8 +116,8 @@ public final class ALBNoSQLDB {
 
 	// MARK: - Auto Close
 	/**
-    The number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity.
-    */
+	The number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity.
+	*/
 	public class var autoCloseTimeout: Int {
 		get {
 			let db = ALBNoSQLDB.sharedInstance
@@ -132,11 +132,11 @@ public final class ALBNoSQLDB {
 
 	/**
 	Sets the number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity.
-	
+
 	- parameter seconds: The number of seconds after activity before closing
 	*/
 
-	@available( *, deprecated, message: "Use autoCloseTimeout class property")
+	@available(*, deprecated, message: "Use autoCloseTimeout class property")
 	public class func setAutoCloseTimeout(_ seconds: Int) {
 		let db = ALBNoSQLDB.sharedInstance
 		db._autoCloseTimeout = seconds
@@ -145,16 +145,16 @@ public final class ALBNoSQLDB {
 	// MARK: - Open / Close
 	/**
 	Opens the database file.
-	
+
 	- parameter location: The file location if different than the default. This is optional
-	
+
 	- returns: Bool Returns if the database could be successfully opened
 	*/
 	public class func open(_ location: URL? = nil) -> Bool {
 		let db = ALBNoSQLDB.sharedInstance
 
 		// if we already have a db file open at a different location, close it first
-		if db._SQLiteCore._sqliteDB != nil && db._dbFileLocation != location {
+		if db._SQLiteCore.isOpen && db._dbFileLocation != location {
 			close()
 		}
 
@@ -179,10 +179,10 @@ public final class ALBNoSQLDB {
 	// MARK: - Keys
 	/**
 	Checks if the given table contains the given key.
-	
+
 	- parameter table: The table to search.
 	- parameter key: The key to look for.
-	
+
 	- returns: Bool? Returns if the key exists in the table. Is nil when database could not be opened or other error occured.
 	*/
 	public class func tableHasKey(table: String, key: String) -> Bool? {
@@ -209,18 +209,18 @@ public final class ALBNoSQLDB {
 
 	/**
 	Returns an array of keys from the given table sorted in the way specified.
-	
+
 	Example:
-	
+
 	if let keys = ALBNoSQLDB.keysInTable("table1",sortOrder:"date desc, amount asc") {
 	// use keys
 	} else {
 	// handle error
 	}
-	
+
 	- parameter table: The table to return keys from.
 	- parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by
-	
+
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
 	public class func keysInTable(_ table: String, sortOrder: String? = nil) -> [String]? {
@@ -252,20 +252,20 @@ public final class ALBNoSQLDB {
 
 	/**
 	Returns an array of keys from the given table sorted in the way specified matching the given conditions. All conditions in the same set are ANDed together. Separate sets are ORed against each other.  (set:0 AND set:0 AND set:0) OR (set:1 AND set:1 AND set:1) OR (set:2)
-	
+
 	Unsorted Example:
-	
+
 	let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
 	if let keys = ALBNoSQLDB.keysInTableForConditions("table1", sortOrder:nil, conditions:accountCondition) {
 	// use keys
 	} else {
 	// handle error
 	}
-	
+
 	- parameter table: The table to return keys from.
 	- parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by
 	- parameter conditions: Array of DBConditions that specify what conditions must be met.
-	
+
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
 	public class func keysInTableForConditions(_ table: String, sortOrder: String?, conditions: [DBCondition]) -> [String]? {
@@ -426,11 +426,11 @@ public final class ALBNoSQLDB {
 	// MARK: - Indexing
 	/**
 	Sets the indexes desired for a given table.
-	
+
 	Example:
-	
+
 	ALBNoSQLDB.setTableIndexes(table: kTransactionsTable, indexes: ["accountKey","date"]) // index accountKey and date each individually
-	
+
 	- parameter table: The table to return keys from.
 	- parameter indexes: An array of table properties to be indexed. An array can be compound.
 	*/
@@ -445,18 +445,18 @@ public final class ALBNoSQLDB {
 	// MARK: - Set Values
 	/**
 	Sets the value of an entry in the given table for a given key optionally deleted automatically after a given date. Supported values are dictionaries that consist of String, Int, Double and arrays of these. If more complex objects need to be stored, a string value of those objects need to be stored.
-	
+
 	Example:
-	
+
 	if !ALBNoSQLDB.setValue(table: "table5", key: "testKey1", value: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil) {
 	// handle error
 	}
-	
+
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
 	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary.
 	- parameter autoDeleteAfter: Optional date of when the value should be automatically deleted from the table.
-	
+
 	- returns: Bool If the value was set successfully.
 	*/
 	public class func setValue(table: String, key: String, value: String, autoDeleteAfter: Date? = nil) -> Bool {
@@ -479,17 +479,17 @@ public final class ALBNoSQLDB {
 	// MARK: - Return Values
 	/**
 	Returns the JSON value of what was stored for a given table and key.
-	
+
 	Example:
 	if let jsonValue = ALBNoSQLDB.valueForKey(table: "table1", key: "58D200A048F9") {
 	// process JSON text
 	} else {
 	// handle error
 	}
-	
+
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
-	
+
 	- returns: String? JSON value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
 	public class func valueForKey(table: String, key: String) -> String? {
@@ -504,17 +504,17 @@ public final class ALBNoSQLDB {
 
 	/**
 	Returns the JSON value of what was stored for a given table and key.
-	
+
 	Example:
 	if let dictValue = ALBNoSQLDB.dictValueForKey(table: "table1", key: "58D200A048F9") {
 	// process dictionary
 	} else {
 	// handle error
 	}
-	
+
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
-	
+
 	- returns: [String:AnyObject]? Dictionary value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
 	public class func dictValueForKey(table: String, key: String) -> [String: AnyObject]? {
@@ -530,10 +530,10 @@ public final class ALBNoSQLDB {
 	// MARK: - Delete
 	/**
 	Delete the value from the given table for the given key.
-	
+
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
-	
+
 	- returns: Bool Value was successfuly removed.
 	*/
 	public class func deleteForKey(table: String, key: String) -> Bool {
@@ -548,9 +548,9 @@ public final class ALBNoSQLDB {
 
 	/**
 	Removes the given table and associated values.
-	
+
 	- parameter table: The table to return keys from.
-	
+
 	- returns: Bool Table was successfuly removed.
 	*/
 	public class func dropTable(_ table: String) -> Bool {
@@ -563,8 +563,8 @@ public final class ALBNoSQLDB {
 		}
 
 		if !db.sqlExecute("drop table \(table)")
-		|| !db.sqlExecute("drop table \(table)_arrayValues")
-		|| !db.sqlExecute("delete from __tableArrayColumns where tableName = '\(table)'") {
+			|| !db.sqlExecute("drop table \(table)_arrayValues")
+			|| !db.sqlExecute("delete from __tableArrayColumns where tableName = '\(table)'") {
 			return false
 		}
 
@@ -588,7 +588,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	Removes all tables and associated values.
-	
+
 	- returns: Bool Tables were successfuly removed.
 	*/
 	public class func dropAllTables() -> Bool {
@@ -612,8 +612,8 @@ public final class ALBNoSQLDB {
 
 	// MARK: - Sync
 	/**
-    Current syncing status. Nil if the database could not be opened.
-    */
+	Current syncing status. Nil if the database could not be opened.
+	*/
 	public class var isSyncingEnabled: Bool? {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
@@ -625,10 +625,10 @@ public final class ALBNoSQLDB {
 
 	/**
 	Returns whether syncing is currently enabled.
-	
+
 	- returns: Bool? If syncing is enabled. Is nil when database could not be opened.
 	*/
-	@available( *, deprecated, message: "use isSyncingEnabled class property")
+	@available(*, deprecated, message: "use isSyncingEnabled class property")
 	public class func syncingEnabled() -> Bool? {
 		let db = ALBNoSQLDB.sharedInstance
 		if !db.openDB() {
@@ -640,7 +640,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	Enables syncing. Once enabled, a log is created for all current values in the tables.
-	
+
 	- returns: Bool If syncing was successfully enabled.
 	*/
 	public class func enableSyncing() -> Bool {
@@ -673,7 +673,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	Disables syncing.
-	
+
 	- returns: Bool If syncing was successfully disabled.
 	*/
 	public class func disableSyncing() -> Bool {
@@ -697,7 +697,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	Returns an array of tables not being synced.
-	
+
 	- returns: [String] Array of table names.
 	*/
 	public class func unsyncedTables() -> [String] {
@@ -706,9 +706,9 @@ public final class ALBNoSQLDB {
 
 	/**
 	Sets the tables that are not to be synced.
-	
+
 	- parameter tables: Array of tables that are not to be synced.
-	
+
 	- returns: Bool If list was set successfully.
 	*/
 	public class func setUnsyncedTables(_ tables: [String]) -> Bool {
@@ -733,11 +733,11 @@ public final class ALBNoSQLDB {
 
 	/**
 	Creates a sync file that can be used on another ALBNoSQLDB instance to sync data. This is a synchronous call.
-	
+
 	- parameter filePath: The full path, including the file itself, to be used for the log file.
 	- parameter lastSequence: The last sequence used for the given target DB. Initial sequence is 0.
 	- parameter targetDBInstanceKey: The dbInstanceKey of the target database. Use the class dbInstanceKey method to get the DB's instanceKey.
-	
+
 	- returns: (Bool,Int) If the file was successfully created and the lastSequence that should be used in subsequent calls to this instance for the given targetDBInstanceKey.
 	*/
 	public class func createSyncFileAtURL(_ localURL: URL!, lastSequence: Int, targetDBInstanceKey: String) -> (Bool, Int) {
@@ -818,10 +818,10 @@ public final class ALBNoSQLDB {
 
 	/**
 	Processes a sync file created by another instance of ALBNoSQLDB. This is a synchronous call.
-	
+
 	- parameter filePath: The path to the sync file.
 	- parameter syncProgress: Optional function that will be called periodically giving the percent complete.
-	
+
 	- returns: (Bool,String,Int)  If the sync file was successfully processed,the instanceKey of the submiting DB, and the lastSequence that should be used in subsequent calls to the createSyncFile method of the instance that was used to create this file. If the database couldn't be opened or syncing hasn't been enabled, then the instanceKey will be empty and the lastSequence will be equal to zero.
 	*/
 	public typealias syncProgressUpdate = (_ percentComplete: Double) -> Void
@@ -908,8 +908,8 @@ public final class ALBNoSQLDB {
 
 	// MARK: - Misc
 	/**
-     The instanceKey for this database instance. Each ALBNoSQLDB database is created with a unique instanceKey. Is nil when database could not be opened.
-    */
+	The instanceKey for this database instance. Each ALBNoSQLDB database is created with a unique instanceKey. Is nil when database could not be opened.
+	*/
 	public class var instanceKey: String? {
 		let db = ALBNoSQLDB.sharedInstance
 		if db.openDB() {
@@ -921,10 +921,10 @@ public final class ALBNoSQLDB {
 
 	/**
 	The instanceKey for this database instance. Each ALBNoSQLDB is created with a unique instanceKey.
-	
+
 	- returns: String? the instanceKey.  Is nil when database could not be opened.
 	*/
-	@available( *, deprecated, message: "Use instanceKey class property")
+	@available(*, deprecated, message: "Use instanceKey class property")
 	public class func dbInstanceKey() -> String? {
 		let db = ALBNoSQLDB.sharedInstance
 		if db.openDB() {
@@ -936,7 +936,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	Replace single quotes with two single quotes for use in SQL commands.
-	
+
 	- returns: An escaped string.
 	*/
 	public func esc(_ source: String) -> String {
@@ -945,7 +945,7 @@ public final class ALBNoSQLDB {
 
 	/**
 	A unique string that can be used as a key.
-	
+
 	- returns: String Unique string.
 	*/
 	public class func guid() -> String {
@@ -957,9 +957,9 @@ public final class ALBNoSQLDB {
 
 	/**
 	String value for a given date.
-	
+
 	- parameter date: Date to get string value of
-	
+
 	- returns: String Date presented as a string
 	*/
 	public class func stringValueForDate(_ date: Date) -> String {
@@ -969,9 +969,9 @@ public final class ALBNoSQLDB {
 
 	/**
 	Date value for given string
-	
+
 	- parameter stringValue: String representation of date given in ISO format "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
-	
+
 	- returns: NSDate? Date value. Is nil if the string could not be converted to date.
 	*/
 	public class func dateValueForString(_ stringValue: String) -> Date? {
@@ -991,7 +991,7 @@ public final class ALBNoSQLDB {
 	}
 
 	fileprivate func openDB() -> Bool {
-		if _SQLiteCore._sqliteDB != nil {
+		if _SQLiteCore.isOpen {
 			return true
 		}
 
@@ -1407,11 +1407,11 @@ extension ALBNoSQLDB {
 
 	fileprivate func reservedColumn(_ column: String) -> Bool {
 		return column == "key"
-		|| column == "addedDateTime"
-		|| column == "updatedDateTime"
-		|| column == "autoDeleteDateTime"
-		|| column == "hasArrayValues"
-		|| column == "arrayValues"
+			|| column == "addedDateTime"
+			|| column == "updatedDateTime"
+			|| column == "autoDeleteDateTime"
+			|| column == "hasArrayValues"
+			|| column == "arrayValues"
 	}
 
 	fileprivate func createTable(_ table: String) -> Bool {
@@ -1559,7 +1559,8 @@ extension ALBNoSQLDB {
 //MARK: - SQLiteCore
 fileprivate extension ALBNoSQLDB {
 	final class SQLiteCore: Thread {
-		var _sqliteDB: OpaquePointer? = nil
+		var isOpen = false
+		private var _sqliteDB: OpaquePointer? = nil
 		private var _threadLock = DispatchSemaphore(value: 0)
 		private var _queuedBlocks = [Any]()
 		private let _closeQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBCloseQueue", attributes: [])
@@ -1609,11 +1610,12 @@ fileprivate extension ALBNoSQLDB {
 				if autoCloseTimeout > 0 {
 					self._autoCloseTimer.scheduleRepeating(deadline: .now(), interval: .milliseconds(autoCloseTimeout * 1000), leeway: .milliseconds(1000))
 					self._autoCloseTimer.setEventHandler {
-						self.closeFile(true)
+						self.close(fromCloseTimer: true)
 					}
 				}
 
 				let successful = self.openFile()
+				self.isOpen = successful
 
 				completion(successful)
 				return
@@ -1622,8 +1624,17 @@ fileprivate extension ALBNoSQLDB {
 			addBlock(block)
 		}
 
-		func close() {
+		func close(fromCloseTimer: Bool = false) {
 			let block = { [unowned self] in
+				if fromCloseTimer {
+					if self._automaticallyClosed || Date().timeIntervalSince1970 < (self._lastActivity + Double(self._autoCloseTimeout)) {
+						return
+					}
+
+					self._autoCloseTimer.suspend()
+					self._automaticallyClosed = true
+				}
+
 				sqlite3_close_v2(self._sqliteDB)
 				self._sqliteDB = nil
 			}
@@ -1842,7 +1853,7 @@ fileprivate extension ALBNoSQLDB {
 				while _queuedBlocks.count > 0 {
 					if let block = _queuedBlocks.first as? () -> Void {
 						_queuedBlocks.removeFirst()
-						block();
+						block()
 					}
 				}
 
@@ -1870,19 +1881,6 @@ fileprivate extension ALBNoSQLDB {
 
 			_automaticallyClosed = false
 			return true
-		}
-
-		private func closeFile(_ autoClose: Bool = false) {
-			if autoClose {
-				if _automaticallyClosed || Date().timeIntervalSince1970 < (_lastActivity + Double(_autoCloseTimeout)) {
-					return
-				}
-
-				_autoCloseTimer.suspend()
-				_automaticallyClosed = true
-			}
-
-			sqlite3_close_v2(self._sqliteDB)
 		}
 	}
 }
