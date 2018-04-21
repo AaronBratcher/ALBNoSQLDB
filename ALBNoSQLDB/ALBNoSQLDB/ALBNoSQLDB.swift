@@ -1633,6 +1633,8 @@ fileprivate extension ALBNoSQLDB {
 
 					self._autoCloseTimer.suspend()
 					self._automaticallyClosed = true
+				} else {
+					self.isOpen = false
 				}
 
 				sqlite3_close_v2(self._sqliteDB)
