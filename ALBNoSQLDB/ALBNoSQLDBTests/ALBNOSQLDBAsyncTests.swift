@@ -31,7 +31,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 		expectations.expectedFulfillmentCount = 4
 
 		DispatchQueue.global(qos: .userInteractive).async {
-			let tableName = "table4"
+			let tableName = "asyncTable4"
 			_ = ALBNoSQLDB.dropTable(tableName)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey1", value: "{\"numValue\":2,\"value2\":1}", autoDeleteAfter: nil)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey2", value: "{\"numValue\":3,\"value2\":1}", autoDeleteAfter: nil)
@@ -63,7 +63,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 
 
 		DispatchQueue.global(qos: .background).async {
-			let tableName = "table3"
+			let tableName = "asyncTable3"
 			_ = ALBNoSQLDB.dropTable(tableName)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey1", value: "{\"numValue\":2,\"value2\":1}", autoDeleteAfter: nil)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey2", value: "{\"numValue\":3,\"value2\":1}", autoDeleteAfter: nil)
@@ -93,7 +93,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 		}
 
 		DispatchQueue.global(qos: .default).async {
-			let tableName = "table2"
+			let tableName = "asyncTable2"
 			_ = ALBNoSQLDB.dropTable(tableName)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey1", value: "{\"numValue\":2,\"value2\":1}", autoDeleteAfter: nil)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey2", value: "{\"numValue\":3,\"value2\":1}", autoDeleteAfter: nil)
@@ -124,7 +124,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 		}
 
 		DispatchQueue.main.async {
-			let tableName = "table1"
+			let tableName = "asyncTable1"
 			_ = ALBNoSQLDB.dropTable(tableName)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey1", value: "{\"numValue\":2,\"value2\":1}", autoDeleteAfter: nil)
 			_ = ALBNoSQLDB.setValue(table: tableName, key: "testKey2", value: "{\"numValue\":3,\"value2\":1}", autoDeleteAfter: nil)
@@ -154,7 +154,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 			expectations.fulfill()
 		}
 
-		waitForExpectations(timeout: 2, handler: nil)
+		waitForExpectations(timeout: 20, handler: nil)
 	}
 
 }

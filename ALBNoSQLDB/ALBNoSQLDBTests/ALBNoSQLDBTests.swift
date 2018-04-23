@@ -332,7 +332,7 @@ class ALBNoSQLDBTests: XCTestCase {
 
 		let key = "SimpleDeleteKey"
 		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
-		let successful = ALBNoSQLDB.setValue(table: "table1", key: key, value: sample, autoDeleteAfter: Date())
+		let successful = ALBNoSQLDB.setValue(table: "AutoDeleteTable1", key: key, value: sample, autoDeleteAfter: Date())
 		
 		XCTAssert(successful, "setValueFailed")
 
