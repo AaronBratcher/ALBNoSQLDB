@@ -14,6 +14,7 @@
 		89C8984E1D8FFC3800E3C870 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 89C8984D1D8FFC3800E3C870 /* libsqlite3.tbd */; };
 		89C898501D8FFCDC00E3C870 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 89C8984F1D8FFCDC00E3C870 /* sqlite3.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89C898511D8FFD1C00E3C870 /* ALBNoSQLDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 89C8982F1D8FF9D100E3C870 /* ALBNoSQLDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A1568974208E10F70081324C /* ALBNOSQLDBAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1568973208E10F70081324C /* ALBNOSQLDBAsyncTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +38,7 @@
 		89C898491D8FFA7000E3C870 /* ALBNoSQLDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALBNoSQLDBTests.swift; sourceTree = "<group>"; };
 		89C8984D1D8FFC3800E3C870 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		89C8984F1D8FFCDC00E3C870 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
+		A1568973208E10F70081324C /* ALBNOSQLDBAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALBNOSQLDBAsyncTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 			children = (
 				89C898481D8FFA7000E3C870 /* ALBNoSQLDBSyncTests.swift */,
 				89C898491D8FFA7000E3C870 /* ALBNoSQLDBTests.swift */,
+				A1568973208E10F70081324C /* ALBNOSQLDBAsyncTests.swift */,
 				89C8983C1D8FF9D100E3C870 /* Info.plist */,
 			);
 			path = ALBNoSQLDBTests;
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				89C8984A1D8FFA7000E3C870 /* ALBNoSQLDBSyncTests.swift in Sources */,
+				A1568974208E10F70081324C /* ALBNOSQLDBAsyncTests.swift in Sources */,
 				89C8984B1D8FFA7000E3C870 /* ALBNoSQLDBTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

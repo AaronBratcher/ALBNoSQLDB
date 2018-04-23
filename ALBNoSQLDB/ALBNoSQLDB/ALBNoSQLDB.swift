@@ -1009,16 +1009,18 @@ public final class ALBNoSQLDB {
 		let fileExists = FileManager.default.fileExists(atPath: dbFilePath)
 
 		var openDBSuccessful = false
+		var previouslyOpened = false
 
 		_dbQueue.sync { [unowned self]() -> Void in
-			self._SQLiteCore.openDBFile(dbFilePath, autoCloseTimeout: self._autoCloseTimeout, completion: { (successful) -> Void in
+			self._SQLiteCore.openDBFile(dbFilePath, autoCloseTimeout: self._autoCloseTimeout, completion: { (successful, openedFromOtherThread) -> Void in
 				openDBSuccessful = successful
+				previouslyOpened = openedFromOtherThread
 				self._lock.signal()
 			})
 			self._lock.wait()
 		}
 
-		if openDBSuccessful {
+		if openDBSuccessful && !previouslyOpened {
 			// if this fails, then the DB file has issues and should not be used
 			if !sqlExecute("ANALYZE") {
 				return false
@@ -1602,11 +1604,16 @@ fileprivate extension ALBNoSQLDB {
 			return valueType
 		}
 
-		func openDBFile(_ dbFilePath: String, autoCloseTimeout: Int, completion: @escaping (_ successful: Bool) -> Void) {
+		func openDBFile(_ dbFilePath: String, autoCloseTimeout: Int, completion: @escaping (_ successful: Bool, _ openedFromOtherThread: Bool) -> Void) {
 			_autoCloseTimeout = autoCloseTimeout
 			_dbFilePath = dbFilePath
 
 			let block = { [unowned self] in
+				if self.isOpen {
+					completion(true, true)
+					return
+				}
+
 				if autoCloseTimeout > 0 {
 					self._autoCloseTimer.scheduleRepeating(deadline: .now(), interval: .milliseconds(autoCloseTimeout * 1000), leeway: .milliseconds(1000))
 					self._autoCloseTimer.setEventHandler {
@@ -1617,7 +1624,7 @@ fileprivate extension ALBNoSQLDB {
 				let successful = self.openFile()
 				self.isOpen = successful
 
-				completion(successful)
+				completion(successful, false)
 				return
 			}
 
