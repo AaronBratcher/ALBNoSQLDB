@@ -696,10 +696,18 @@ public final class ALBNoSQLDB {
 	}
 
 	/**
+	Array of synced tables.
+	*/
+	var unsyncedTables: [String] {
+		return _unsyncedTables
+	}
+
+	/**
 	Returns an array of tables not being synced.
 
 	- returns: [String] Array of table names.
 	*/
+	@available(*, deprecated, message: "Use unsyncedTables property instead")
 	public class func unsyncedTables() -> [String] {
 		return ALBNoSQLDB.sharedInstance._unsyncedTables
 	}
@@ -948,6 +956,7 @@ public final class ALBNoSQLDB {
 
 	- returns: String Unique string.
 	*/
+	@available(*, deprecated, message: "Use 'UUID().uuidString' instead")
 	public class func guid() -> String {
 		let uuid = CFUUIDCreate(kCFAllocatorDefault)
 		let uuidString = String(CFUUIDCreateString(kCFAllocatorDefault, uuid))
