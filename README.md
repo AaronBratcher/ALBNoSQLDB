@@ -2,7 +2,7 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
 
 
-**This class uses Swift 4.0.**
+**This class uses Swift 4.2.**
 
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
 
@@ -50,7 +50,7 @@ if let hasKey = ALBNoSQLDB.shared.tableHasKey(table:table, key:"category1") {
 Return an array of keys in a given table. Optionally specify sort order based on a value at the root level
 ```swift
 let table: DBTable = "categories"
-if let tableKeys = ALBNoSQLDB.shared.keysInTable(table:"categories", sortOrder:"name, date desc") }
+if let tableKeys = ALBNoSQLDB.shared.keysInTable(table:table, sortOrder:"name, date desc") }
     // process keys
 } else {
     // handle error
