@@ -50,7 +50,7 @@ if let hasKey = ALBNoSQLDB.shared.tableHasKey(table:table, key:"category1") {
 Return an array of keys in a given table. Optionally specify sort order based on a value at the root level
 ```swift
 let table: DBTable = "categories"
-if let tableKeys = ALBNoSQLDB.shared.keysInTable(table:"categories", sortOrder:"name, date desc") }
+if let tableKeys = ALBNoSQLDB.shared.keysInTable(table:table, sortOrder:"name, date desc") }
     // process keys
 } else {
     // handle error
