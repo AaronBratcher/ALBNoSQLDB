@@ -661,10 +661,12 @@ public final class ALBNoSQLDB {
 	- returns: Returns a DBCommandToken that can be used to cancel the command before it executes. If the database file cannot be opened or table does not exist an error is thrown.
 	*/
 	@discardableResult
-	public func dictValueFromTable(_ table: DBTable, for key: String, queue: DispatchQueue? = nil, completion: @escaping ([String: AnyObject]?) -> Void) -> DBCommandToken? {
+	public func dictValueFromTable(_ table: DBTable, for key: String, queue: DispatchQueue? = nil, completion: @escaping (DBResults<[String: AnyObject]>) -> Void) -> DBCommandToken? {
 		if !openDB() || !_tables.hasTable(table) {
 			return nil
 		}
+		
+		var results: DBResults<[String: AnyObject]> = .error
 		
 		let (sql, columns) = dictValueForKeySQL(table: table, key: key, includeDates: false)
 		
@@ -673,11 +675,12 @@ public final class ALBNoSQLDB {
 			dispatchQueue.async {
 				guard let dictionaryValue = self.dictValueResults(table: table, key: key, results: rows, columns: columns)
 					else {
-						completion(nil)
+						completion(results)
 						return
 				}
 				
-				completion(dictionaryValue)
+				results = .success(dictionaryValue)
+				completion(results)
 			}
 		})
 		

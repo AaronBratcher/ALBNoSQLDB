@@ -115,8 +115,12 @@ With version 5, ALBNoSQLDB allows data to be retrieved asynchronously. A DBComma
 let db = ALBNoSQLDB.shared
 let table: DBTable = "categories"
 
-guard let token = db.valueFromTable(table, for: key, completion: { (value) in
-	// process value
+guard let token = db.valueFromTable(table, for: key, completion: { (results) in
+	if case .success(let value) = results {
+		XCTAssert(value == "{\"numValue\":2,\"value2\":3}")
+	} else {
+		XCTFail()
+	}
 }) else {
 	XCTFail("Unable to get value")
 	return
