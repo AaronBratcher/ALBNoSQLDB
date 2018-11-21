@@ -42,15 +42,15 @@ class MasterViewController: UITableViewController {
 	}
 	
 	func loadEntries() {
-		if let dates = ALBNoSQLDB.keysInTable(kDatesTable, sortOrder: "key desc") {
+		if let dates = ALBNoSQLDB.shared.keysInTable(kDatesTable, sortOrder: "key desc") {
 			objects = dates
 		}
 	}
 
-	func insertNewObject(_ sender: Any) {
+    @objc func insertNewObject(_ sender: Any) {
 		let date = ALBNoSQLDB.stringValueForDate(Date())
 		objects.insert(date, at: 0)
-		let _ = ALBNoSQLDB.setValue(table: kDatesTable, key: date, value: "{}")
+		let _ = ALBNoSQLDB.shared.setValue(table: kDatesTable, key: date, value: "{}")
 		let indexPath = IndexPath(row: 0, section: 0)
 		self.tableView.insertRows(at: [indexPath], with: .automatic)
 	}
@@ -60,7 +60,7 @@ class MasterViewController: UITableViewController {
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "showDetail" {
 		    if let indexPath = self.tableView.indexPathForSelectedRow {
-		        let object = objects[indexPath.row] as! NSDate
+		        let object = ALBNoSQLDB.dateValueForString(objects[indexPath.row])
 		        let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
 		        controller.detailItem = object
 		        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
@@ -92,7 +92,7 @@ class MasterViewController: UITableViewController {
 		return true
 	}
 
-	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
 		if editingStyle == .delete {
 		    objects.remove(at: indexPath.row)
 		    tableView.deleteRows(at: [indexPath], with: .fade)
