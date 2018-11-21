@@ -205,13 +205,12 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
         db.setValueInTable(table, for: "testKey4", to: "{\"numValue\":1,\"value2\":1}", autoDeleteAfter: nil)
         db.setValueInTable(table, for: "testKey5", to: "{\"numValue\":2,\"value2\":2}", autoDeleteAfter: nil)
 
-        db.valueFromTable(table, for: "testKey3") { (value) in
-            guard let value = value else {
-                XCTFail()
-                return
-            }
-
-            XCTAssert(value == "{\"numValue\":2,\"value2\":3}")
+        db.valueFromTable(table, for: "testKey3") { (results) in
+			if case .success(let value) = results {
+				XCTAssert(value == "{\"numValue\":2,\"value2\":3}")
+			} else {
+				XCTFail()
+			}
         }
     }
 

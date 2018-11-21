@@ -263,7 +263,7 @@ class ALBNoSQLDBTests: XCTestCase {
 
 	func testContainsCondition() {
 		let table: DBTable = "table6"
-		db.setIndexedColumsForTable(table, to: ["account"])
+		db.setIndexesForTable(table, to: ["account"])
 
 		db.setValueInTable(table, for: "testKey1", to: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil)
 		db.setValueInTable(table, for: "testKey2", to: "{\"numValue\":2,\"account\":\"TEST1\",\"dateValue\":\"2014-9-19T18:23:42.434-05:00\",\"arrayValue\":[6,7,8,9,10]}", autoDeleteAfter: nil)

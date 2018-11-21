@@ -575,10 +575,12 @@ public final class ALBNoSQLDB {
 	
 	*/
 	@discardableResult
-	public func valueFromTable(_ table: DBTable, for key: String, queue: DispatchQueue? = nil, completion: @escaping (String?) -> Void) -> DBCommandToken? {
+	public func valueFromTable(_ table: DBTable, for key: String, queue: DispatchQueue? = nil, completion: @escaping (DBResults<String>) -> Void) -> DBCommandToken? {
 		if !openDB() || !_tables.hasTable(table) {
 			return nil
 		}
+		
+		var results: DBResults<String> = .error
 		
 		let (sql, columns) = dictValueForKeySQL(table: table, key: key, includeDates: false)
 		
@@ -589,11 +591,13 @@ public final class ALBNoSQLDB {
 					, let dataValue = try? JSONSerialization.data(withJSONObject: dictionaryValue, options: JSONSerialization.WritingOptions(rawValue: 0))
 					, let jsonValue = String(data: dataValue, encoding: .utf8)
 					else {
-						completion(nil)
+						completion(results)
 						return
 				}
 				
-				completion(jsonValue)
+				results = .success(jsonValue)
+				
+				completion(results)
 			}
 		})
 		
