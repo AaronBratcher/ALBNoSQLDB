@@ -284,7 +284,7 @@ public final class ALBNoSQLDB {
 	- parameter queue: Dispatch queue to use when running the completion closure. Default value is main queue.
 	- parameter completion: Closure to use for results.
 	
-	- returns: DBActivityToken Returns a DBCommandToken that can be used to cancel the command before it executes If the database file cannot be opened an error is thrown.
+	- returns: DBActivityToken Returns a DBCommandToken that can be used to cancel the command before it executes If the database file cannot be opened nil is returned.
 	*/
 	@discardableResult
 	public func tableHasKey(table: DBTable, key: String, queue: DispatchQueue? = nil, completion: @escaping (DBResults<Bool>) -> Void) -> DBCommandToken? {
@@ -392,7 +392,7 @@ public final class ALBNoSQLDB {
 	- parameter queue: Optional dispatch queue to use when running the completion closure. Default value is main queue.
 	- parameter completion: Closure with DBRowResults.
 	
-	- returns: DBCommandToken that can be used to cancel the command before it executes If the database file cannot be opened an error is thrown.
+	- returns: DBCommandToken that can be used to cancel the command before it executes If the database file cannot be opened nil is returned.
 	*/
 	
 	@discardableResult
@@ -571,7 +571,7 @@ public final class ALBNoSQLDB {
 	- parameter queue: Optional dispatch queue to use when running the completion closure. Default value is main queue.
 	- parameter completion: Closure to use for JSON results.
 	
-	- returns: Returns a DBCommandToken that can be used to cancel the command before it executes. If the database file cannot be opened or table does not exist an error is thrown.
+	- returns: Returns a DBCommandToken that can be used to cancel the command before it executes. If the database file cannot be opened or table does not exist nil is returned.
 	
 	*/
 	@discardableResult
@@ -658,7 +658,7 @@ public final class ALBNoSQLDB {
 	- parameter queue: Optional dispatch queue to use when running the completion closure. Default value is main queue.
 	- parameter completion: Closure to use for dictionary results.
 	
-	- returns: Returns a DBCommandToken that can be used to cancel the command before it executes. If the database file cannot be opened or table does not exist an error is thrown.
+	- returns: Returns a DBCommandToken that can be used to cancel the command before it executes. If the database file cannot be opened or table does not exist nil is returned.
 	*/
 	@discardableResult
 	public func dictValueFromTable(_ table: DBTable, for key: String, queue: DispatchQueue? = nil, completion: @escaping (DBResults<[String: AnyObject]>) -> Void) -> DBCommandToken? {
