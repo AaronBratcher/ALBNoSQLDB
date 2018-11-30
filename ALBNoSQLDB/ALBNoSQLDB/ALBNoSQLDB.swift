@@ -13,7 +13,7 @@ DBTable is used to identify the table data is stored in
 */
 public struct DBTable: Equatable {
 	let name: String
-	
+
 	public init(name: String) {
 		assert(name != "", "name cannot be empty")
 		assert(!ALBNoSQLDB.reservedTable(name), "reserved table")
@@ -40,16 +40,16 @@ DBCommandToken is returned by asynchronous methods. Call the token's cancel meth
 public struct DBCommandToken {
 	private weak var database: ALBNoSQLDB?
 	private let identifier: UInt
-	
+
 	public init() {
 		identifier = 0
 	}
-	
+
 	fileprivate init(database: ALBNoSQLDB, identifier: UInt) {
 		self.database = database
 		self.identifier = identifier
 	}
-	
+
 	/**
 	Cancel the asynchronous command before it executes
 	
@@ -78,7 +78,7 @@ public struct DBCondition {
 	public var objectKey = ""
 	public var conditionOperator = DBConditionOperator.equal
 	public var value: AnyObject
-	
+
 	public init(set: Int, objectKey: String, conditionOperator: DBConditionOperator, value: AnyObject) {
 		self.set = set
 		self.objectKey = objectKey
@@ -107,78 +107,78 @@ public final class ALBNoSQLDB {
 		case double
 		case bool
 		case unknown
-		
+
 		static func fromRaw(_ rawValue: String) -> ValueType {
 			if let valueType = ValueType(rawValue: rawValue.lowercased()) {
 				return valueType
 			}
-			
+
 			return .unknown
 		}
 	}
-	
+
 	public static let shared = ALBNoSQLDB()
 
-    /**
+	/**
     Used for testing purposes. This should never be enabled in production.
     */
-    public var debugMode = false {
-        didSet {
-            _SQLiteCore.debugMode = debugMode
-        }
-    }
-	
+	public var debugMode = false {
+		didSet {
+			_SQLiteCore.debugMode = debugMode
+		}
+	}
+
 	/**
 	The number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity.
 	*/
 	public var autoCloseTimeout = 0
-	
+
 	// MARK: - Private properties
 	private static var _dateFormatter: DateFormatter = {
 		let dateFormatter = DateFormatter()
 		dateFormatter.calendar = Calendar(identifier: .gregorian)
 		dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZZZZZ"
-		
+
 		return dateFormatter
 	}()
-	
+
 	private struct DBTables {
 		private var tables: [DBTable] = []
 		static let tableQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLTableQueue", attributes: [])
-		
+
 		func allTables() -> [DBTable] {
 			return tables
 		}
-		
+
 		mutating func addTable(_ table: DBTable) {
 			DBTables.tableQueue.sync {
 				tables.append(DBTable(name: table.name))
 			}
 		}
-		
+
 		mutating func dropTable(_ table: DBTable) {
 			DBTables.tableQueue.sync {
 				tables = tables.filter({ $0 != table })
 			}
 		}
-		
+
 		mutating func dropAllTables() {
 			DBTables.tableQueue.sync {
 				tables = []
 			}
 		}
-		
+
 		func hasTable(_ table: DBTable) -> Bool {
 			var exists = false
-			
+
 			DBTables.tableQueue.sync {
 				exists = tables.filter({ $0 == table }).count > 0
 			}
-			
+
 			return exists
 		}
 	}
-	
+
 	private var _SQLiteCore = SQLiteCore()
 	private var _lock = DispatchSemaphore(value: 0)
 	private var _dbFileLocation: URL?
@@ -190,7 +190,7 @@ public final class ALBNoSQLDB {
 	private var _unsyncedTables = [String]()
 	private let _deletionQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBDeletionQueue", attributes: [])
 	private var _autoDeleteTimer: DispatchSourceTimer
-	
+
 	// MARK: - Init
 	/**
 	Instantiates an instance of ALBNoSQLDB
@@ -202,7 +202,7 @@ public final class ALBNoSQLDB {
 		_autoDeleteTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _deletionQueue)
 		_SQLiteCore.start()
 	}
-	
+
 	// MARK: - Open / Close
 	/**
 	Opens the database file.
@@ -217,14 +217,14 @@ public final class ALBNoSQLDB {
 		if _SQLiteCore.isOpen && _dbFileLocation != dbFileLocation {
 			close()
 		}
-		
+
 		if let location = location {
 			_dbFileLocation = location
 		}
-		
+
 		return openDB()
 	}
-	
+
 	/**
 	Close the database.
 	*/
@@ -234,10 +234,10 @@ public final class ALBNoSQLDB {
 			_SQLiteCore.close()
 		}
 	}
-	
+
 	// MARK: - Keys
 
-    /**
+	/**
      Checks if the given table contains the given key.
 
      - parameter table: The table to search.
@@ -245,10 +245,10 @@ public final class ALBNoSQLDB {
 
      - returns: Bool? Returns if the key exists in the table. Is nil when database could not be opened or other error occured.
      */
-    @available(*, deprecated, message: "use tableHasKey that accepts DBTable for first parameter")
-    public func tableHasKey(table: String, key: String) -> Bool? {
-        return tableHasKey(table: DBTable(name: table), key: key)
-    }
+	@available( *, deprecated, message: "use tableHasKey that accepts DBTable for first parameter")
+	public func tableHasKey(table: String, key: String) -> Bool? {
+		return tableHasKey(table: DBTable(name: table), key: key)
+	}
 
 	/**
 	Checks if the given table contains the given key.
@@ -262,20 +262,20 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return nil
 		}
-		
+
 		if !_tables.hasTable(table) {
 			return false
 		}
-		
+
 		let sql = "select 1 from \(table) where key = '\(key)'"
 		let results = sqlSelect(sql)
 		if let results = results {
 			return results.count > 0
 		}
-		
+
 		return nil
 	}
-	
+
 	/**
 	Asynchronously checks if the given table contains the given key.
 	
@@ -291,13 +291,13 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return nil
 		}
-        var results: DBResults<Bool> = .error
-		
+		var results: DBResults<Bool> = .error
+
 		if !_tables.hasTable(table) {
 			completion(DBResults.success(false))
 			return DBCommandToken(database: self, identifier: 0)
 		}
-		
+
 		let sql = "select 1 from \(table) where key = '\(key)'"
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { (rows) -> Void in
 			let dispatchQueue = queue ?? DispatchQueue.main
@@ -305,14 +305,14 @@ public final class ALBNoSQLDB {
 				if let rows = rows {
 					results = DBResults.success(rows.count > 0)
 				}
-				
+
 				completion(results)
 			}
 		})
-		
+
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
-	
+
 	/**
 	Returns an array of keys from the given table sorted in the way specified matching the given conditions. All conditions in the same set are ANDed together. Separate sets are ORed against each other.  (set:0 AND set:0 AND set:0) OR (set:1 AND set:1 AND set:1) OR (set:2)
 	
@@ -331,11 +331,11 @@ public final class ALBNoSQLDB {
 	
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
-	@available(*, deprecated, message: "use keysInTable that accepts DBTable for first parameter")
+	@available( *, deprecated, message: "use keysInTable that accepts DBTable for first parameter")
 	public func keysInTable(_ table: String, sortOrder: String? = nil, conditions: [DBCondition]? = nil) -> [String]? {
 		return keysInTable(DBTable(name: table), sortOrder: sortOrder, conditions: conditions)
 	}
-	
+
 	/**
 	Returns an array of keys from the given table sorted in the way specified matching the given conditions. All conditions in the same set are ANDed together. Separate sets are ORed against each other.  (set:0 AND set:0 AND set:0) OR (set:1 AND set:1 AND set:1) OR (set:2)
 	
@@ -358,20 +358,20 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return nil
 		}
-		
+
 		if !_tables.hasTable(table) {
 			return []
 		}
-		
+
 		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions) else { return [] }
-		
+
 		if let results = sqlSelect(sql) {
 			return results.map({ $0.values[0] as! String })
 		}
-		
+
 		return nil
 	}
-	
+
 	/**
 	Asynchronously returns the keys in the given table.
 	
@@ -394,37 +394,37 @@ public final class ALBNoSQLDB {
 	
 	- returns: DBCommandToken that can be used to cancel the command before it executes If the database file cannot be opened nil is returned.
 	*/
-	
+
 	@discardableResult
 	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, queue: DispatchQueue? = nil, completion: @escaping (DBResults<[String]>) -> Void) -> DBCommandToken? {
 		if !openDB() {
 			return nil
 		}
 
-        var results: DBResults<[String]> = .error
-		
+		var results: DBResults<[String]> = .error
+
 		if !_tables.hasTable(table) {
-            results = .success([])
+			results = .success([])
 			completion(results)
 			return DBCommandToken(database: self, identifier: 0)
 		}
-		
+
 		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions) else { return nil }
-		
+
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { (rows) -> Void in
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				if let rows = rows {
 					results = .success(rows.map({ $0.values[0] as! String }))
 				}
-				
+
 				completion(results)
 			}
 		})
-		
+
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
-	
+
 	// MARK: - Indexing
 	/**
 	Sets the indexes desired for a given table.
@@ -436,14 +436,14 @@ public final class ALBNoSQLDB {
 	- parameter table: The table to return keys from.
 	- parameter indexes: An array of table properties to be indexed. An array entry can be compound.
 	*/
-	@available(*, deprecated, renamed: "setIndexesForTable")
+	@available( *, deprecated, renamed: "setIndexesForTable")
 	public func setTableIndexes(table: String, indexes: [String]) {
 		_indexes[table] = indexes
 		if openDB() {
 			createIndexesForTable(DBTable(name: table))
 		}
 	}
-	
+
 	/**
 	Sets the indexes desired for a given table.
 	
@@ -460,7 +460,7 @@ public final class ALBNoSQLDB {
 			createIndexesForTable(table)
 		}
 	}
-	
+
 	// MARK: - Set Values
 	/**
 	Sets the value of an entry in the given table for a given key optionally deleted automatically after a given date. Supported values are dictionaries that consist of String, Int, Double and arrays of these. If more complex objects need to be stored, a string value of those objects need to be stored.
@@ -479,11 +479,11 @@ public final class ALBNoSQLDB {
 	- returns: Bool If the value was set successfully.
 	*/
 	@discardableResult
-	@available(*, deprecated, renamed: "setValueInTable")
+	@available( *, deprecated, renamed: "setValueInTable")
 	public func setValue(table: String, key: String, value: String, autoDeleteAfter: Date? = nil) -> Bool {
 		return setValueInTable(DBTable(name: table), for: key, to: value, autoDeleteAfter: autoDeleteAfter)
 	}
-	
+
 	/**
 	Sets the value of an entry in the given table for a given key optionally deleted automatically after a given date. Supported values are dictionaries that consist of String, Int, Double and arrays of these. If more complex objects need to be stored, a string value of those objects need to be stored.
 	
@@ -504,17 +504,17 @@ public final class ALBNoSQLDB {
 	public func setValueInTable(_ table: DBTable, for key: String, to value: String, autoDeleteAfter: Date? = nil) -> Bool {
 		assert(key != "", "key must be provided")
 		assert(value != "", "value must be provided")
-		
+
 		let dataValue = value.data(using: .utf8)
 		let objectValues = (try? JSONSerialization.jsonObject(with: dataValue!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
 		assert(objectValues != nil, "Value must be valid JSON string that is a dictionary for the top-level object")
-		
+
 		let now = ALBNoSQLDB.stringValueForDate(Date())
 		let deleteDateTime = (autoDeleteAfter == nil ? "NULL" : "'" + ALBNoSQLDB.stringValueForDate(autoDeleteAfter!) + "'")
-		
+
 		return setValue(table: table, key: key, objectValues: objectValues!, addedDateTime: now, updatedDateTime: now, deleteDateTime: deleteDateTime, sourceDB: _instanceKey, originalDB: _instanceKey)
 	}
-	
+
 	// MARK: - Return Values
 	/**
 	Returns the JSON value of what was stored for a given table and key.
@@ -531,11 +531,11 @@ public final class ALBNoSQLDB {
 	
 	- returns: JSON value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
-	@available(*, deprecated, renamed: "valueFromTable")
+	@available( *, deprecated, renamed: "valueFromTable")
 	public func valueForKey(table: String, key: String) -> String? {
 		return valueFromTable(DBTable(name: table), for: key)
 	}
-	
+
 	/**
 	Returns the JSON value of what was stored for a given table and key.
 	
@@ -557,10 +557,10 @@ public final class ALBNoSQLDB {
 			let jsonValue = String(data: dataValue!, encoding: .utf8)
 			return jsonValue! as String
 		}
-		
+
 		return nil
 	}
-	
+
 	/**
 	Asynchronously returns the value for a given table and key.
 	
@@ -579,31 +579,33 @@ public final class ALBNoSQLDB {
 		if !openDB() || !_tables.hasTable(table) {
 			return nil
 		}
-		
+
 		var results: DBResults<String> = .error
-		
+
 		let (sql, columns) = dictValueForKeySQL(table: table, key: key, includeDates: false)
-		
-		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [unowned self] (rows) -> Void in
+
+		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [weak self] (rows) -> Void in
+			guard let self = self else { return }
+			
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				guard let dictionaryValue = self.dictValueResults(table: table, key: key, results: rows, columns: columns)
 					, let dataValue = try? JSONSerialization.data(withJSONObject: dictionaryValue, options: JSONSerialization.WritingOptions(rawValue: 0))
 					, let jsonValue = String(data: dataValue, encoding: .utf8)
 					else {
-						completion(results)
-						return
+					completion(results)
+					return
 				}
-				
+
 				results = .success(jsonValue)
-				
+
 				completion(results)
 			}
 		})
-		
+
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
-	
+
 	/**
 	Returns the dictionary value of what was stored for a given table and key.
 	
@@ -619,11 +621,11 @@ public final class ALBNoSQLDB {
 	
 	- returns: [String:AnyObject]? Dictionary value of what was stored. Is nil when database could not be opened or other error occured.
 	*/
-	@available(*, deprecated, renamed: "dictValueFromTable")
+	@available( *, deprecated, renamed: "dictValueFromTable")
 	public func dictValueForKey(table: String, key: String) -> [String: AnyObject]? {
 		return dictValueFromTable(DBTable(name: table), for: key, includeDates: false)
 	}
-	
+
 	/**
 	Returns the dictionary value of what was stored for a given table and key.
 	
@@ -642,7 +644,7 @@ public final class ALBNoSQLDB {
 	public func dictValueFromTable(_ table: DBTable, for key: String) -> [String: AnyObject]? {
 		return dictValueFromTable(table, for: key, includeDates: false)
 	}
-	
+
 	/**
 	Returns the dictionary value of what was stored for a given table and key.
 	
@@ -665,28 +667,30 @@ public final class ALBNoSQLDB {
 		if !openDB() || !_tables.hasTable(table) {
 			return nil
 		}
-		
+
 		var results: DBResults<[String: AnyObject]> = .error
-		
+
 		let (sql, columns) = dictValueForKeySQL(table: table, key: key, includeDates: false)
-		
-		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [unowned self] (rows) -> Void in
+
+		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [weak self] (rows) -> Void in
+			guard let self = self else { return }
+			
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				guard let dictionaryValue = self.dictValueResults(table: table, key: key, results: rows, columns: columns)
 					else {
-						completion(results)
-						return
+					completion(results)
+					return
 				}
-				
+
 				results = .success(dictionaryValue)
 				completion(results)
 			}
 		})
-		
+
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
-	
+
 	// MARK: - Delete
 	/**
 	Delete the value from the given table for the given key.
@@ -696,13 +700,13 @@ public final class ALBNoSQLDB {
 	
 	- returns: Bool Value was successfuly removed.
 	*/
-	@available(*, deprecated, renamed: "deleteFromTable")
+	@available( *, deprecated, renamed: "deleteFromTable")
 	public func deleteForKey(table: String, key: String) -> Bool {
 		assert(key != "", "key must be provided")
-		
+
 		return deleteForKey(table: DBTable(name: table), key: key, autoDelete: false, sourceDB: _instanceKey, originalDB: _instanceKey)
 	}
-	
+
 	/**
 	Delete the value from the given table for the given key.
 	
@@ -714,10 +718,10 @@ public final class ALBNoSQLDB {
 	@discardableResult
 	public func deleteFromTable(_ table: DBTable, for key: String) -> Bool {
 		assert(key != "", "key must be provided")
-		
+
 		return deleteForKey(table: table, key: key, autoDelete: false, sourceDB: _instanceKey, originalDB: _instanceKey)
 	}
-	
+
 	/**
 	Removes the given table and associated values.
 	
@@ -730,31 +734,31 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return false
 		}
-		
+
 		if !sqlExecute("drop table \(table)")
-			|| !sqlExecute("drop table \(table)_arrayValues")
-			|| !sqlExecute("delete from __tableArrayColumns where tableName = '\(table)'") {
+		|| !sqlExecute("drop table \(table)_arrayValues")
+		|| !sqlExecute("delete from __tableArrayColumns where tableName = '\(table)'") {
 			return false
 		}
-		
+
 		_tables.dropTable(table)
-		
+
 		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
 			let now = ALBNoSQLDB.stringValueForDate(Date())
 			if !sqlExecute("insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(_instanceKey)','\(_instanceKey)','\(table)','X',NULL)") {
 				return false
 			}
-			
+
 			let lastID = lastInsertID()
-			
+
 			if !sqlExecute("delete from __synclog where tableName = '\(table)' and rowid < \(lastID)") {
 				return false
 			}
 		}
-		
+
 		return true
 	}
-	
+
 	/**
 	Removes all tables and associated values.
 	
@@ -765,7 +769,7 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return false
 		}
-		
+
 		var successful = true
 		let tables = _tables.allTables()
 		for table in tables {
@@ -774,12 +778,12 @@ public final class ALBNoSQLDB {
 				return false
 			}
 		}
-		
+
 		_tables.dropAllTables()
-		
+
 		return true
 	}
-	
+
 	// MARK: - Sync
 	/**
 	Current syncing status. Nil if the database could not be opened.
@@ -788,10 +792,10 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return nil
 		}
-		
+
 		return _syncingEnabled
 	}
-	
+
 	/**
 	Enables syncing. Once enabled, a log is created for all current values in the tables.
 	
@@ -801,18 +805,18 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return false
 		}
-		
+
 		if _syncingEnabled {
 			return true
 		}
-		
+
 		if !sqlExecute("create table __synclog(timestamp text, sourceDB text, originalDB text, tableName text, activity text, key text)") {
 			return false
 		}
 		sqlExecute("create index __synclog_index on __synclog(tableName,key)")
 		sqlExecute("create index __synclog_source on __synclog(sourceDB,originalDB)")
 		sqlExecute("create table __unsyncedTables(tableName text)")
-		
+
 		let now = ALBNoSQLDB.stringValueForDate(Date())
 		let tables = _tables.allTables()
 		for table in tables {
@@ -820,11 +824,11 @@ public final class ALBNoSQLDB {
 				return false
 			}
 		}
-		
+
 		_syncingEnabled = true
 		return true
 	}
-	
+
 	/**
 	Disables syncing.
 	
@@ -834,27 +838,27 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return false
 		}
-		
+
 		if !_syncingEnabled {
 			return true
 		}
-		
+
 		if !sqlExecute("drop table __synclog") || !sqlExecute("drop table __unsyncedTables") {
 			return false
 		}
-		
+
 		_syncingEnabled = false
-		
+
 		return true
 	}
-	
+
 	/**
 	Array of synced tables.
 	*/
 	var unsyncedTables: [String] {
 		return _unsyncedTables
 	}
-	
+
 	/**
 	Sets the tables that are not to be synced.
 	
@@ -866,21 +870,21 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return false
 		}
-		
+
 		if !_syncingEnabled {
 			print("syncing must be enabled before setting unsynced tables")
 			return false
 		}
-		
+
 		_unsyncedTables = [String]()
 		for tableName in tables {
 			sqlExecute("delete from __synclog where tableName = '\(tableName)'")
 			_unsyncedTables.append(tableName)
 		}
-		
+
 		return true
 	}
-	
+
 	/**
 	Creates a sync file that can be used on another ALBNoSQLDB instance to sync data. This is a synchronous call.
 	
@@ -894,14 +898,14 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return (false, lastSequence)
 		}
-		
+
 		if !_syncingEnabled {
 			print("syncing must be enabled before creating sync file")
 			return (false, lastSequence)
 		}
-		
+
 		let filePath = localURL.path
-		
+
 		if FileManager.default.fileExists(atPath: filePath) {
 			do {
 				try FileManager.default.removeItem(atPath: filePath)
@@ -909,9 +913,9 @@ public final class ALBNoSQLDB {
 				return (false, lastSequence)
 			}
 		}
-		
+
 		FileManager.default.createFile(atPath: filePath, contents: nil, attributes: nil)
-		
+
 		if let fileHandle = FileHandle(forWritingAtPath: filePath) {
 			if let results = sqlSelect("select rowid,timestamp,originalDB,tableName,activity,key from __synclog where rowid > \(lastSequence) and sourceDB <> '\(targetDBInstanceKey)' and originalDB <> '\(targetDBInstanceKey)' order by rowid") {
 				var lastRowID = lastSequence
@@ -924,7 +928,7 @@ public final class ALBNoSQLDB {
 					let tableName = row.values[3] as! String
 					let activity = row.values[4] as! String
 					let key = row.values[5] as! String?
-					
+
 					var entryDict = [String: AnyObject]()
 					entryDict["timeStamp"] = timeStamp as AnyObject
 					if originalDB != _instanceKey {
@@ -939,17 +943,17 @@ public final class ALBNoSQLDB {
 							entryDict["value"] = dictValue as AnyObject
 						}
 					}
-					
+
 					let dataValue = try? JSONSerialization.data(withJSONObject: entryDict, options: JSONSerialization.WritingOptions(rawValue: 0))
 					if firstEntry {
 						firstEntry = false
 					} else {
 						fileHandle.write("\n,".dataValue())
 					}
-					
+
 					fileHandle.write(dataValue!)
 				}
-				
+
 				fileHandle.write("\n],\"lastSequence\":\(lastRowID)}".dataValue())
 				fileHandle.closeFile()
 				return (true, lastRowID)
@@ -961,11 +965,11 @@ public final class ALBNoSQLDB {
 				}
 			}
 		}
-		
+
 		return (false, lastSequence)
 	}
-	
-	
+
+
 	/**
 	Processes a sync file created by another instance of ALBNoSQL This is a synchronous call.
 	
@@ -979,22 +983,22 @@ public final class ALBNoSQLDB {
 		if !openDB() {
 			return (false, "", 0)
 		}
-		
+
 		if !_syncingEnabled {
 			print("syncing must be enabled before creating sync file")
 			return (false, "", 0)
 		}
-		
+
 		autoDelete()
-		
+
 		let filePath = localURL.path
-		
+
 		if let _ = FileHandle(forReadingAtPath: filePath) {
 			// TODO: Stream in the file and parse as needed instead of parsing the entire thing at once to save on memory use
 			let now = ALBNoSQLDB.stringValueForDate(Date())
 			if let fileText = try? String(contentsOfFile: filePath, encoding: String.Encoding.utf8) {
 				let dataValue = fileText.dataValue()
-				
+
 				if let objectValues = (try? JSONSerialization.jsonObject(with: dataValue, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject] {
 					let sourceDB = objectValues["sourceDB"] as! String
 					let logEntries = objectValues["logEntries"] as! [[String: AnyObject]]
@@ -1008,12 +1012,12 @@ public final class ALBNoSQLDB {
 								syncProgress(percent)
 							}
 						}
-						
+
 						let activity = entry["activity"] as! String
 						let timeStamp = entry["timeStamp"] as! String
 						let tableName = entry["tableName"] as! String
 						let originalDB = (entry["originalDB"] == nil ? sourceDB : entry["originalDB"] as! String)
-						
+
 						// for entry activity U,D only process log entry if no local entry for same table/key that is greater than one received
 						if activity == "D" || activity == "U" {
 							if let key = entry["key"] as? String, let results = sqlSelect("select 1 from __synclog where tableName = '\(tableName)' and key = '\(key)' and timestamp > '\(timeStamp)'") {
@@ -1027,7 +1031,7 @@ public final class ALBNoSQLDB {
 										objectValues.removeValue(forKey: "addedDateTime")
 										objectValues.removeValue(forKey: "updatedDateTime")
 										objectValues.removeValue(forKey: "deleteDateTime")
-										
+
 										_ = setValue(table: DBTable(name: tableName), key: key, objectValues: objectValues, addedDateTime: addedDateTime, updatedDateTime: updatedDateTime, deleteDateTime: deleteDateTime, sourceDB: sourceDB, originalDB: originalDB)
 									} else {
 										_ = deleteForKey(table: DBTable(name: tableName), key: key, autoDelete: false, sourceDB: sourceDB, originalDB: originalDB)
@@ -1042,7 +1046,7 @@ public final class ALBNoSQLDB {
 							sqlExecute("insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(sourceDB)','\(originalDB)','\(tableName)','X',NULL)")
 						}
 					}
-					
+
 					return (true, sourceDB, lastSequence)
 				} else {
 					return (false, "", 0)
@@ -1051,10 +1055,10 @@ public final class ALBNoSQLDB {
 				return (false, "", 0)
 			}
 		}
-		
+
 		return (false, "", 0)
 	}
-	
+
 	// MARK: - Misc
 	/**
 	The instanceKey for this database instance. Each ALBNoSQLDB database is created with a unique instanceKey. Is nil when database could not be opened.
@@ -1063,10 +1067,10 @@ public final class ALBNoSQLDB {
 		if openDB() {
 			return _instanceKey
 		}
-		
+
 		return nil
 	}
-	
+
 	/**
 	Replace single quotes with two single quotes for use in SQL commands.
 	
@@ -1075,7 +1079,7 @@ public final class ALBNoSQLDB {
 	public func esc(_ source: String) -> String {
 		return source.replacingOccurrences(of: "'", with: "''")
 	}
-	
+
 	/**
 	String value for a given date.
 	
@@ -1086,7 +1090,7 @@ public final class ALBNoSQLDB {
 	public class func stringValueForDate(_ date: Date) -> String {
 		return ALBNoSQLDB._dateFormatter.string(from: date)
 	}
-	
+
 	/**
 	Date value for given string
 	
@@ -1097,75 +1101,77 @@ public final class ALBNoSQLDB {
 	public class func dateValueForString(_ stringValue: String) -> Date? {
 		return ALBNoSQLDB._dateFormatter.date(from: stringValue)
 	}
-	
+
 	// MARK: - Internal Initialization Methods
 	private func openDB() -> Bool {
 		if _SQLiteCore.isOpen {
 			return true
 		}
-		
+
 		let dbFilePath: String
-		
+
 		if let _dbFileLocation = self._dbFileLocation {
 			dbFilePath = _dbFileLocation.path
 		} else {
 			dbFilePath = defaultFileLocation()
 			_dbFileLocation = URL(fileURLWithPath: dbFilePath)
 		}
-		
+
 		let fileExists = FileManager.default.fileExists(atPath: dbFilePath)
-		
+
 		var openDBSuccessful = false
 		var previouslyOpened = false
-		
-		_dbQueue.sync { [unowned self]() -> Void in
-            self._SQLiteCore.openDBFile(dbFilePath, autoCloseTimeout: self.autoCloseTimeout) { (successful, alreadyOpen) -> Void in
+
+		_dbQueue.sync { [weak self]() -> Void in
+			guard let self = self else { return }
+			
+			self._SQLiteCore.openDBFile(dbFilePath, autoCloseTimeout: self.autoCloseTimeout) { (successful, alreadyOpen) -> Void in
 				openDBSuccessful = successful
 				previouslyOpened = alreadyOpen
 				self._lock.signal()
 			}
 			self._lock.wait()
 		}
-		
+
 		if openDBSuccessful && !previouslyOpened {
 			// if this fails, then the DB file has issues and should not be used
 			if !sqlExecute("ANALYZE") {
 				return false
 			}
-			
+
 			if !fileExists {
 				makeDB()
 			}
 			checkSchema()
 			startAutoDelete()
 		}
-		
+
 		return openDBSuccessful
 	}
-	
+
 	private func defaultFileLocation() -> String {
 		let searchPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
 		let documentFolderPath = searchPaths[0]
 		let dbFilePath = documentFolderPath + "/ABNoSQLDB.db"
 		return dbFilePath
 	}
-	
+
 	private func startAutoDelete() {
 		let seconds = 60
 		_autoDeleteTimer.schedule(deadline: .now(), repeating: .milliseconds(seconds * 1000), leeway: .milliseconds(1000))
 		_autoDeleteTimer.setEventHandler {
 			self.autoDelete()
 		}
-		
+
 		_autoDeleteTimer.resume()
 	}
-	
+
 	private func makeDB() {
 		assert(sqlExecute("create table __settings(key text, value text)"), "Unable to make DB")
 		assert(sqlExecute("insert into __settings(key,value) values('schema',1)"), "Unable to make DB")
 		assert(sqlExecute("create table __tableArrayColumns(tableName text, arrayColumns text)"), "Unable to make DB")
 	}
-	
+
 	private func checkSchema() {
 		_tables.dropAllTables()
 		let tableList = sqlSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
@@ -1175,13 +1181,13 @@ public final class ALBNoSQLDB {
 				if !ALBNoSQLDB.reservedTable(table) && !table.hasSuffix("_arrayValues") {
 					_tables.addTable(DBTable(name: table))
 				}
-				
+
 				if table == "__synclog" {
 					_syncingEnabled = true
 				}
 			}
 		}
-		
+
 		if _syncingEnabled {
 			_unsyncedTables = [String]()
 			let unsyncedTables = sqlSelect("select tableName from __unsyncedTables")
@@ -1189,7 +1195,7 @@ public final class ALBNoSQLDB {
 				_unsyncedTables = unsyncedTables.map({ $0.values[0] as! String })
 			}
 		}
-		
+
 		if let keyResults = sqlSelect("select value from __settings where key = 'dbInstanceKey'") {
 			if keyResults.count == 0 {
 				_instanceKey = UUID().uuidString
@@ -1200,14 +1206,14 @@ public final class ALBNoSQLDB {
 				_instanceKey = keyResults[0].values[0] as! String
 			}
 		}
-		
+
 		if let schemaResults = sqlSelect("select value from __settings where key = 'schema'") {
 			var schemaVersion = Int((schemaResults[0].values[0] as! String))!
 			if schemaVersion == 1 {
 				sqlExecute("update __settings set value = 2 where key = 'schema'")
 				schemaVersion = 2
 			}
-			
+
 			// use this space to update the schema value in __settings and to update any other tables that need updating with the new schema
 		}
 	}
@@ -1224,12 +1230,12 @@ extension ALBNoSQLDB {
 		} else {
 			return nil
 		}
-		
+
 		let tableColumns = columnsInTable(table).map({ $0.name }) + ["key"]
-		
+
 		var selectClause = "select distinct a.key from \(table) a"
 		var whereClause = " where 1=1"
-		
+
 		// if we have the include operator on an array object, do a left outer join
 		if let conditions = conditions {
 			for condition in conditions {
@@ -1238,28 +1244,28 @@ extension ALBNoSQLDB {
 					break
 				}
 			}
-			
+
 			var conditionSet = conditions
 			if conditionSet.count > 0 {
 				whereClause += " AND ("
 				// order the conditions array by page
 				conditionSet.sort { $0.set < $1.set }
-				
+
 				// conditionDict: ObjectKey,operator,value
 				var currentSet = conditions[0].set
 				var inPage = true
 				var inMultiPage = false
 				var firstConditionInSet = true
 				let hasMultipleSets = conditions.filter({ $0.set != conditions[0].set }).count > 0
-				
+
 				for condition in conditionSet {
 					if tableColumns.filter({ $0 == condition.objectKey }).count == 0 && arrayColumns.filter({ $0 == condition.objectKey }).count == 0 {
 						print("table \(table) has no column named \(condition.objectKey)")
 						return nil
 					}
-					
+
 					let valueType = SQLiteCore.typeOfValue(condition.value)
-					
+
 					if currentSet != condition.set {
 						currentSet = condition.set
 						whereClause += ")"
@@ -1268,7 +1274,7 @@ extension ALBNoSQLDB {
 							whereClause += ")"
 						}
 						whereClause += " OR ("
-						
+
 						inMultiPage = false
 					} else {
 						inPage = true
@@ -1281,12 +1287,12 @@ extension ALBNoSQLDB {
 							if inMultiPage {
 								whereClause += ")"
 							}
-							
+
 							whereClause += " and key in (select key from \(table) where"
 							inMultiPage = true
 						}
 					}
-					
+
 					switch condition.conditionOperator {
 					case .contains:
 						if arrayColumns.filter({ $0 == condition.objectKey }).count > 0 {
@@ -1323,7 +1329,7 @@ extension ALBNoSQLDB {
 								whereClause += ")"
 							}
 						}
-						
+
 					default:
 						if let conditionValue = condition.value as? String {
 							whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(esc(conditionValue))'"
@@ -1332,43 +1338,43 @@ extension ALBNoSQLDB {
 						}
 					}
 				}
-				
+
 				whereClause += ")"
-				
+
 				if inMultiPage {
 					whereClause += ")"
 				}
-				
+
 				if inPage && hasMultipleSets {
 					whereClause += ")"
 					inPage = false
 				}
 			}
 		}
-		
+
 		if let sortOrder = sortOrder {
 			whereClause += " order by \(sortOrder)"
 		}
-		
+
 		let sql = selectClause + whereClause
 		return sql
 	}
-	
+
 	private func setValue(table: DBTable, key: String, objectValues: [String: AnyObject], addedDateTime: String, updatedDateTime: String, deleteDateTime: String, sourceDB: String, originalDB: String) -> Bool {
 		if !openDB() {
 			return false
 		}
-		
+
 		if !createTable(table) {
 			return false
 		}
-		
+
 		// look for any array objects
 		var arrayKeys = [String]()
 		var arrayKeyTypes = [String]()
 		var arrayTypes = [ValueType]()
 		var arrayValues = [AnyObject]()
-		
+
 		for (objectKey, objectValue) in objectValues {
 			let valueType = SQLiteCore.typeOfValue(objectValue)
 			if valueType == .textArray || valueType == .intArray || valueType == .doubleArray {
@@ -1378,19 +1384,19 @@ extension ALBNoSQLDB {
 				arrayValues.append(objectValue)
 			}
 		}
-		
+
 		let joinedArrayKeys = arrayKeyTypes.joined(separator: ",")
-		
+
 		var sql = "select key from \(esc(table.name)) where key = '\(esc(key))'"
-		
+
 		var tableHasKey = false
 		guard let results = sqlSelect(sql) else { return false }
-		
+
 		if results.count == 0 {
 			// key doesn't exist, insert values
 			sql = "insert into \(table) (key,addedDateTime,updatedDateTime,autoDeleteDateTime,hasArrayValues"
 			var placeHolders = "'\(key)','\(addedDateTime)','\(updatedDateTime)',\(deleteDateTime),'\(joinedArrayKeys)'"
-			
+
 			for (objectKey, objectValue) in objectValues {
 				let valueType = SQLiteCore.typeOfValue(objectValue)
 				if valueType == .int || valueType == .double || valueType == .text || valueType == .bool {
@@ -1398,7 +1404,7 @@ extension ALBNoSQLDB {
 					placeHolders += ",?"
 				}
 			}
-			
+
 			sql += ") values(\(placeHolders))"
 		} else {
 			tableHasKey = true
@@ -1420,7 +1426,7 @@ extension ALBNoSQLDB {
 			}
 			sql += " where key = '\(key)'"
 		}
-		
+
 		if !setTableValues(objectValues: objectValues, sql: sql) {
 			// adjust table columns
 			validateTableColumns(table: table, objectValues: objectValues as [String: AnyObject])
@@ -1429,52 +1435,54 @@ extension ALBNoSQLDB {
 				return false
 			}
 		}
-		
+
 		// process any array values
 		for index in 0 ..< arrayKeys.count {
 			if !setArrayValues(table: table, arrayValues: arrayValues[index] as! [AnyObject], valueType: arrayTypes[index], key: key, objectKey: arrayKeys[index]) {
 				return false
 			}
 		}
-		
+
 		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
 			let now = ALBNoSQLDB.stringValueForDate(Date())
 			sql = "insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(sourceDB)','\(originalDB)','\(table)','U','\(esc(key))')"
-			
+
 			// TODO: Rework this so if the synclog stuff fails we do a rollback and return false
 			if sqlExecute(sql) {
 				let lastID = self.lastInsertID()
-				
+
 				if tableHasKey {
 					sql = "delete from __synclog where tableName = '\(table)' and key = '\(self.esc(key))' and rowid < \(lastID)"
 					self.sqlExecute(sql)
 				}
 			}
 		}
-		
+
 		return true
 	}
-	
+
 	private func setTableValues(objectValues: [String: AnyObject], sql: String) -> Bool {
 		var successful = false
-		
-		_dbQueue.sync { [unowned self]() -> Void in
+
+		_dbQueue.sync { [weak self]() -> Void in
+			guard let self = self else { return }
+			
 			self._SQLiteCore.setTableValues(objectValues: objectValues, sql: sql, completion: { (success) -> Void in
 				successful = success
 				self._lock.signal()
 			})
 			self._lock.wait()
 		}
-		
+
 		return successful
 	}
-	
+
 	private func setArrayValues(table: DBTable, arrayValues: [AnyObject], valueType: ValueType, key: String, objectKey: String) -> Bool {
 		var successful = sqlExecute("delete from \(table)_arrayValues where key='\(key)' and objectKey='\(objectKey)'")
 		if !successful {
 			return false
 		}
-		
+
 		for value in arrayValues {
 			switch valueType {
 			case .textArray:
@@ -1486,28 +1494,28 @@ extension ALBNoSQLDB {
 			default:
 				successful = true
 			}
-			
+
 			if !successful {
 				return false
 			}
 		}
-		
+
 		return true
 	}
-	
+
 	private func deleteForKey(table: DBTable, key: String, autoDelete: Bool, sourceDB: String, originalDB: String) -> Bool {
 		if !openDB() {
 			return false
 		}
-		
+
 		if !_tables.hasTable(table) {
 			return false
 		}
-		
+
 		if !sqlExecute("delete from \(table) where key = '\(esc(key))'") || !sqlExecute("delete from \(table)_arrayValues where key = '\(esc(key))'") {
 			return false
 		}
-		
+
 		let now = ALBNoSQLDB.stringValueForDate(Date())
 		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
 			var sql = ""
@@ -1515,7 +1523,7 @@ extension ALBNoSQLDB {
 			if !autoDelete {
 				sql = "insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(sourceDB)','\(originalDB)','\(table)','D','\(esc(key))')"
 				_ = sqlExecute(sql)
-				
+
 				let lastID = lastInsertID()
 				sql = "delete from __synclog where tableName = '\(table)' and key = '\(esc(key))' and rowid < \(lastID)"
 				_ = sqlExecute(sql)
@@ -1524,15 +1532,15 @@ extension ALBNoSQLDB {
 				_ = sqlExecute(sql)
 			}
 		}
-		
+
 		return true
 	}
-	
+
 	private func autoDelete() {
 		if !openDB() {
 			return
 		}
-		
+
 		let now = ALBNoSQLDB.stringValueForDate(Date())
 		let tables = _tables.allTables()
 		for table in tables {
@@ -1547,23 +1555,23 @@ extension ALBNoSQLDB {
 			}
 		}
 	}
-	
+
 	private func dictValueFromTable(_ table: DBTable, for key: String, includeDates: Bool) -> [String: AnyObject]? {
 		assert(key != "", "key value must be provided")
-		
+
 		if !openDB() || !_tables.hasTable(table) {
 			return nil
 		}
-		
+
 		let (sql, columns) = dictValueForKeySQL(table: table, key: key, includeDates: includeDates)
 		let results = sqlSelect(sql)
-		
+
 		return dictValueResults(table: table, key: key, results: results, columns: columns)
 	}
-	
+
 	private func dictValueResults(table: DBTable, key: String, results: [DBRow]?, columns: [TableColumn]) -> [String: AnyObject]? {
 		guard var results = results, results.count > 0 else { return nil }
-		
+
 		var valueDict = [String: AnyObject]()
 		for (columnIndex, column) in columns.enumerated() {
 			let valueIndex = columnIndex + 1
@@ -1575,21 +1583,21 @@ extension ALBNoSQLDB {
 				}
 			}
 		}
-		
+
 		// handle any arrayValues
 		let arrayObjects = (results[0].values[0] as! String).split { $0 == "," }.map { String($0) }
 		for object in arrayObjects {
 			if object == "" {
 				continue
 			}
-			
+
 			let keyType = object.split { $0 == ":" }.map { String($0) }
 			let objectKey = keyType[0]
 			let valueType = ValueType(rawValue: keyType[1] as String)!
 			var stringArray = [String]()
 			var intArray = [Int]()
 			var doubleArray = [Double]()
-			
+
 			var arrayQueryResults: [DBRow]?
 			switch valueType {
 			case .textArray:
@@ -1602,9 +1610,9 @@ extension ALBNoSQLDB {
 			default:
 				break
 			}
-			
+
 			guard let arrayResults = arrayQueryResults else { return nil }
-			
+
 			for index in 0 ..< arrayResults.count {
 				switch valueType {
 				case .textArray:
@@ -1617,7 +1625,7 @@ extension ALBNoSQLDB {
 					break
 				}
 			}
-			
+
 			switch valueType {
 			case .textArray:
 				valueDict[objectKey] = stringArray as AnyObject
@@ -1629,10 +1637,10 @@ extension ALBNoSQLDB {
 				break
 			}
 		}
-		
+
 		return valueDict
 	}
-	
+
 	private func dictValueForKeySQL(table: DBTable, key: String, includeDates: Bool) -> (String, [TableColumn]) {
 		var columns = columnsInTable(table)
 		if includeDates {
@@ -1640,68 +1648,68 @@ extension ALBNoSQLDB {
 			columns.append(TableColumn(name: "addedDateTime", type: .text))
 			columns.append(TableColumn(name: "updatedDateTime", type: .text))
 		}
-		
+
 		var sql = "select hasArrayValues"
 		for column in columns {
 			sql += ",\(column.name)"
 		}
 		sql += " from \(table) where key = '\(esc(key))'"
-		
+
 		return (sql, columns)
 	}
-	
+
 	// MARK: - Internal Table methods
 	struct TableColumn {
 		fileprivate var name: String
 		fileprivate var type: ValueType
-		
+
 		fileprivate init(name: String, type: ValueType) {
 			self.name = name
 			self.type = type
 		}
 	}
-	
+
 	fileprivate static func reservedTable(_ table: String) -> Bool {
 		return table.hasPrefix("__") || table.hasPrefix("sqlite_stat")
 	}
-	
+
 	private func reservedColumn(_ column: String) -> Bool {
 		return column == "key"
-			|| column == "addedDateTime"
-			|| column == "updatedDateTime"
-			|| column == "autoDeleteDateTime"
-			|| column == "hasArrayValues"
-			|| column == "arrayValues"
+		|| column == "addedDateTime"
+		|| column == "updatedDateTime"
+		|| column == "autoDeleteDateTime"
+		|| column == "hasArrayValues"
+		|| column == "arrayValues"
 	}
-	
+
 	private func createTable(_ table: DBTable) -> Bool {
 		if _tables.hasTable(table) {
 			return true
 		}
-		
+
 		if !sqlExecute("create table \(table) (key text PRIMARY KEY, autoDeleteDateTime text, addedDateTime text, updatedDateTime text, hasArrayValues text)") || !sqlExecute("create index idx_\(table)_autoDeleteDateTime on \(table)(autoDeleteDateTime)") {
 			return false
 		}
-		
+
 		if !sqlExecute("create table \(table)_arrayValues (key text, objectKey text, stringValue text, intValue int, doubleValue double)") || !sqlExecute("create index idx_\(table)_arrayValues_keys on \(table)_arrayValues(key,objectKey)") {
 			return false
 		}
-		
+
 		_tables.addTable(table)
-		
+
 		return true
 	}
-	
+
 	private func createIndexesForTable(_ table: DBTable) {
 		if !_tables.hasTable(table) {
 			return
 		}
-		
+
 		if let indexes = _indexes[table.name] {
 			for index in indexes {
 				var indexName = index.replacingOccurrences(of: ",", with: "_")
 				indexName = "idx_\(table)_\(indexName)"
-				
+
 				var sql = "select * from sqlite_master where tbl_name = '\(table)' and name = '\(indexName)'"
 				if let results = sqlSelect(sql), results.count == 0 {
 					sql = "CREATE INDEX \(indexName) on \(table)(\(index))"
@@ -1710,7 +1718,7 @@ extension ALBNoSQLDB {
 			}
 		}
 	}
-	
+
 	private func columnsInTable(_ table: DBTable) -> [TableColumn] {
 		let tableInfo = sqlSelect("pragma table_info(\(table))")
 		var columns = [TableColumn]()
@@ -1722,23 +1730,23 @@ extension ALBNoSQLDB {
 				columns.append(TableColumn(name: columnName, type: valueType))
 			}
 		}
-		
+
 		return columns
 	}
-	
+
 	private func validateTableColumns(table: DBTable, objectValues: [String: AnyObject]) {
 		let columns = columnsInTable(table)
 		// determine missing columns and add them
 		for (objectKey, value) in objectValues {
 			assert(!reservedColumn(objectKey as String), "Reserved column")
 			assert((objectKey as String).range(of: "'") == nil, "Single quote not allowed in column names")
-			
+
 			let found = columns.filter({ $0.name == objectKey }).count > 0
-			
+
 			if !found {
 				let valueType = SQLiteCore.typeOfValue(value)
 				assert(valueType != .unknown, "column types are int, double, string, bool or arrays of int, double, or string")
-				
+
 				if valueType == .int || valueType == .double || valueType == .text {
 					let sql = "alter table \(table) add column \(objectKey) \(valueType.rawValue)"
 					_ = sqlExecute(sql)
@@ -1762,65 +1770,71 @@ extension ALBNoSQLDB {
 				}
 			}
 		}
-		
+
 		createIndexesForTable(table)
 	}
-	
+
 	// MARK: - SQLite execute/query
 	@discardableResult
 	private func sqlExecute(_ sql: String) -> Bool {
 		var successful = false
-		
-		_dbQueue.sync { [unowned self]() -> Void in
+
+		_dbQueue.sync { [weak self]() -> Void in
+			guard let self = self else { return }
+			
 			_ = self._SQLiteCore.sqlExecute(sql, completion: { (success) in
 				successful = success
 				self._lock.signal()
 			})
 			self._lock.wait()
 		}
-		
+
 		return successful
 	}
-	
+
 	private func lastInsertID() -> sqlite3_int64 {
 		var lastID: sqlite3_int64 = 0
-		
-		_dbQueue.sync(execute: { [unowned self]() -> Void in
+
+		_dbQueue.sync(execute: { [weak self]() -> Void in
+			guard let self = self else { return }
+			
 			self._SQLiteCore.lastID({ (lastInsertionID) -> Void in
 				lastID = lastInsertionID
 				self._lock.signal()
 			})
 			self._lock.wait()
 		})
-		
+
 		return lastID
 	}
-	
+
 	public func sqlSelect(_ sql: String) -> [DBRow]? {
 		var rows: [DBRow]?
-		
+
 		if !openDB() {
 			return nil
 		}
-		
-		_dbQueue.sync { [unowned self]() -> Void in
+
+		_dbQueue.sync { [weak self]() -> Void in
+			guard let self = self else { return }
+			
 			_ = self._SQLiteCore.sqlSelect(sql, completion: { (results) -> Void in
 				rows = results
 				self._lock.signal()
 			})
 			self._lock.wait()
 		}
-		
+
 		return rows
 	}
-	
+
 	public func sqlSelect(_ sql: String, queue: DispatchQueue? = nil, completion: @escaping (DBResults<[DBRow]>) -> Void) -> DBCommandToken? {
 		if !openDB() {
 			// throw error
 			return nil
 		}
 
-        var results: DBResults<[DBRow]> = .error
+		var results: DBResults<[DBRow]> = .error
 
 		let blockReference: UInt = self._SQLiteCore.sqlSelect(sql, completion: { (rows) -> Void in
 			let dispatchQueue = queue ?? DispatchQueue.main
@@ -1828,25 +1842,27 @@ extension ALBNoSQLDB {
 				if let rows = rows {
 					results = .success(rows)
 				}
-				
+
 				completion(results)
 			}
 		})
-		
+
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
-	
+
 	func dequeueCommand(_ commandReference: UInt) -> Bool {
 		var removed = true
-		
-		_dbQueue.sync { [unowned self]() -> Void in
-			_ = self._SQLiteCore.removeExecutionBlock(commandReference, completion: { (results) -> Void in
+
+		_dbQueue.sync { [weak self]() -> Void in
+			guard let self = self else { return }
+			
+			self._SQLiteCore.removeExecutionBlock(commandReference, completion: { (results) -> Void in
 				removed = results
 				self._lock.signal()
 			})
 			self._lock.wait()
 		}
-		
+
 		return removed
 	}
 }
@@ -1855,13 +1871,13 @@ extension ALBNoSQLDB {
 private extension ALBNoSQLDB {
 	final class SQLiteCore: Thread {
 		var isOpen = false
-        var debugMode = false
+		var debugMode = false
 
 		private struct ExecutionBlock {
 			var block: Any
 			var blockReference: UInt
 		}
-		
+
 		private var _sqliteDB: OpaquePointer?
 		private var _threadLock = DispatchSemaphore(value: 0)
 		private var _queuedBlocks = [ExecutionBlock]()
@@ -1875,15 +1891,15 @@ private extension ALBNoSQLDB {
 		private var _blockReference: UInt = 1
 
 		private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
-		
+
 		override init() {
 			_autoCloseTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _closeQueue)
 			super.init()
 		}
-		
+
 		class func typeOfValue(_ value: AnyObject) -> ValueType {
 			let valueType: ValueType
-			
+
 			switch value {
 			case is [String]:
 				valueType = .textArray
@@ -1902,11 +1918,11 @@ private extension ALBNoSQLDB {
 			default:
 				valueType = .unknown
 			}
-			
+
 			return valueType
 		}
-		
-        func openDBFile(_ dbFilePath: String, autoCloseTimeout: Int, completion: @escaping (_ successful: Bool, _ openedFromOtherThread: Bool) -> Void) {
+
+		func openDBFile(_ dbFilePath: String, autoCloseTimeout: Int, completion: @escaping (_ successful: Bool, _ openedFromOtherThread: Bool) -> Void) {
 			_autoCloseTimeout = autoCloseTimeout
 			_dbFilePath = dbFilePath
 
@@ -1915,52 +1931,52 @@ private extension ALBNoSQLDB {
 					completion(true, true)
 					return
 				}
-				
+
 				if autoCloseTimeout > 0 {
 					self._autoCloseTimer.schedule(deadline: .now(), repeating: .milliseconds(autoCloseTimeout * 1000), leeway: .milliseconds(1000))
 					self._autoCloseTimer.setEventHandler {
 						self.close(automatically: true)
 					}
 				}
-				
+
 				let successful = self.openFile()
 				self.isOpen = successful
-				
+
 				completion(successful, false)
 				return
 			}
-			
+
 			_ = addBlock(block)
 		}
-		
+
 		func close(automatically: Bool = false) {
 			let block = { [unowned self] in
 				if automatically {
 					if self._automaticallyClosed || Date().timeIntervalSince1970 < (self._lastActivity + Double(self._autoCloseTimeout)) {
 						return
 					}
-					
+
 					self._autoCloseTimer.suspend()
 					self._automaticallyClosed = true
 				} else {
 					self.isOpen = false
 				}
-				
+
 				sqlite3_close_v2(self._sqliteDB)
 				self._sqliteDB = nil
 			}
-			
+
 			_ = addBlock(block)
 		}
-		
+
 		func lastID(_ completion: @escaping (_ lastInsertionID: sqlite3_int64) -> Void) {
 			let block = { [unowned self] in
 				completion(sqlite3_last_insert_rowid(self._sqliteDB))
 			}
-			
+
 			_ = addBlock(block)
 		}
-		
+
 		func sqlExecute(_ sql: String, completion: @escaping (_ success: Bool) -> Void) -> UInt {
 			let block = { [unowned self] in
 				var dbps: OpaquePointer?
@@ -1969,28 +1985,28 @@ private extension ALBNoSQLDB {
 						sqlite3_finalize(dbps)
 					}
 				}
-				
+
 				var status = sqlite3_prepare_v2(self._sqliteDB, sql, -1, &dbps, nil)
 				if status != SQLITE_OK {
 					self.displaySQLError(sql)
 					completion(false)
 					return
 				}
-				
+
 				status = sqlite3_step(dbps)
 				if status != SQLITE_DONE && status != SQLITE_OK {
 					self.displaySQLError(sql)
 					completion(false)
 					return
 				}
-				
+
 				completion(true)
 				return
 			}
-			
+
 			return addBlock(block)
 		}
-		
+
 		func sqlSelect(_ sql: String, completion: @escaping (_ results: [DBRow]?) -> Void) -> UInt {
 			let block = { [unowned self] in
 				var rows = [DBRow]()
@@ -2007,7 +2023,7 @@ private extension ALBNoSQLDB {
 					completion(nil)
 					return
 				}
-				
+
 				repeat {
 					status = sqlite3_step(dbps)
 					if status == SQLITE_ROW {
@@ -2027,24 +2043,24 @@ private extension ALBNoSQLDB {
 								row.values.append(nil)
 							}
 						}
-						
+
 						rows.append(row)
 					}
 				} while status == SQLITE_ROW
-				
+
 				if status != SQLITE_DONE {
 					self.displaySQLError(sql)
 					completion(nil)
 					return
 				}
-				
+
 				completion(rows)
 				return
 			}
-			
+
 			return addBlock(block)
 		}
-		
+
 		func removeExecutionBlock(_ blockReference: UInt, completion: @escaping (_ success: Bool) -> Void) {
 			let block = {
 				var blockArrayIndex: Int?
@@ -2054,7 +2070,7 @@ private extension ALBNoSQLDB {
 						break
 					}
 				}
-				
+
 				if let blockArrayIndex = blockArrayIndex {
 					self._queuedBlocks.remove(at: blockArrayIndex)
 					completion(true)
@@ -2062,22 +2078,22 @@ private extension ALBNoSQLDB {
 					completion(false)
 				}
 			}
-			
+
 			_blockQueue.sync {
 				if _blockReference > (UInt.max - 5) {
 					_blockReference = 1
 				} else {
 					_blockReference += 1
 				}
-				
+
 				let executionBlock = ExecutionBlock(block: block, blockReference: _blockReference)
-				
+
 				_queuedBlocks.insert(executionBlock, at: 0)
 				_threadLock.signal()
 			}
-			
+
 		}
-		
+
 		func setTableValues(objectValues: [String: AnyObject], sql: String, completion: @escaping (_ success: Bool) -> Void) {
 			let block = { [unowned self] in
 				var dbps: OpaquePointer?
@@ -2086,7 +2102,7 @@ private extension ALBNoSQLDB {
 						sqlite3_finalize(dbps)
 					}
 				}
-				
+
 				var status = sqlite3_prepare_v2(self._sqliteDB, sql, -1, &dbps, nil)
 				if status != SQLITE_OK {
 					self.displaySQLError(sql)
@@ -2095,7 +2111,7 @@ private extension ALBNoSQLDB {
 				} else {
 					// try to bind the object properties to table fields.
 					var index: Int32 = 1
-					
+
 					for (_, objectValue) in objectValues {
 						let valueType = SQLiteCore.typeOfValue(objectValue)
 						if valueType == .int || valueType == .double || valueType == .text || valueType == .bool {
@@ -2105,7 +2121,7 @@ private extension ALBNoSQLDB {
 							} else {
 								value = objectValue
 							}
-							
+
 							status = self.bindValue(dbps!, index: index, value: value)
 							if status != SQLITE_OK {
 								self.displaySQLError(sql)
@@ -2115,7 +2131,7 @@ private extension ALBNoSQLDB {
 							index += 1
 						}
 					}
-					
+
 					status = sqlite3_step(dbps)
 					if status != SQLITE_DONE && status != SQLITE_OK {
 						self.displaySQLError(sql)
@@ -2123,18 +2139,18 @@ private extension ALBNoSQLDB {
 						return
 					}
 				}
-				
+
 				completion(true)
 				return
 			}
-			
+
 			_ = addBlock(block)
 		}
-		
+
 		private func bindValue(_ statement: OpaquePointer, index: Int32, value: AnyObject) -> Int32 {
 			var status = SQLITE_OK
 			let valueType = SQLiteCore.typeOfValue(value)
-			
+
 			switch valueType {
 			case .text:
 				status = sqlite3_bind_text(statement, index, value as! String, -1, SQLITE_TRANSIENT)
@@ -2148,10 +2164,10 @@ private extension ALBNoSQLDB {
 			default:
 				status = SQLITE_OK
 			}
-			
+
 			return status
 		}
-		
+
 		private func displaySQLError(_ sql: String) {
 			let text = UnsafePointer<Int8>(sqlite3_errmsg(_sqliteDB))
 			let error = String(cString: text!)
@@ -2159,7 +2175,7 @@ private extension ALBNoSQLDB {
 			print("     on command - \(sql)")
 			print("")
 		}
-		
+
 		private func explain(_ sql: String) {
 			var dbps: OpaquePointer?
 			let explainCommand = "EXPLAIN QUERY PLAN \(sql)"
@@ -2170,48 +2186,48 @@ private extension ALBNoSQLDB {
 				let iOrder = sqlite3_column_int(dbps, 1)
 				let iFrom = sqlite3_column_int(dbps, 2)
 				let value = String(cString: sqlite3_column_text(dbps, 3))
-				
+
 				print("\(iSelectid) \(iOrder) \(iFrom) \(value)\n=================================================\n\n")
 			}
-			
+
 			sqlite3_finalize(dbps)
 		}
-		
+
 		private func addBlock(_ block: Any) -> UInt {
-            _blockQueue.sync {
+			_blockQueue.sync {
 				if _blockReference > (UInt.max - 5) {
 					_blockReference = 1
 				} else {
 					_blockReference += 1
 				}
-            }
+			}
 
-            _blockQueue.async {
+			_blockQueue.async {
 				let executionBlock = ExecutionBlock(block: block, blockReference: self._blockReference)
-				
+
 				self._queuedBlocks.append(executionBlock)
 				self._threadLock.signal()
 			}
-			
+
 			return _blockReference
 		}
-		
+
 		override func main() {
 			while true {
 				if _autoCloseTimeout > 0 {
 					_autoCloseTimer.suspend()
 				}
-				
+
 				if _automaticallyClosed {
 					if !openFile() {
 						fatalError("Unable to open DB")
 					}
 				}
-				
+
 				while _queuedBlocks.count > 0 {
-                    if debugMode {
-                        Thread.sleep(forTimeInterval: 0.1)
-                    }
+					if debugMode {
+						Thread.sleep(forTimeInterval: 0.1)
+					}
 
 					_blockQueue.sync {
 						if let executionBlock = _queuedBlocks.first, let block = executionBlock.block as? () -> Void {
@@ -2220,29 +2236,29 @@ private extension ALBNoSQLDB {
 						}
 					}
 				}
-				
+
 				_lastActivity = Date().timeIntervalSince1970
 				if _autoCloseTimeout > 0 {
 					_autoCloseTimer.resume()
 				}
-				
+
 				_threadLock.wait()
 			}
 		}
-		
+
 		private func openFile() -> Bool {
 			_sqliteDB = nil
 			let status = sqlite3_open_v2(_dbFilePath.cString(using: .utf8)!, &self._sqliteDB, SQLITE_OPEN_FILEPROTECTION_COMPLETE | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nil)
-			
+
 			if status != SQLITE_OK {
 				print("Error opening SQLite Database: \(status)")
 				return false
 			}
-			
+
 			if _autoCloseTimeout > 0 {
 				_autoCloseTimer.resume()
 			}
-			
+
 			_automaticallyClosed = false
 			return true
 		}
