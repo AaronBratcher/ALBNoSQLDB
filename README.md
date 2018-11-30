@@ -117,9 +117,9 @@ let table: DBTable = "categories"
 
 guard let token = db.valueFromTable(table, for: key, completion: { (results) in
 	if case .success(let value) = results {
-		XCTAssert(value == "{\"numValue\":2,\"value2\":3}")
+		// use value
 	} else {
-		XCTFail()
+		// error
 	}
 }) else {
 	XCTFail("Unable to get value")
