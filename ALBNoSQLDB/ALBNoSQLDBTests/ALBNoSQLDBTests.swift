@@ -14,7 +14,7 @@ class ALBNoSQLDBTests: XCTestCase {
 	lazy var db: ALBNoSQLDB = {
 		return dbForTestClass(className: String(describing: type(of: self)))
 	}()
-	
+
 	override func setUp() {
 		super.setUp()
 
@@ -31,16 +31,16 @@ class ALBNoSQLDBTests: XCTestCase {
 			try? FileManager.default.removeItem(atPath: path)
 		}
 	}
-	
+
 	func testURLOpen() {
 		let path = pathForDB(className: String(describing: type(of: self))) + "testURL"
 		let location = URL(fileURLWithPath: path)
-		
+
 		let db = ALBNoSQLDB()
-		
+
 		XCTAssert(db.open(location))
 		db.close()
-		
+
 		let fileExists = FileManager.default.fileExists(atPath: path)
 		if fileExists {
 			try? FileManager.default.removeItem(atPath: path)
@@ -78,9 +78,9 @@ class ALBNoSQLDBTests: XCTestCase {
 			let objectValues = (try? JSONSerialization.jsonObject(with: dataValue, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
 			let equalDicts = objectValues?.count == sampleDict?.count
 			let linked = objectValues!["link"] as! Bool
-			
+
 			XCTAssert(linked, "Should be link of true")
-			
+
 			XCTAssert(equalDicts, "Dictionaries don't match")
 		}
 	}
@@ -360,35 +360,32 @@ class ALBNoSQLDBTests: XCTestCase {
 			XCTAssert(false, "keys not returned")
 		}
 	}
-	
+
 	func testAutoDelete() {
 		let deleteExpectation = expectation(description: "Value deleted")
 		let table: DBTable = "AutoDeleteTable1"
 		let key = "SimpleDeleteKey"
 		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\"}"
 		let successful = db.setValueInTable(table, for: key, to: sample, autoDeleteAfter: Date())
-		
+
 		XCTAssert(successful, "setValueFailed")
 
-		delay(90) { 
+		delay(90) {
 			if var keys = self.db.keysInTable(table, sortOrder: nil) {
 				keys = keys.filter({ $0 == key })
 				XCTAssert(keys.count == 0, "keys were returned when table should be empty")
 			} else {
 				XCTAssert(false, "keys not returned")
 			}
-			
+
 			deleteExpectation.fulfill()
 		}
-		
+
 		waitForExpectations(timeout: 120, handler: nil)
 	}
 }
 
-
-
-
 func delay(_ seconds: Double, closure: @escaping () -> Void) {
 	DispatchQueue.main.asyncAfter(
-		deadline: DispatchTime.now() + Double(Int64(seconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
+	                              deadline: DispatchTime.now() + Double(Int64(seconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
 }

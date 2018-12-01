@@ -189,7 +189,11 @@ public final class ALBNoSQLDB {
 	private var _syncingEnabled = false
 	private var _unsyncedTables = [String]()
 	private let _deletionQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBDeletionQueue", attributes: [])
-	private var _autoDeleteTimer: DispatchSourceTimer
+	private lazy var _autoDeleteTimer: RepeatingTimer = {
+		return RepeatingTimer(timeInterval: 60) {
+			self.autoDelete()
+		}
+	}()
 
 	// MARK: - Init
 	/**
@@ -199,7 +203,6 @@ public final class ALBNoSQLDB {
 	*/
 	public init(fileLocation: URL? = nil) {
 		_dbFileLocation = fileLocation
-		_autoDeleteTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _deletionQueue)
 		_SQLiteCore.start()
 	}
 
@@ -229,7 +232,7 @@ public final class ALBNoSQLDB {
 	Close the database.
 	*/
 	public func close() {
-		_autoDeleteTimer.cancel()
+		_autoDeleteTimer.suspend()
 		_dbQueue.sync { () -> Void in
 			_SQLiteCore.close()
 		}
@@ -586,7 +589,7 @@ public final class ALBNoSQLDB {
 
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [weak self] (rows) -> Void in
 			guard let self = self else { return }
-			
+
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				guard let dictionaryValue = self.dictValueResults(table: table, key: key, results: rows, columns: columns)
@@ -674,7 +677,7 @@ public final class ALBNoSQLDB {
 
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { [weak self] (rows) -> Void in
 			guard let self = self else { return }
-			
+
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				guard let dictionaryValue = self.dictValueResults(table: table, key: key, results: rows, columns: columns)
@@ -1124,7 +1127,7 @@ public final class ALBNoSQLDB {
 
 		_dbQueue.sync { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			self._SQLiteCore.openDBFile(dbFilePath, autoCloseTimeout: self.autoCloseTimeout) { (successful, alreadyOpen) -> Void in
 				openDBSuccessful = successful
 				previouslyOpened = alreadyOpen
@@ -1143,7 +1146,7 @@ public final class ALBNoSQLDB {
 				makeDB()
 			}
 			checkSchema()
-			startAutoDelete()
+			_autoDeleteTimer.resume()
 		}
 
 		return openDBSuccessful
@@ -1154,16 +1157,6 @@ public final class ALBNoSQLDB {
 		let documentFolderPath = searchPaths[0]
 		let dbFilePath = documentFolderPath + "/ABNoSQLDB.db"
 		return dbFilePath
-	}
-
-	private func startAutoDelete() {
-		let seconds = 60
-		_autoDeleteTimer.schedule(deadline: .now(), repeating: .milliseconds(seconds * 1000), leeway: .milliseconds(1000))
-		_autoDeleteTimer.setEventHandler {
-			self.autoDelete()
-		}
-
-		_autoDeleteTimer.resume()
 	}
 
 	private func makeDB() {
@@ -1466,7 +1459,7 @@ extension ALBNoSQLDB {
 
 		_dbQueue.sync { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			self._SQLiteCore.setTableValues(objectValues: objectValues, sql: sql, completion: { (success) -> Void in
 				successful = success
 				self._lock.signal()
@@ -1781,7 +1774,7 @@ extension ALBNoSQLDB {
 
 		_dbQueue.sync { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			_ = self._SQLiteCore.sqlExecute(sql, completion: { (success) in
 				successful = success
 				self._lock.signal()
@@ -1797,7 +1790,7 @@ extension ALBNoSQLDB {
 
 		_dbQueue.sync(execute: { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			self._SQLiteCore.lastID({ (lastInsertionID) -> Void in
 				lastID = lastInsertionID
 				self._lock.signal()
@@ -1817,7 +1810,7 @@ extension ALBNoSQLDB {
 
 		_dbQueue.sync { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			_ = self._SQLiteCore.sqlSelect(sql, completion: { (results) -> Void in
 				rows = results
 				self._lock.signal()
@@ -1855,7 +1848,7 @@ extension ALBNoSQLDB {
 
 		_dbQueue.sync { [weak self]() -> Void in
 			guard let self = self else { return }
-			
+
 			self._SQLiteCore.removeExecutionBlock(commandReference, completion: { (results) -> Void in
 				removed = results
 				self._lock.signal()
@@ -1882,20 +1875,15 @@ private extension ALBNoSQLDB {
 		private var _threadLock = DispatchSemaphore(value: 0)
 		private var _queuedBlocks = [ExecutionBlock]()
 		private let _closeQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBCloseQueue", attributes: [])
-		private var _autoCloseTimer: DispatchSourceTimer
+		private var _autoCloseTimer: RepeatingTimer?
 		private var _dbFilePath = ""
-		private var _autoCloseTimeout = 0
+		private var _autoCloseTimeout: TimeInterval = 0
 		private var _lastActivity: Double = 0
 		private var _automaticallyClosed = false
 		private let _blockQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBBlockQueue", attributes: [])
 		private var _blockReference: UInt = 1
 
 		private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
-
-		override init() {
-			_autoCloseTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: _closeQueue)
-			super.init()
-		}
 
 		class func typeOfValue(_ value: AnyObject) -> ValueType {
 			let valueType: ValueType
@@ -1923,7 +1911,7 @@ private extension ALBNoSQLDB {
 		}
 
 		func openDBFile(_ dbFilePath: String, autoCloseTimeout: Int, completion: @escaping (_ successful: Bool, _ openedFromOtherThread: Bool) -> Void) {
-			_autoCloseTimeout = autoCloseTimeout
+			_autoCloseTimeout = TimeInterval(exactly: autoCloseTimeout) ?? 0.0
 			_dbFilePath = dbFilePath
 
 			let block = { [unowned self] in
@@ -1933,8 +1921,7 @@ private extension ALBNoSQLDB {
 				}
 
 				if autoCloseTimeout > 0 {
-					self._autoCloseTimer.schedule(deadline: .now(), repeating: .milliseconds(autoCloseTimeout * 1000), leeway: .milliseconds(1000))
-					self._autoCloseTimer.setEventHandler {
+					self._autoCloseTimer = RepeatingTimer(timeInterval: self._autoCloseTimeout) {
 						self.close(automatically: true)
 					}
 				}
@@ -1956,7 +1943,7 @@ private extension ALBNoSQLDB {
 						return
 					}
 
-					self._autoCloseTimer.suspend()
+					self._autoCloseTimer?.suspend()
 					self._automaticallyClosed = true
 				} else {
 					self.isOpen = false
@@ -2214,9 +2201,7 @@ private extension ALBNoSQLDB {
 
 		override func main() {
 			while true {
-				if _autoCloseTimeout > 0 {
-					_autoCloseTimer.suspend()
-				}
+				_autoCloseTimer?.suspend()
 
 				if _automaticallyClosed {
 					if !openFile() {
@@ -2238,9 +2223,7 @@ private extension ALBNoSQLDB {
 				}
 
 				_lastActivity = Date().timeIntervalSince1970
-				if _autoCloseTimeout > 0 {
-					_autoCloseTimer.resume()
-				}
+				_autoCloseTimer?.resume()
 
 				_threadLock.wait()
 			}
@@ -2255,10 +2238,7 @@ private extension ALBNoSQLDB {
 				return false
 			}
 
-			if _autoCloseTimeout > 0 {
-				_autoCloseTimer.resume()
-			}
-
+			_autoCloseTimer?.resume()
 			_automaticallyClosed = false
 			return true
 		}
@@ -2269,5 +2249,51 @@ private extension ALBNoSQLDB {
 private extension String {
 	func dataValue() -> Data {
 		return data(using: .utf8, allowLossyConversion: false)!
+	}
+}
+
+private class RepeatingTimer {
+	private enum State {
+		case suspended
+		case resumed
+	}
+
+	private let timeInterval: TimeInterval
+	private let eventHandler: (() -> Void)
+	private var state = State.suspended
+	private lazy var timer: DispatchSourceTimer = makeTimer()
+
+	init(timeInterval: TimeInterval = 60.0, eventHandler: @escaping (() -> Void)) {
+		self.timeInterval = timeInterval
+		self.eventHandler = eventHandler
+	}
+
+	private func makeTimer() -> DispatchSourceTimer {
+		let timer = DispatchSource.makeTimerSource()
+		timer.schedule(deadline: .now() + self.timeInterval, repeating: self.timeInterval)
+		timer.setEventHandler(handler: { [weak self] in
+			self?.eventHandler()
+		})
+		return timer
+	}
+
+	deinit {
+		timer.setEventHandler { }
+		timer.cancel()
+		resume()
+	}
+
+	func resume() {
+		if state == .resumed { return }
+		
+		state = .resumed
+		timer.resume()
+	}
+
+	func suspend() {
+		if state == .suspended { return }
+		
+		state = .suspended
+		timer.suspend()
 	}
 }
