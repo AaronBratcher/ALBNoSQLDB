@@ -172,7 +172,7 @@ public final class ALBNoSQLDB {
 			var exists = false
 
 			DBTables.tableQueue.sync {
-				exists = tables.filter({ $0 == table }).count > 0
+				exists = tables.filter({ $0 == table }).isNotEmpty
 			}
 
 			return exists
@@ -273,7 +273,7 @@ public final class ALBNoSQLDB {
 		let sql = "select 1 from \(table) where key = '\(key)'"
 		let results = sqlSelect(sql)
 		if let results = results {
-			return results.count > 0
+			return results.isNotEmpty
 		}
 
 		return nil
@@ -306,7 +306,7 @@ public final class ALBNoSQLDB {
 			let dispatchQueue = queue ?? DispatchQueue.main
 			dispatchQueue.async {
 				if let rows = rows {
-					results = DBResults.success(rows.count > 0)
+					results = DBResults.success(rows.isNotEmpty)
 				}
 
 				completion(results)
@@ -746,7 +746,7 @@ public final class ALBNoSQLDB {
 
 		_tables.dropTable(table)
 
-		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
+		if _syncingEnabled && _unsyncedTables.doesNotContain(table.name) {
 			let now = ALBNoSQLDB.stringValueForDate(Date())
 			if !sqlExecute("insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(_instanceKey)','\(_instanceKey)','\(table)','X',NULL)") {
 				return false
@@ -1024,7 +1024,7 @@ public final class ALBNoSQLDB {
 						// for entry activity U,D only process log entry if no local entry for same table/key that is greater than one received
 						if activity == "D" || activity == "U" {
 							if let key = entry["key"] as? String, let results = sqlSelect("select 1 from __synclog where tableName = '\(tableName)' and key = '\(key)' and timestamp > '\(timeStamp)'") {
-								if results.count == 0 {
+								if results.isEmpty {
 									if activity == "U" {
 										// strip out the dates to send separately
 										var objectValues = entry["value"] as! [String: AnyObject]
@@ -1190,7 +1190,7 @@ public final class ALBNoSQLDB {
 		}
 
 		if let keyResults = sqlSelect("select value from __settings where key = 'dbInstanceKey'") {
-			if keyResults.count == 0 {
+			if keyResults.isEmpty {
 				_instanceKey = UUID().uuidString
 				let parts = _instanceKey.components(separatedBy: "-")
 				_instanceKey = parts[parts.count - 1]
@@ -1217,7 +1217,7 @@ extension ALBNoSQLDB {
 	fileprivate func keysInTableSQL(table: DBTable, sortOrder: String?, conditions: [DBCondition]?) -> String? {
 		var arrayColumns = [String]()
 		if let results = sqlSelect("select arrayColumns from __tableArrayColumns where tableName = '\(table)'") {
-			if results.count > 0 {
+			if results.isNotEmpty {
 				arrayColumns = (results[0].values[0] as! String).split { $0 == "," }.map { String($0) }
 			}
 		} else {
@@ -1239,7 +1239,7 @@ extension ALBNoSQLDB {
 			}
 
 			var conditionSet = conditions
-			if conditionSet.count > 0 {
+			if conditionSet.isNotEmpty {
 				whereClause += " AND ("
 				// order the conditions array by page
 				conditionSet.sort { $0.set < $1.set }
@@ -1249,10 +1249,10 @@ extension ALBNoSQLDB {
 				var inPage = true
 				var inMultiPage = false
 				var firstConditionInSet = true
-				let hasMultipleSets = conditions.filter({ $0.set != conditions[0].set }).count > 0
+				let hasMultipleSets = conditions.filter({ $0.set != conditions[0].set }).isNotEmpty
 
 				for condition in conditionSet {
-					if tableColumns.filter({ $0 == condition.objectKey }).count == 0 && arrayColumns.filter({ $0 == condition.objectKey }).count == 0 {
+					if tableColumns.filter({ $0 == condition.objectKey }).isEmpty && arrayColumns.filter({ $0 == condition.objectKey }).isEmpty {
 						print("table \(table) has no column named \(condition.objectKey)")
 						return nil
 					}
@@ -1288,7 +1288,7 @@ extension ALBNoSQLDB {
 
 					switch condition.conditionOperator {
 					case .contains:
-						if arrayColumns.filter({ $0 == condition.objectKey }).count > 0 {
+						if arrayColumns.contains(condition.objectKey) {
 							switch valueType {
 							case .text:
 								whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(esc(condition.value as! String))'"
@@ -1385,7 +1385,7 @@ extension ALBNoSQLDB {
 		var tableHasKey = false
 		guard let results = sqlSelect(sql) else { return false }
 
-		if results.count == 0 {
+		if results.isEmpty {
 			// key doesn't exist, insert values
 			sql = "insert into \(table) (key,addedDateTime,updatedDateTime,autoDeleteDateTime,hasArrayValues"
 			var placeHolders = "'\(key)','\(addedDateTime)','\(updatedDateTime)',\(deleteDateTime),'\(joinedArrayKeys)'"
@@ -1413,7 +1413,7 @@ extension ALBNoSQLDB {
 			let columns = columnsInTable(table)
 			for column in columns {
 				let filteredKeys = objectKeys.filter({ $0 == column.name })
-				if filteredKeys.count == 0 {
+				if filteredKeys.isEmpty {
 					sql += ",\(column.name)=NULL"
 				}
 			}
@@ -1436,7 +1436,7 @@ extension ALBNoSQLDB {
 			}
 		}
 
-		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
+		if _syncingEnabled && _unsyncedTables.doesNotContain(table.name) {
 			let now = ALBNoSQLDB.stringValueForDate(Date())
 			sql = "insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(sourceDB)','\(originalDB)','\(table)','U','\(esc(key))')"
 
@@ -1510,7 +1510,7 @@ extension ALBNoSQLDB {
 		}
 
 		let now = ALBNoSQLDB.stringValueForDate(Date())
-		if _syncingEnabled && _unsyncedTables.filter({ $0 == table.name }).count == 0 {
+		if _syncingEnabled && _unsyncedTables.doesNotContain(table.name) {
 			var sql = ""
 			// auto-deleted entries will be automatically removed from any other databases too. Don't need to log this deletion.
 			if !autoDelete {
@@ -1563,7 +1563,7 @@ extension ALBNoSQLDB {
 	}
 
 	private func dictValueResults(table: DBTable, key: String, results: [DBRow]?, columns: [TableColumn]) -> [String: AnyObject]? {
-		guard var results = results, results.count > 0 else { return nil }
+		guard var results = results, results.isNotEmpty else { return nil }
 
 		var valueDict = [String: AnyObject]()
 		for (columnIndex, column) in columns.enumerated() {
@@ -1704,7 +1704,7 @@ extension ALBNoSQLDB {
 				indexName = "idx_\(table)_\(indexName)"
 
 				var sql = "select * from sqlite_master where tbl_name = '\(table)' and name = '\(indexName)'"
-				if let results = sqlSelect(sql), results.count == 0 {
+				if let results = sqlSelect(sql), results.isEmpty {
 					sql = "CREATE INDEX \(indexName) on \(table)(\(index))"
 					_ = sqlExecute(sql)
 				}
@@ -1713,9 +1713,9 @@ extension ALBNoSQLDB {
 	}
 
 	private func columnsInTable(_ table: DBTable) -> [TableColumn] {
-		let tableInfo = sqlSelect("pragma table_info(\(table))")
+        guard let tableInfo = sqlSelect("pragma table_info(\(table))") else { return [] }
 		var columns = [TableColumn]()
-		for info in tableInfo! {
+		for info in tableInfo {
 			let columnName = info.values[1] as! String
 			if !reservedColumn(columnName) {
 				let rawValue = info.values[2] as! String
@@ -1734,7 +1734,7 @@ extension ALBNoSQLDB {
 			assert(!reservedColumn(objectKey as String), "Reserved column")
 			assert((objectKey as String).range(of: "'") == nil, "Single quote not allowed in column names")
 
-			let found = columns.filter({ $0.name == objectKey }).count > 0
+			let found = columns.filter({ $0.name == objectKey }).isNotEmpty
 
 			if !found {
 				let valueType = SQLiteCore.typeOfValue(value)
@@ -1751,7 +1751,7 @@ extension ALBNoSQLDB {
 					let sql = "select arrayColumns from __tableArrayColumns where tableName = '\(table)'"
 					if let results = sqlSelect(sql) {
 						var arrayColumns = ""
-						if results.count > 0 {
+						if results.isNotEmpty {
 							arrayColumns = results[0].values[0] as! String
 							arrayColumns += ",\(objectKey)"
 							_ = sqlExecute("delete from __tableArrayColumns where tableName = '\(table)'")
@@ -2209,7 +2209,7 @@ private extension ALBNoSQLDB {
 					}
 				}
 
-				while _queuedBlocks.count > 0 {
+				while _queuedBlocks.isNotEmpty {
 					if debugMode {
 						Thread.sleep(forTimeInterval: 0.1)
 					}
@@ -2296,4 +2296,16 @@ private class RepeatingTimer {
 		state = .suspended
 		timer.suspend()
 	}
+}
+
+fileprivate extension Collection {
+    var isNotEmpty: Bool {
+        return !isEmpty
+    }
+}
+
+fileprivate extension Array where Element: Equatable {
+    func doesNotContain(_ element: Element) -> Bool {
+        return !contains(element)
+    }
 }
