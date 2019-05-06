@@ -179,9 +179,7 @@ public func disableSyncing() -> Bool
 /**
 Read-only array of unsynced tables. Any tables not in this array will be synced.
 */
-var unsyncedTables: [String] {
-	return _unsyncedTables
-}
+var unsyncedTables: [String]
 
 /**
 Sets the tables that are not to be synced.
