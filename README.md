@@ -144,7 +144,21 @@ let successful = token.cancel()
 - sqlSelect
 
 ## SQL Queries ##
-ALBNoSQLDB allows you to do standard SQL selects for more complex queries. Because the values given are actually broken into separate columns in the tables, a standard SQL statement can be passed in and an array of rows (arrays of values) will be optionally returned. Below are the APIs used:
+ALBNoSQLDB allows you to do standard SQL selects for more complex queries. Because the values given are actually broken into separate columns in the tables, a standard SQL statement can be passed in and an array of rows (arrays of values) will be optionally returned.
+
+```
+let db = ALBNoSQLDB.shared
+let sql = "select name from accounts a inner join categories c on c.accountKey = a.key order by a.name"
+if let results = db.sqlSelect(sql) {
+    // process results
+} else {
+    // handle error
+}
+```
+
+## Syncing ##
+ALBNoSQLDB can sync with other instances of itself by enabling syncing before processing any data and then sharing a sync log.
+
 ```swift
 /**
 Enables syncing. Once enabled, a log is created for all current values in the tables.
