@@ -24,7 +24,7 @@ Completely thread safe since it uses it's own Thread subclass.
 
 ## Installation Options ##
 - Cocoapods `pod ALBNoSQLDB`
-- Include ALBNoSQLDB.swift in your project
+- Include ALBNoSQLDB.swift and DBOject.swift files in your project
 
 ## Getting Started ##
 ALBNoSQLDB acts as a key/value database allowing you to set a JSON value in a table for a specific key or getting keys from a table.
