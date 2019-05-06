@@ -236,12 +236,12 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 				return
 			}
 
-			self.db.debugMode = true
-			for (index, key) in keys.enumerated() {
+			self.db.isDebugging = true
+			for key in keys{
 				DispatchQueue.global().async {
 					guard let token = self.db.valueFromTable(table, for: key, completion: { (value) in
 						expectations.fulfill()
-						if index == 3 {
+						if key == "testKey4" {
 							XCTFail("Cancel failed")
 						}
 					}) else {
@@ -260,7 +260,7 @@ class ALBNOSQLDBAsyncTests: XCTestCase {
 			let success = lastToken.cancel()
 			XCTAssert(success)
 
-			self.db.debugMode = false
+			self.db.isDebugging = false
 
 		}
 

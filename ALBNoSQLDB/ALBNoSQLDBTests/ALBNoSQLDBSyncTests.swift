@@ -54,9 +54,9 @@ class ALBNoSQLDBSyncTests: XCTestCase {
 	}
 
 	func testCreateSyncFile() {
-		db.disableSyncing()
+		_ = db.disableSyncing()
 		db.dropAllTables()
-		db.enableSyncing()
+		_ = db.enableSyncing()
 
 		db.setValueInTable(DBTable(name: "table8"), for: "testKey1", to: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil)
 		db.deleteFromTable(DBTable(name: "table8"), for: "testKey1")
@@ -142,12 +142,12 @@ class ALBNoSQLDBSyncTests: XCTestCase {
 			XCTAssert(results, "sync log not processed")
 
 			// check for proper changes
-			XCTAssert(!db.tableHasKey(table: "table8", key: "testKey1")!, "table8 still has entry")
+            XCTAssert(!db.tableHasKey(table: DBTable(name: "table8"), key: "testKey1")!, "table8 still has entry")
 
-			XCTAssert(!db.tableHasKey(table: "table9", key: "testKey2")!, "drop table 9 failed")
-			XCTAssert(!db.tableHasKey(table: "table9", key: "testKey3")!, "drop table 9 failed")
-			XCTAssert(!db.tableHasKey(table: "table9", key: "testKey4")!, "drop table 9 failed")
-			XCTAssert(!db.tableHasKey(table: "table9", key: "testKey5")!, "drop table 9 failed")
+			XCTAssert(!db.tableHasKey(table: DBTable(name: "table9"), key: "testKey2")!, "drop table 9 failed")
+			XCTAssert(!db.tableHasKey(table: DBTable(name: "table9"), key: "testKey3")!, "drop table 9 failed")
+			XCTAssert(!db.tableHasKey(table: DBTable(name: "table9"), key: "testKey4")!, "drop table 9 failed")
+			XCTAssert(!db.tableHasKey(table: DBTable(name: "table9"), key: "testKey5")!, "drop table 9 failed")
 
 			var jsonValue = db.valueFromTable(DBTable(name: "table10"), for: "testKey3")
 			// compare dict values

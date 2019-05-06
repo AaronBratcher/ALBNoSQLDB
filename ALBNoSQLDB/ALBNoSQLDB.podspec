@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "ALBNoSQLDB"
-  s.version      = "5.0.3"
-  s.summary      = "A thread safe SQLite database wrapper written in Swift 4.2"
+  s.version      = "5.1"
+  s.summary      = "A thread safe SQLite database wrapper written in Swift 5"
   s.homepage	 = "https://github.com/AaronBratcher/ALBNoSQLDB"
 
   s.license      = "MIT"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.social_media_url   = "http://twitter.com/AaronLBratcher"
 
   s.osx.deployment_target = "10.10"
-  s.ios.deployment_target = "9.0"
+  s.ios.deployment_target = "10.0"
   
   s.osx.frameworks = 'AppKit', 'Foundation'
   s.ios.frameworks = 'UIKit', 'Foundation'
