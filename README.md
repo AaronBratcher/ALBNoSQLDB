@@ -74,6 +74,8 @@ if let keys = ALBNoSQLDB.shared.keysInTable(table, sortOrder: nil, conditions: [
 
 
 ### Values ###
+Data can be set or retrieved manually as shown here or your class/struct can adhere to the DBObject protocol, documented below, and use the built-in init and save methods.
+
 Set value in table
 ```swift
 let table: DBTable = "categories"
