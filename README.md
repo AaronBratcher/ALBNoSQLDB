@@ -144,6 +144,7 @@ let successful = token.cancel()
 - valueFromTable
 - dictValueFromTable
 - sqlSelect
+- loadObjectFromDB in the DBObject protocol
 
 ## SQL Queries ##
 ALBNoSQLDB allows you to do standard SQL selects for more complex queries. Because the values given are actually broken into separate columns in the tables, a standard SQL statement can be passed in and an array of rows (arrays of values) will be optionally returned.
