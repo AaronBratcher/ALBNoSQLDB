@@ -244,7 +244,7 @@ public init?(db: ALBNoSQLDB, key: String)
 
 
 /**
- Save the object to the database
+ Save the object to the database based on the values set in the encode method of the object.
 
  - parameter db: Database object to hold the data.
  - parameter expiration: Optional Date specifying when the data is to be automatically deleted. Default value is nil specifying no automatic deletion.
