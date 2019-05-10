@@ -305,6 +305,7 @@ struct Category: DBObject {
 
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CategoryKey.self)
+
 		try container.encode(accountKey, forKey: .accountKey)
 		try container.encode(name, forKey: .name)
 		try container.encode(inSummary, forKey: .inSummary)
