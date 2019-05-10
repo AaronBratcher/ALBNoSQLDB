@@ -268,3 +268,55 @@ public func save(to db: ALBNoSQLDB, autoDeleteAfter expiration: Date? = nil) -> 
 public static func loadObjectFromDB<T: DBObject>(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (T) -> Void) -> DBCommandToken?
 
 ```
+
+### Sample Struct ###
+```swift
+import ALBNoSQLDB
+
+enum Table: String {
+	case categories = "Categories"
+    
+	var dbTable: DBTable {
+        return DBTable(name: self.rawValue)
+    }
+}
+
+struct Category: DBObject {
+	static var table: DBTable { return Table.categories.dbTable }
+	var key = UUID().uuidString
+	var accountKey = ""
+	var name = ""
+	var inSummary = true
+
+	private enum CategoryKey: String, CodingKey {
+		case key, accountKey, name, inSummary
+	}
+
+	init() { }
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CategoryKey.self)
+
+		key = try container.decode(String.self, forKey: .key)
+		accountKey = try container.decode(String.self, forKey: .accountKey)
+		name = try container.decode(String.self, forKey: .name)
+		inSummary = try container.decode(Bool.self, forKey: .inSummary)
+	}
+
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CategoryKey.self)
+		try container.encode(accountKey, forKey: .accountKey)
+		try container.encode(name, forKey: .name)
+		try container.encode(inSummary, forKey: .inSummary)
+	}
+}
+
+// instantiate synchronously
+guard let category = Category(db: db, key: categoryKey) else { return }
+
+// instantiate asynchronously
+let token = Category.loadObjectFromDB(db, for categoryKey) { (category: Category) in
+	// use category object
+}
+
+```
