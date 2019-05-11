@@ -265,7 +265,7 @@ public func save(to db: ALBNoSQLDB, autoDeleteAfter expiration: Date? = nil) -> 
 
  - returns: DBCommandToken that can be used to cancel the call before it executes. Nil is returned if database could not be opened.
 */
-public static func loadObjectFromDB<T: DBObject>(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (T) -> Void) -> DBCommandToken?
+public static func loadObjectFromDB(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (Self) -> Void) -> DBCommandToken?
 
 ```
 
