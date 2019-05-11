@@ -55,10 +55,10 @@ extension DBObject {
 	
 	 - returns: DBCommandToken that can be used to cancel the call before it executes. Nil is returned if database could not be opened.
 	*/
-	public static func loadObjectFromDB<T: DBObject>(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (T) -> Void) -> DBCommandToken? {
-		let token = db.dictValueFromTable(T.table, for: key, queue: queue, completion: { (results) in
+	public static func loadObjectFromDB(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (Self) -> Void) -> DBCommandToken? {
+		let token = db.dictValueFromTable(table, for: key, queue: queue, completion: { (results) in
 			if case .success(let dictionaryValue) = results
-				, let dbObject: T = dbObjectWithDict(dictionaryValue, for: key) {
+				, let dbObject = dbObjectWithDict(dictionaryValue, for: key) {
 					completion(dbObject)
 			}
 		})
@@ -66,12 +66,12 @@ extension DBObject {
 		return token
 	}
 
-	private static func dbObjectWithDict<T: DBObject>(_ dictionaryValue: [String: AnyObject], for key: String) -> T? {
+	private static func dbObjectWithDict(_ dictionaryValue: [String: AnyObject], for key: String) -> Self? {
 		var dictionaryValue = dictionaryValue
 
 		dictionaryValue["key"] = key as AnyObject
 		let decoder = DictDecoder(dictionaryValue)
-		return try? T(from: decoder)
+		return try? Self(from: decoder)
 	}
 
 	/**
