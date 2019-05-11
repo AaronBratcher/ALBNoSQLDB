@@ -316,7 +316,7 @@ struct Category: DBObject {
 guard let category = Category(db: db, key: categoryKey) else { return }
 
 // instantiate asynchronously
-let token = Category.loadObjectFromDB(db, for categoryKey) { (category) in
+let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
 	// use category object
 }
 
