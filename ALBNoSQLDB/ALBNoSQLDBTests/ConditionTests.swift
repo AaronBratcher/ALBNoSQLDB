@@ -130,7 +130,7 @@ class ConditionTests: XCTestCase {
 		conditions.append(DBCondition(set: 1, objectKey: "accountKey", conditionOperator: .equal, value: "Checking" as AnyObject))
 		conditions.append(DBCondition(set: 1, objectKey: "note", conditionOperator: .equal, value: "Kroger" as AnyObject))
 		
-		if let keys = db.keysInTable(table, sortOrder: nil, conditions: conditions, validateObjecs: true) {
+		if let keys = db.keysInTable(table, sortOrder: nil, conditions: conditions, validateObjects: true) {
 			XCTAssert(keys.count == 1)
 		} else {
 			XCTAssert(false, "keys not returned")

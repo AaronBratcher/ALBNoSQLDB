@@ -409,7 +409,7 @@ public final class ALBNoSQLDB {
 	
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
-	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjecs: Bool = false) -> [String]? {
+	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjects: Bool = false) -> [String]? {
 		let openResults = openDB()
 		if case .failure(_) = openResults {
 			return nil
@@ -419,7 +419,7 @@ public final class ALBNoSQLDB {
 			return []
 		}
 
-		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjecs) else { return [] }
+		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjects) else { return [] }
 
 		if let results = sqlSelect(sql) {
 			return results.map({ $0.values[0] as! String })
@@ -453,7 +453,7 @@ public final class ALBNoSQLDB {
 	*/
 
 	@discardableResult
-	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjecs: Bool = false, queue: DispatchQueue? = nil, completion: @escaping (KeyResults) -> Void) -> DBCommandToken? {
+	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjects: Bool = false, queue: DispatchQueue? = nil, completion: @escaping (KeyResults) -> Void) -> DBCommandToken? {
 		let openResults = openDB()
 		if case .failure(_) = openResults {
 			return nil
@@ -464,7 +464,7 @@ public final class ALBNoSQLDB {
 			return DBCommandToken(database: self, identifier: 0)
 		}
 
-		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjecs) else { return nil }
+		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjects) else { return nil }
 
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { (rowResults) -> Void in
 			let dispatchQueue = queue ?? DispatchQueue.main
