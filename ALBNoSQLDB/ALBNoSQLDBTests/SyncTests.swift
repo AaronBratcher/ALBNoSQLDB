@@ -12,6 +12,7 @@ import XCTest
 
 func dbForTestClass(className: String) -> ALBNoSQLDB {
 	let pathURL = URL(fileURLWithPath: pathForDB(className: className))
+	print(pathURL)
 	let db = ALBNoSQLDB(fileLocation: pathURL)
 
 	return db
@@ -24,7 +25,7 @@ func pathForDB(className: String) -> String {
 	return dbFilePath
 }
 
-class ALBNoSQLDBSyncTests: XCTestCase {
+class SyncTests: XCTestCase {
 	lazy var db: ALBNoSQLDB = {
 		return dbForTestClass(className: String(describing: type(of: self)))
 	}()

@@ -9,7 +9,7 @@
 import XCTest
 @testable import ALBNoSQLDB
 
-class ALBNOSQLDBAsyncTests: XCTestCase {
+class AsyncTests: XCTestCase {
 	lazy var db: ALBNoSQLDB = {
 		return dbForTestClass(className: String(describing: type(of: self)))
 	}()

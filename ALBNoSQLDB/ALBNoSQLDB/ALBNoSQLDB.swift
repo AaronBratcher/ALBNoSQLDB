@@ -405,10 +405,11 @@ public final class ALBNoSQLDB {
 	- parameter table: The DBTable to return keys from.
 	- parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
 	- parameter conditions: Optional array of DBConditions that specify what conditions must be met.
+	- parameter validateObjects: Optional bool that condition sets will be validated against the table. Any set that refers to json objects that do not exist in the table will be ignored. Default value is false.
 	
 	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
 	*/
-	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil) -> [String]? {
+	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjecs: Bool = false) -> [String]? {
 		let openResults = openDB()
 		if case .failure(_) = openResults {
 			return nil
@@ -418,7 +419,7 @@ public final class ALBNoSQLDB {
 			return []
 		}
 
-		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions) else { return [] }
+		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjecs) else { return [] }
 
 		if let results = sqlSelect(sql) {
 			return results.map({ $0.values[0] as! String })
@@ -444,6 +445,7 @@ public final class ALBNoSQLDB {
 	- parameter table: The table to return keys from.
 	- parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
 	- parameter conditions: Optional array of DBConditions that specify what conditions must be met.
+	- parameter validateObjects: Optional bool that condition sets will be validated against the table. Any set that refers to json objects that do not exist in the table will be ignored. Default value is false.
 	- parameter queue: Optional dispatch queue to use when running the completion closure. Default value is main queue.
 	- parameter completion: Closure with DBRowResults.
 	
@@ -451,7 +453,7 @@ public final class ALBNoSQLDB {
 	*/
 
 	@discardableResult
-	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, queue: DispatchQueue? = nil, completion: @escaping (KeyResults) -> Void) -> DBCommandToken? {
+	public func keysInTable(_ table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjecs: Bool = false, queue: DispatchQueue? = nil, completion: @escaping (KeyResults) -> Void) -> DBCommandToken? {
 		let openResults = openDB()
 		if case .failure(_) = openResults {
 			return nil
@@ -462,7 +464,7 @@ public final class ALBNoSQLDB {
 			return DBCommandToken(database: self, identifier: 0)
 		}
 
-		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions) else { return nil }
+		guard let sql = keysInTableSQL(table: table, sortOrder: sortOrder, conditions: conditions, validateObjecs: validateObjecs) else { return nil }
 
 		let blockReference = _SQLiteCore.sqlSelect(sql, completion: { (rowResults) -> Void in
 			let dispatchQueue = queue ?? DispatchQueue.main
@@ -538,7 +540,7 @@ public final class ALBNoSQLDB {
 	
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
-	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary.
+	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary. If a key object is in the value, it will be ignored.
 	- parameter autoDeleteAfter: Optional date of when the value should be automatically deleted from the table.
 	
 	- returns: Bool If the value was set successfully.
@@ -560,7 +562,7 @@ public final class ALBNoSQLDB {
 	
 	- parameter table: The table to return keys from.
 	- parameter key: The key for the entry.
-	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary.
+	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary. If a key object is in the value, it will be ignored.
 	- parameter autoDeleteAfter: Optional date of when the value should be automatically deleted from the table.
 	
 	- returns: Bool If the value was set successfully.
@@ -1305,7 +1307,7 @@ public final class ALBNoSQLDB {
 
 // MARK: - Internal data handling methods
 extension ALBNoSQLDB {
-	fileprivate func keysInTableSQL(table: DBTable, sortOrder: String?, conditions: [DBCondition]?) -> String? {
+	fileprivate func keysInTableSQL(table: DBTable, sortOrder: String?, conditions: [DBCondition]?, validateObjecs: Bool) -> String? {
 		var arrayColumns = [String]()
 		if let results = sqlSelect("select arrayColumns from __tableArrayColumns where tableName = '\(table)'") {
 			if results.isNotEmpty {
@@ -1316,125 +1318,127 @@ extension ALBNoSQLDB {
 		}
 
 		let tableColumns = columnsInTable(table).map({ $0.name }) + ["key"]
-
 		var selectClause = "select distinct a.key from \(table) a"
 		var whereClause = " where 1=1"
 
 		// if we have the include operator on an array object, do a left outer join
-		if let conditions = conditions {
-			for condition in conditions {
+		if var conditionSet = conditions, let firstCondition = conditionSet.first {
+			if validateObjecs {
+				let invalidSets = conditionSet.filter({ !tableColumns.contains($0.objectKey) }).compactMap({ $0.set })
+				let validConditions = conditionSet.filter({ !invalidSets.contains($0.set) })
+				conditionSet = validConditions
+			}
+			
+			for condition in conditionSet {
 				if condition.conditionOperator == .contains && arrayColumns.filter({ $0 == condition.objectKey }).count == 1 {
 					selectClause += " left outer join \(table)_arrayValues b on a.key = b.key"
 					break
 				}
 			}
 
-			var conditionSet = conditions
-			if conditionSet.isNotEmpty {
-				whereClause += " AND ("
-				// order the conditions array by page
-				conditionSet.sort { $0.set < $1.set }
+			whereClause += " AND ("
+			// order the conditions array by page
+			conditionSet.sort { $0.set < $1.set }
 
-				// conditionDict: ObjectKey,operator,value
-				var currentSet = conditions[0].set
-				var inPage = true
-				var inMultiPage = false
-				var firstConditionInSet = true
-				let hasMultipleSets = conditions.filter({ $0.set != conditions[0].set }).isNotEmpty
+			// conditionDict: ObjectKey,operator,value
+			var currentSet = firstCondition.set
+			var inPage = true
+			var inMultiPage = false
+			var firstConditionInSet = true
+			let hasMultipleSets = conditionSet.filter({ $0.set != firstCondition.set }).isNotEmpty
 
-				for condition in conditionSet {
-					if tableColumns.filter({ $0 == condition.objectKey }).isEmpty && arrayColumns.filter({ $0 == condition.objectKey }).isEmpty {
-						if isDebugging {
-							print("table \(table) has no column named \(condition.objectKey)")
-						}
-						return nil
+			for condition in conditionSet {
+				if tableColumns.filter({ $0 == condition.objectKey }).isEmpty && arrayColumns.filter({ $0 == condition.objectKey }).isEmpty {
+					if isDebugging {
+						print("table \(table) has no column named \(condition.objectKey)")
 					}
+					return nil
+				}
 
-					let valueType = SQLiteCore.typeOfValue(condition.value)
+				let valueType = SQLiteCore.typeOfValue(condition.value)
 
-					if currentSet != condition.set {
-						currentSet = condition.set
-						whereClause += ")"
-						if inMultiPage {
-							inMultiPage = false
-							whereClause += ")"
-						}
-						whereClause += " OR ("
-
+				if currentSet != condition.set {
+					currentSet = condition.set
+					whereClause += ")"
+					if inMultiPage {
 						inMultiPage = false
-					} else {
-						inPage = true
-						if firstConditionInSet {
-							firstConditionInSet = false
-							if hasMultipleSets {
-								whereClause += " ("
-							}
-						} else {
-							if inMultiPage {
-								whereClause += ")"
-							}
-
-							whereClause += " and key in (select key from \(table) where"
-							inMultiPage = true
-						}
+						whereClause += ")"
 					}
+					whereClause += " OR ("
 
-					switch condition.conditionOperator {
-					case .contains:
-						if arrayColumns.contains(condition.objectKey) {
-							switch valueType {
-							case .text:
-								whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(esc(condition.value as! String))'"
-							case .int:
-								whereClause += "b.objectKey = '\(condition.objectKey)' and b.intValue = \(condition.value)"
-							case .double:
-								whereClause += "b.objectKey = '\(condition.objectKey)' and b.doubleValue = \(condition.value)"
-							default:
-								break
-							}
-						} else {
-							whereClause += " \(condition.objectKey) like '%%\(esc(condition.value as! String))%%'"
+					inMultiPage = false
+				} else {
+					inPage = true
+					if firstConditionInSet {
+						firstConditionInSet = false
+						if hasMultipleSets {
+							whereClause += " ("
 						}
-					case .inList:
-						whereClause += " \(condition.objectKey)  in ("
-						if let stringArray = condition.value as? [String] {
-							for value in stringArray {
-								whereClause += "'\(esc(value))'"
+					} else {
+						if inMultiPage {
+							whereClause += ")"
+						}
+
+						whereClause += " and key in (select key from \(table) where"
+						inMultiPage = true
+					}
+				}
+
+				switch condition.conditionOperator {
+				case .contains:
+					if arrayColumns.contains(condition.objectKey) {
+						switch valueType {
+						case .text:
+							whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(esc(condition.value as! String))'"
+						case .int:
+							whereClause += "b.objectKey = '\(condition.objectKey)' and b.intValue = \(condition.value)"
+						case .double:
+							whereClause += "b.objectKey = '\(condition.objectKey)' and b.doubleValue = \(condition.value)"
+						default:
+							break
+						}
+					} else {
+						whereClause += " \(condition.objectKey) like '%%\(esc(condition.value as! String))%%'"
+					}
+				case .inList:
+					whereClause += " \(condition.objectKey)  in ("
+					if let stringArray = condition.value as? [String] {
+						for value in stringArray {
+							whereClause += "'\(esc(value))'"
+						}
+						whereClause += ")"
+					} else {
+						if let intArray = condition.value as? [Int] {
+							for value in intArray {
+								whereClause += "\(value)"
 							}
 							whereClause += ")"
 						} else {
-							if let intArray = condition.value as? [Int] {
-								for value in intArray {
-									whereClause += "\(value)"
-								}
-								whereClause += ")"
-							} else {
-								for value in condition.value as! [Double] {
-									whereClause += "\(value)"
-								}
-								whereClause += ")"
+							for value in condition.value as! [Double] {
+								whereClause += "\(value)"
 							}
-						}
-
-					default:
-						if let conditionValue = condition.value as? String {
-							whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(esc(conditionValue))'"
-						} else {
-							whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) \(condition.value)"
+							whereClause += ")"
 						}
 					}
-				}
 
+				default:
+					if let conditionValue = condition.value as? String {
+						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(esc(conditionValue))'"
+					} else {
+						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) \(condition.value)"
+					}
+				}
+			}
+
+			whereClause += ")"
+
+			if inMultiPage {
 				whereClause += ")"
+			}
 
-				if inMultiPage {
-					whereClause += ")"
-				}
-
-				if inPage && hasMultipleSets {
-					whereClause += ")"
-					inPage = false
-				}
+			if inPage && hasMultipleSets {
+				whereClause += ")"
+				inPage = false
 			}
 		}
 
@@ -1485,6 +1489,10 @@ extension ALBNoSQLDB {
 			var placeHolders = "'\(key)','\(addedDateTime)','\(updatedDateTime)',\(deleteDateTime),'\(joinedArrayKeys)'"
 
 			for (objectKey, objectValue) in objectValues {
+				if objectKey == "key" {
+					continue
+				}
+				
 				let valueType = SQLiteCore.typeOfValue(objectValue)
 				if [.int, .double, .text, .bool].contains(valueType) {
 					sql += ",\(objectKey)"
@@ -1497,6 +1505,10 @@ extension ALBNoSQLDB {
 			tableHasKey = true
 			sql = "update \(table) set updatedDateTime='\(updatedDateTime)',autoDeleteDateTime=\(deleteDateTime),hasArrayValues='\(joinedArrayKeys)'"
 			for (objectKey, objectValue) in objectValues {
+				if objectKey == "key" {
+					continue
+				}
+				
 				let valueType = SQLiteCore.typeOfValue(objectValue)
 				if [.int, .double, .text, .bool].contains(valueType) {
 					sql += ",\(objectKey)=?"
@@ -1827,6 +1839,10 @@ extension ALBNoSQLDB {
 		let columns = columnsInTable(table)
 		// determine missing columns and add them
 		for (objectKey, value) in objectValues {
+			if objectKey == "key" {
+				continue
+			}
+			
 			assert(!reservedColumn(objectKey as String), "Reserved column")
 			assert((objectKey as String).range(of: "'") == nil, "Single quote not allowed in column names")
 
@@ -2224,7 +2240,11 @@ private extension ALBNoSQLDB {
 					// try to bind the object properties to table fields.
 					var index: Int32 = 1
 
-					for (_, objectValue) in objectValues {
+					for (objectKey, objectValue) in objectValues {
+						if objectKey == "key" {
+							continue
+						}
+						
 						let valueType = SQLiteCore.typeOfValue(objectValue)
 						guard [.int, .double, .text, .bool].contains(valueType) else { continue }
 
@@ -2282,6 +2302,8 @@ private extension ALBNoSQLDB {
 		}
 
 		private func displaySQLError(_ sql: String) {
+			if !isDebugging { return }
+			
 			print("Error: \(dbErrorMessage)")
 			print("     on command - \(sql)")
 			print("")
@@ -2364,7 +2386,9 @@ private extension ALBNoSQLDB {
 			let status = sqlite3_open_v2(_dbFilePath.cString(using: .utf8)!, &self._sqliteDB, SQLITE_OPEN_FILEPROTECTION_COMPLETE | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nil)
 
 			if status != SQLITE_OK {
-				print("Error opening SQLite Database: \(status)")
+				if isDebugging {
+					print("Error opening SQLite Database: \(status)")
+				}
 				return BoolResults.failure(DBError(rawValue: Int(status)))
 			}
 

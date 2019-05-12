@@ -78,10 +78,19 @@ Data can be set or retrieved manually as shown here or your class/struct can adh
 
 Set value in table
 ```swift
-let table: DBTable = "categories"
-let jsonValue = "{\"numValue\":1,\"name\":\"Account Category\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}"
-if ALBNoSQLDB.shared.setValueInTable(table, for:"category1", to:jsonValue, autoDeleteAfter:nil) {
-    // value was set properly
+let table: DBTable = "Transactions"
+let key = UUID().uuidString
+let dict = [
+	"key": key
+	, "accountKey": "Checking"
+	, "locationKey" :"Kroger"
+	, "categoryKey": "Food"
+]
+
+let data = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+let json = String(data: data, encoding: .utf8)!
+if ALBNoSQLDB.shared.setValueInTable(table, for: key, to: json)    // value was set properly
+	// success
 } else {
     // handle error
 }
