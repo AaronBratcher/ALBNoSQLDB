@@ -89,6 +89,7 @@ let dict = [
 
 let data = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
 let json = String(data: data, encoding: .utf8)!
+// the key object in the json value is ignored in the setValue method
 if ALBNoSQLDB.shared.setValueInTable(table, for: key, to: json)    // value was set properly
 	// success
 } else {
