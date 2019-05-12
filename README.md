@@ -14,6 +14,8 @@ Completely thread safe since it uses it's own Thread subclass.
 - Developed and tested with Xcode 10.2 using Swift 5
 - Introduction of DBObject protocol. See below.
 - debugMode property renamed to isDebugging.
+- `key` object in value provided is now ignored instead of giving error.
+- New parameter `validateObjects` in the keysInTable method will ignore condition sets that refer to objects not in the table.
 
 ## What's new in version 5 ##
 - Developed and tested with Xcode 10.1
