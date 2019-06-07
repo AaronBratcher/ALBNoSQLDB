@@ -22,10 +22,10 @@ let package = Package(
         .target(
             name: "ALBNoSQLDB",
             dependencies: [],
-            path: "ALBNoSQLDB"),
+            path: "ALBNoSQLDB/ALBNoSQLDB"),
         .testTarget(
             name: "ALBNoSQLDBTests",
             dependencies: ["ALBNoSQLDB"],
-            path: "ALBNoSQLDBTests")
+            path: "ALBNoSQLDB/ALBNoSQLDBTests")
     ]
 )
