@@ -13,8 +13,6 @@
 		89C8984A1D8FFA7000E3C870 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C898481D8FFA7000E3C870 /* SyncTests.swift */; };
 		89C8984B1D8FFA7000E3C870 /* BasicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C898491D8FFA7000E3C870 /* BasicTests.swift */; };
 		89C8984E1D8FFC3800E3C870 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 89C8984D1D8FFC3800E3C870 /* libsqlite3.tbd */; };
-		89C898501D8FFCDC00E3C870 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 89C8984F1D8FFCDC00E3C870 /* sqlite3.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		89C898511D8FFD1C00E3C870 /* ALBNoSQLDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 89C8982F1D8FF9D100E3C870 /* ALBNoSQLDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89FF2C902271DFED003C24AF /* DBObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FF2C8F2271DFED003C24AF /* DBObject.swift */; };
 		A1568974208E10F70081324C /* AsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1568973208E10F70081324C /* AsyncTests.swift */; };
 /* End PBXBuildFile section */
@@ -32,7 +30,6 @@
 /* Begin PBXFileReference section */
 		8909A88D228826BF004CB569 /* ConditionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionTests.swift; sourceTree = "<group>"; };
 		89C8982C1D8FF9D100E3C870 /* ALBNoSQLDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ALBNoSQLDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		89C8982F1D8FF9D100E3C870 /* ALBNoSQLDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ALBNoSQLDB.h; sourceTree = "<group>"; };
 		89C898301D8FF9D100E3C870 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		89C898351D8FF9D100E3C870 /* ALBNoSQLDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALBNoSQLDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		89C8983C1D8FF9D100E3C870 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -40,7 +37,6 @@
 		89C898481D8FFA7000E3C870 /* SyncTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
 		89C898491D8FFA7000E3C870 /* BasicTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicTests.swift; sourceTree = "<group>"; };
 		89C8984D1D8FFC3800E3C870 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		89C8984F1D8FFCDC00E3C870 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
 		89FF2C8F2271DFED003C24AF /* DBObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBObject.swift; sourceTree = "<group>"; };
 		A1568973208E10F70081324C /* AsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -87,8 +83,6 @@
 		89C8982E1D8FF9D100E3C870 /* ALBNoSQLDB */ = {
 			isa = PBXGroup;
 			children = (
-				89C8984F1D8FFCDC00E3C870 /* sqlite3.h */,
-				89C8982F1D8FF9D100E3C870 /* ALBNoSQLDB.h */,
 				89C898461D8FFA4A00E3C870 /* ALBNoSQLDB.swift */,
 				89FF2C8F2271DFED003C24AF /* DBObject.swift */,
 				89C898301D8FF9D100E3C870 /* Info.plist */,
@@ -123,8 +117,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				89C898511D8FFD1C00E3C870 /* ALBNoSQLDB.h in Headers */,
-				89C898501D8FFCDC00E3C870 /* sqlite3.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

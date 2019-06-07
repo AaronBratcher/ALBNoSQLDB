@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SQLite3
 
 // MARK: - Definitions
 public typealias BoolResults = Result<Bool, DBError>
@@ -1671,7 +1672,7 @@ extension ALBNoSQLDB {
 	}
 
 	private func dictValueResults(table: DBTable, key: String, results: [DBRow]?, columns: [TableColumn]) -> [String: AnyObject]? {
-		guard var results = results, results.isNotEmpty else { return nil }
+		guard let results = results, results.isNotEmpty else { return nil }
 
 		var valueDict = [String: AnyObject]()
 		for (columnIndex, column) in columns.enumerated() {
