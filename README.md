@@ -235,7 +235,7 @@ public func processSyncFileAtURL(_ localURL: URL!, syncProgress: syncProgressUpd
 ## DBObject Protocol ##
 Create classes or structs that adhere to the DBObject Protocol and you can instantiate objects that are automatically populated with data from the database synchronously or asynchronously and save the data to the database.
 Note that the protocol adheres to the Codable protocol and will require a CodingKey enum to function properly.
-Bool properties read from the database will be interpreted as follows: An integer 0 = false and any other number is true or a string where "1" or any case "yes" or "true" = true.
+Bool properties read from the database will be interpreted as follows: An integer 0 = false and any other number is true. For string values "1", "yes", "YES", "true", and "TRUE" evaluate to true.
 
 ### Protocol Definition ###
 ```swift
