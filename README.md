@@ -25,6 +25,7 @@ Completely thread safe since it uses it's own Thread subclass.
 - Methods are no longer class-level, they must be accessed through an instance of the db. A simple way to update to this is to simply append .shared to the class name in any existing code.
 
 ## Installation Options ##
+- Swift Package Manager
 - Cocoapods `pod ALBNoSQLDB`
 - Include ALBNoSQLDB.swift and DBOject.swift files in your project
 
