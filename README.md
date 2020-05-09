@@ -101,25 +101,6 @@ struct Category: DBObject {
 	var accountKey = ""
 	var name = ""
 	var inSummary = true
-
-	init() { }
-
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CategoryKey.self)
-
-		key = try container.decode(String.self, forKey: .key)
-		accountKey = try container.decode(String.self, forKey: .accountKey)
-		name = try container.decode(String.self, forKey: .name)
-		inSummary = try container.decode(Bool.self, forKey: .inSummary)
-	}
-
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: CategoryKey.self)
-
-		try container.encode(accountKey, forKey: .accountKey)
-		try container.encode(name, forKey: .name)
-		try container.encode(inSummary, forKey: .inSummary)
-	}
 }
 
 // save to database
