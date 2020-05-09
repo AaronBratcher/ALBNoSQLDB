@@ -328,9 +328,8 @@ public final class ALBNoSQLDB {
 	}
 
 	/**
-    Returns a  Publisher for generic DBResults.
+    Returns a  Publisher for generic DBResults. Uses the table of the DBObject for results.
 
-    - parameter table: The table to query against.
     - parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
     - parameter conditions: Optional array of DBConditions that specify what conditions must be met.
     - parameter validateObjects: Optional bool that condition sets will be validated against the table. Any set that refers to json objects that do not exist in the table will be ignored. Default value is false.

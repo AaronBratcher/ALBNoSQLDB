@@ -149,7 +149,7 @@ let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
 ### Usage ###
 ```swift
 	/**
-    Returns a  Publisher for generic DBResults.
+    Returns a  Publisher for generic DBResults. Uses the table of the DBObject for results.
 
     - parameter table: The table to query against.
     - parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
