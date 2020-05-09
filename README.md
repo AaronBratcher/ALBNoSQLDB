@@ -2,11 +2,9 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
 
 
-A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
-
-No need to keep track of columns used in the database; it's automatic.
-
-Completely thread safe since it uses it's own Thread subclass.
+- A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
+- No need to keep track of columns used in the database; it's automatic.
+- Completely thread safe since it uses it's own Thread subclass.
 
 ### What's new in version 6.0 ###
 - New publisher method for use in SwiftUI and Combine. The publisher returns the new DBResults object. All active publishers will send new results if published DBResults has added, deleted, or updated keys.
@@ -150,7 +148,7 @@ let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
 
 ### Usage ###
 ```swift
-	let publisher: DBResultsPublisher<Transaction> = db.publisher(table: Transaction.table)
+	let publisher: DBResultsPublisher<Transaction> = db.publisher()
 	let _ = publisher.sink(receiveCompletion: { _ in }) { ( results) in
 		// assign to AnyCancellable property
 	}
