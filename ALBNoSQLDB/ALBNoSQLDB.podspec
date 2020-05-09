@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
 
   s.osx.deployment_target = "10.15"
   s.ios.deployment_target = "13.0"
+  s.swift_version = '5.2'
   
   s.osx.frameworks = 'AppKit', 'Foundation'
   s.ios.frameworks = 'UIKit', 'Foundation'
