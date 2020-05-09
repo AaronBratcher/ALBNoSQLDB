@@ -17,8 +17,8 @@ struct Transaction: DBObject {
 	var accountKey: String
 	var notes: [String]?
 	var amount: Int
-    var purchaseOrders: [Int]?
-    var purchaseDates: [Date]?
+	var purchaseOrders: [Int]?
+	var purchaseDates: [Date]?
 	var isNew = true
 }
 
@@ -27,7 +27,7 @@ enum TransactionValue {
 	static let accountKey = "accountKey"
 	static let notes = ["Note1", "Note2", "Note3"]
 	static let amount = 100
-    static let purchaseOrders = [1,2,3,4,5]
+	static let purchaseOrders = [1, 2, 3, 4, 5]
 	static let isNew = true
 }
 
@@ -50,28 +50,28 @@ class DBObjectTests: XCTestCase {
 	}
 
 	func testSaveObject() throws {
-        let date: Date = { Date() }()
-        let purchaseDates = [date,date,date]
+		let date: Date = { Date() }()
+		let purchaseDates = [date, date, date]
 
-        let transaction = Transaction(key: TransactionValue.key, date: date, accountKey: TransactionValue.accountKey, notes: TransactionValue.notes, amount: TransactionValue.amount, purchaseOrders: TransactionValue.purchaseOrders, purchaseDates: purchaseDates, isNew: TransactionValue.isNew)
+		let transaction = Transaction(key: TransactionValue.key, date: date, accountKey: TransactionValue.accountKey, notes: TransactionValue.notes, amount: TransactionValue.amount, purchaseOrders: TransactionValue.purchaseOrders, purchaseDates: purchaseDates, isNew: TransactionValue.isNew)
 		transaction.save(to: db)
 
 		guard let testTransaction = Transaction.init(db: db, key: TransactionValue.key) else { XCTFail(); return }
 
 		let dateCompare = Calendar(identifier: .gregorian).compare(date, to: testTransaction.date, toGranularity: .nanosecond)
-        let dateCompare0 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![0], toGranularity: .nanosecond)
-        let dateCompare1 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![1], toGranularity: .nanosecond)
-        let dateCompare2 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![2], toGranularity: .nanosecond)
+		let dateCompare0 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![0], toGranularity: .nanosecond)
+		let dateCompare1 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![1], toGranularity: .nanosecond)
+		let dateCompare2 = Calendar(identifier: .gregorian).compare(date, to: testTransaction.purchaseDates![2], toGranularity: .nanosecond)
 
 		XCTAssertEqual(testTransaction.key, TransactionValue.key)
 		XCTAssertEqual(dateCompare, ComparisonResult.orderedSame)
 		XCTAssertEqual(testTransaction.accountKey, TransactionValue.accountKey)
 		XCTAssertEqual(testTransaction.notes, TransactionValue.notes)
 		XCTAssertEqual(testTransaction.amount, TransactionValue.amount)
-        XCTAssertEqual(testTransaction.purchaseOrders, TransactionValue.purchaseOrders)
-        XCTAssertEqual(dateCompare0, ComparisonResult.orderedSame)
-        XCTAssertEqual(dateCompare1, ComparisonResult.orderedSame)
-        XCTAssertEqual(dateCompare2, ComparisonResult.orderedSame)
+		XCTAssertEqual(testTransaction.purchaseOrders, TransactionValue.purchaseOrders)
+		XCTAssertEqual(dateCompare0, ComparisonResult.orderedSame)
+		XCTAssertEqual(dateCompare1, ComparisonResult.orderedSame)
+		XCTAssertEqual(dateCompare2, ComparisonResult.orderedSame)
 		XCTAssertEqual(testTransaction.isNew, TransactionValue.isNew)
 	}
 

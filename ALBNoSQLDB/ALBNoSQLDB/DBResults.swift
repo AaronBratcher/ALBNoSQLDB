@@ -31,14 +31,14 @@ extension DBResults: RandomAccessCollection, MutableCollection {
 	public var startIndex: CustomClassIndex { return keys.startIndex }
 	public var endIndex: CustomClassIndex { return keys.endIndex }
 
-    public subscript(index: CustomClassIndex) -> CustomClassValue? {
-        get { if index >= 0 && index < keys.count {
-            return T(db: db, key: keys[index])
-        } else {
-            return nil
-            }
-        }
+	public subscript(index: CustomClassIndex) -> CustomClassValue? {
+		get { if index >= 0 && index < keys.count {
+			return T(db: db, key: keys[index])
+			} else {
+			return nil
+			}
+		}
 
-        set { }
-    }
+		set { }
+	}
 }

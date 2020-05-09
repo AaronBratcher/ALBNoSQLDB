@@ -130,7 +130,7 @@ private extension Bool {
 
 private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 	typealias Key = K
-    typealias DBDict = [String: AnyObject]
+	typealias DBDict = [String: AnyObject]
 
 	let codingPath: [CodingKey] = []
 	var allKeys: [K] { return dict.keys.compactMap { K(stringValue: $0) } }
@@ -187,28 +187,28 @@ private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 		return intValue
 	}
 
-    func decodeArray(_ type: [Int].Type, forKey key: K) throws -> [Int] {
-        guard let values = dict[key.stringValue] as? [AnyObject] else {
-            throw DictDecoderError.missingValueForKey(key.stringValue)
-        }
+	func decodeArray(_ type: [Int].Type, forKey key: K) throws -> [Int] {
+		guard let values = dict[key.stringValue] as? [AnyObject] else {
+			throw DictDecoderError.missingValueForKey(key.stringValue)
+		}
 
-        var intValues = [Int]()
+		var intValues = [Int]()
 
-        for value in values {
-            if let intValue = value as? Int {
-                intValues.append(intValue)
-                continue
-            }
+		for value in values {
+			if let intValue = value as? Int {
+				intValues.append(intValue)
+				continue
+			}
 
-            guard let stringValue = value as? String
-                , let intValue = Int(stringValue)
-                else { throw DictDecoderError.missingValueForKey(key.stringValue) }
+			guard let stringValue = value as? String
+				, let intValue = Int(stringValue)
+				else { throw DictDecoderError.missingValueForKey(key.stringValue) }
 
-            intValues.append(intValue)
-        }
+			intValues.append(intValue)
+		}
 
-        return intValues
-    }
+		return intValues
+	}
 
 	func decode(_ type: Double.Type, forKey key: K) throws -> Double {
 		guard let value = dict[key.stringValue] else {
@@ -228,28 +228,28 @@ private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 		return doubleValue
 	}
 
-    func decodeArray(_ type: [Double].Type, forKey key: K) throws -> [Double] {
-        guard let values = dict[key.stringValue] as? [AnyObject] else {
-            throw DictDecoderError.missingValueForKey(key.stringValue)
-        }
+	func decodeArray(_ type: [Double].Type, forKey key: K) throws -> [Double] {
+		guard let values = dict[key.stringValue] as? [AnyObject] else {
+			throw DictDecoderError.missingValueForKey(key.stringValue)
+		}
 
-        var doubleValues = [Double]()
+		var doubleValues = [Double]()
 
-        for value in values {
-            if let doubleValue = value as? Double {
-                doubleValues.append(doubleValue)
-                continue
-            }
+		for value in values {
+			if let doubleValue = value as? Double {
+				doubleValues.append(doubleValue)
+				continue
+			}
 
-            guard let stringValue = value as? String
-                , let doubleValue = Double(stringValue)
-                else { throw DictDecoderError.missingValueForKey(key.stringValue) }
+			guard let stringValue = value as? String
+				, let doubleValue = Double(stringValue)
+				else { throw DictDecoderError.missingValueForKey(key.stringValue) }
 
-            doubleValues.append(doubleValue)
-        }
+			doubleValues.append(doubleValue)
+		}
 
-        return doubleValues
-    }
+		return doubleValues
+	}
 
 	func decode(_ type: String.Type, forKey key: K) throws -> String {
 		guard let value = dict[key.stringValue] as? String else {
@@ -258,12 +258,12 @@ private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 		return value
 	}
 
-    func decodeArray(_ type: [String].Type, forKey key: K) throws -> [String] {
-        guard let value = dict[key.stringValue] as? [String] else {
-            throw DictDecoderError.missingValueForKey(key.stringValue)
-        }
-        return value
-    }
+	func decodeArray(_ type: [String].Type, forKey key: K) throws -> [String] {
+		guard let value = dict[key.stringValue] as? [String] else {
+			throw DictDecoderError.missingValueForKey(key.stringValue)
+		}
+		return value
+	}
 
 	func decode(_ type: Data.Type, forKey key: K) throws -> Data {
 		guard let value = dict[key.stringValue] as? Data else {
@@ -297,53 +297,53 @@ private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 		} else {
 			throw DictDecoderError.invalidUUID(string)
 		}
-    }
+	}
 
-    func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T: Decodable {
-        if Data.self == T.self {
-            return try decode(Data.self, forKey: key) as! T
-        } else if Date.self == T.self {
-            return try decode(Date.self, forKey: key) as! T
-        } else if URL.self == T.self {
-            return try decode(URL.self, forKey: key) as! T
-        } else if UUID.self == T.self {
-            return try decode(UUID.self, forKey: key) as! T
-        } else if Bool.self == T.self {
-            return try decode(Bool.self, forKey: key) as! T
-        } else if [Int].self == T.self {
-            let intArray = try decodeArray([Int].self, forKey: key)
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: intArray, options: .prettyPrinted) else {
-                throw DictDecoderError.invalidJSON("Unknown data structure")
-            }
-            return try JSONDecoder().decode(T.self, from: jsonData)
-        } else if [Double].self == T.self {
-            let doubleArray = try decodeArray([Double].self, forKey: key)
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: doubleArray, options: .prettyPrinted) else {
-                throw DictDecoderError.invalidJSON("Unknown data structure")
-            }
-            return try JSONDecoder().decode(T.self, from: jsonData)
-        } else if [String].self == T.self {
-            let stringArray = try decodeArray([String].self, forKey: key)
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: stringArray, options: .prettyPrinted) else {
-                throw DictDecoderError.invalidJSON("Unknown data structure")
-            }
-            return try JSONDecoder().decode(T.self, from: jsonData)
-        } else if [Date].self == T.self {
-            let dateArray = try decodeArray([String].self, forKey: key)
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: dateArray, options: .prettyPrinted) else {
-                throw DictDecoderError.invalidJSON("^^^ Unknown data structure")
-            }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(ALBNoSQLDB.dateFormatter)
-            return try decoder.decode(T.self, from: jsonData)
-        } else {
-            let jsonText = try decode(String.self, forKey: key)
-            guard let jsonData = jsonText.data(using: .utf8) else {
-                throw DictDecoderError.invalidJSON(jsonText)
-            }
-            return try JSONDecoder().decode(T.self, from: jsonData)
-        }
-    }
+	func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T: Decodable {
+		if Data.self == T.self {
+			return try decode(Data.self, forKey: key) as! T
+		} else if Date.self == T.self {
+			return try decode(Date.self, forKey: key) as! T
+		} else if URL.self == T.self {
+			return try decode(URL.self, forKey: key) as! T
+		} else if UUID.self == T.self {
+			return try decode(UUID.self, forKey: key) as! T
+		} else if Bool.self == T.self {
+			return try decode(Bool.self, forKey: key) as! T
+		} else if [Int].self == T.self {
+			let intArray = try decodeArray([Int].self, forKey: key)
+			guard let jsonData = try? JSONSerialization.data(withJSONObject: intArray, options: .prettyPrinted) else {
+				throw DictDecoderError.invalidJSON("Unknown data structure")
+			}
+			return try JSONDecoder().decode(T.self, from: jsonData)
+		} else if [Double].self == T.self {
+			let doubleArray = try decodeArray([Double].self, forKey: key)
+			guard let jsonData = try? JSONSerialization.data(withJSONObject: doubleArray, options: .prettyPrinted) else {
+				throw DictDecoderError.invalidJSON("Unknown data structure")
+			}
+			return try JSONDecoder().decode(T.self, from: jsonData)
+		} else if [String].self == T.self {
+			let stringArray = try decodeArray([String].self, forKey: key)
+			guard let jsonData = try? JSONSerialization.data(withJSONObject: stringArray, options: .prettyPrinted) else {
+				throw DictDecoderError.invalidJSON("Unknown data structure")
+			}
+			return try JSONDecoder().decode(T.self, from: jsonData)
+		} else if [Date].self == T.self {
+			let dateArray = try decodeArray([String].self, forKey: key)
+			guard let jsonData = try? JSONSerialization.data(withJSONObject: dateArray, options: .prettyPrinted) else {
+				throw DictDecoderError.invalidJSON("^^^ Unknown data structure")
+			}
+			let decoder = JSONDecoder()
+			decoder.dateDecodingStrategy = .formatted(ALBNoSQLDB.dateFormatter)
+			return try decoder.decode(T.self, from: jsonData)
+		} else {
+			let jsonText = try decode(String.self, forKey: key)
+			guard let jsonData = jsonText.data(using: .utf8) else {
+				throw DictDecoderError.invalidJSON(jsonText)
+			}
+			return try JSONDecoder().decode(T.self, from: jsonData)
+		}
+	}
 
 	func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
 		fatalError("_KeyedContainer does not support nested containers.")
@@ -364,7 +364,7 @@ private class DictKeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
 
 private class DictDecoder: Decoder {
 	var codingPath: [CodingKey] = []
-    var userInfo: [CodingUserInfoKey: Any] = [:]
+	var userInfo: [CodingUserInfoKey: Any] = [:]
 
 	var dict: [String: AnyObject]?
 
