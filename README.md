@@ -2,22 +2,25 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/ALBNoSQLDB.svg)](https://cocoapods.org/)
 
 
-**This class uses Swift 5.**
-
 A SQLite database wrapper written in Swift that requires no SQL knowledge to use.
 
 No need to keep track of columns used in the database; it's automatic.
 
 Completely thread safe since it uses it's own Thread subclass.
 
-## What's new in version 5.1 ##
+### What's new in version 6.0 ###
+- New publisher method for use in SwiftUI and Combine. The publisher returns the new DBResults object. All active publishers will send new results if published DBResults has added, deleted, or updated keys.
+- New DBResults object that's subscripted. Only the keys are stored for better memory use.
+- DBObject structures can now store [String], [Int], [Double], and [Date] types. (Nested objects not supported.)
+
+### What's new in version 5.1 ###
 - Developed and tested with Xcode 10.2 using Swift 5
 - Introduction of DBObject protocol. See below.
 - debugMode property renamed to isDebugging.
 - `key` object in value provided is now ignored instead of giving error.
 - New parameter `validateObjects` in the keysInTable method will ignore condition sets that refer to objects not in the table.
 
-## What's new in version 5 ##
+### What's new in version 5 ###
 - Developed and tested with Xcode 10.1
 - Several methods deprecated with a renamed version available for clarity at the point of use.
 - Data can be retrieved asynchronously.
@@ -27,14 +30,152 @@ Completely thread safe since it uses it's own Thread subclass.
 ## Installation Options ##
 - Swift Package Manager
 - Cocoapods `pod ALBNoSQLDB`
-- Include ALBNoSQLDB.swift and DBOject.swift files in your project
+- Include all .swift source files in your project
 
 ## Getting Started ##
-ALBNoSQLDB acts as a key/value database allowing you to set a JSON value in a table for a specific key or getting keys from a table.
+- The easiest way to use ALBNoSQLDB is to use objects that adhere to the DBObject Protocol. This allows you to easily save or instantiate objects to/from the database. Objects can have only simple types: Int, Double, String, Date, Bool, [Int], [Double], [String], [Date]. (These may be optional) Nested objects are not supported.
+- Alternately, you can use low level methods that work from JSON strings. Supported types in the JSON are string, int, double, bool and arrays of string, int, or double off the base object. If a method returns an optional, that value is nil if an error occured and could not return a proper value.
 
-Supported types in the JSON are string, int, double, bool and arrays of string, int, or double off the base object.
+## DBObject Protocol ##
+Create classes or structs that adhere to the DBObject Protocol and you can instantiate objects that are automatically populated with data from the database synchronously or asynchronously and save the data to the database.
+Bool properties read from the database will be interpreted as follows: An integer 0 = false and any other number is true. For string values "1", "yes", "YES", "true", and "TRUE" evaluate to true.
 
-If a method returns an optional, that value is nil if an error occured and could not return a proper value.
+### Protocol Definition ###
+```swift
+public protocol DBObject: Codable {
+	static var table: DBTable { get }
+	var key: String { get set }
+}
+```
+
+### Protocol methods ###
+```swift
+/**
+ Instantiate object and populate with values from the database. If instantiation fails, nil is returned.
+
+ - parameter db: Database object holding the data.
+ - parameter key: Key of the data entry.
+*/
+public init?(db: ALBNoSQLDB, key: String)
+
+
+/**
+ Save the object to the database based on the values set in the encode method of the object.
+
+ - parameter db: Database object to hold the data.
+ - parameter expiration: Optional Date specifying when the data is to be automatically deleted. Default value is nil specifying no automatic deletion.
+
+ - returns: Discardable Bool value of a successful save.
+*/
+@discardableResult
+public func save(to db: ALBNoSQLDB, autoDeleteAfter expiration: Date? = nil) -> Bool
+
+
+/**
+ Asynchronously instantiate object and populate with values from the database before executing the passed block with object. If object could not be instantiated properly, block is not executed.
+
+ - parameter db: Database object to hold the data.
+ - parameter key: Key of the data entry.
+ - parameter queue: DispatchQueue to run the execution block on. Default value is nil specifying the main queue.
+ - parameter block: Block of code to execute with instantiated object.
+
+ - returns: DBCommandToken that can be used to cancel the call before it executes. Nil is returned if database could not be opened.
+*/
+public static func loadObjectFromDB(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (Self) -> Void) -> DBCommandToken?
+
+```
+
+### Sample Struct ###
+```swift
+import ALBNoSQLDB
+
+enum Table: String {
+	static let categories: DBTable = "Categories"
+	static let accounts: DBTable = "Accounts"
+	static let people: DBTable = "People"
+}
+
+struct Category: DBObject {
+	static var table: DBTable { return Table.categories }
+	var key = UUID().uuidString
+	var accountKey = ""
+	var name = ""
+	var inSummary = true
+
+	init() { }
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CategoryKey.self)
+
+		key = try container.decode(String.self, forKey: .key)
+		accountKey = try container.decode(String.self, forKey: .accountKey)
+		name = try container.decode(String.self, forKey: .name)
+		inSummary = try container.decode(Bool.self, forKey: .inSummary)
+	}
+
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CategoryKey.self)
+
+		try container.encode(accountKey, forKey: .accountKey)
+		try container.encode(name, forKey: .name)
+		try container.encode(inSummary, forKey: .inSummary)
+	}
+}
+
+// save to database
+category.save(to: db)
+
+// save to database, automatically delete after designated date
+category.save(to: db, autoDeleteAfter: deletionDate)
+
+// instantiate synchronously
+guard let category = Category(db: db, key: categoryKey) else { return }
+
+// instantiate asynchronously
+let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
+	// use category object
+}
+
+// token allows you to cancel the asynchronous call before completion
+
+```
+
+## DBResults Class
+- Works with DBObject elements
+- Instantiate the class with a reference to the database and the keys
+- Only keys are stored to minimize memory usage
+- The database publisher returns an instance of this class
+
+### Usage ###
+```swift
+	guard let keys = db.keysInTable(Category.table) else { return }
+
+	let categories = DBResults<Category>(db: db, keys: keys)
+	
+	for category in categories {
+		// use category object
+	}
+	
+	for index in 0..<categories.count {
+		let category = categories[index]
+		// use category object
+	}
+```
+
+## Publisher ##
+- Use the publisher with Combine subscribers and SwiftUI
+- Sends DBResults as needed to reflect finished queries and updated results
+- Uses completion to send possible errors
+
+### Usage ###
+```swift
+	let publisher: DBResultsPublisher<Transaction> = db.publisher(table: Transaction.table)
+	let _ = publisher.sink(receiveCompletion: { _ in }) { ( results) in
+		// assign to AnyCancellable property
+	}
+```
+
+## Low level methods ##
 
 ### Keys ###
 
@@ -231,106 +372,3 @@ public typealias syncProgressUpdate = (_ percentComplete: Double) -> Void
 public func processSyncFileAtURL(_ localURL: URL!, syncProgress: syncProgressUpdate?) -> (Bool, String, Int)
 ```	
 	
-
-## DBObject Protocol ##
-Create classes or structs that adhere to the DBObject Protocol and you can instantiate objects that are automatically populated with data from the database synchronously or asynchronously and save the data to the database.
-Note that the protocol adheres to the Codable protocol and will require a CodingKey enum to function properly.
-Bool properties read from the database will be interpreted as follows: An integer 0 = false and any other number is true. For string values "1", "yes", "YES", "true", and "TRUE" evaluate to true.
-
-### Protocol Definition ###
-```swift
-public protocol DBObject: Codable {
-	static var table: DBTable { get }
-	var key: String { get set }
-}
-```
-
-### Protocol methods ###
-```swift
-/**
- Instantiate object and populate with values from the database. If instantiation fails, nil is returned.
-
- - parameter db: Database object holding the data.
- - parameter key: Key of the data entry.
-*/
-public init?(db: ALBNoSQLDB, key: String)
-
-
-/**
- Save the object to the database based on the values set in the encode method of the object.
-
- - parameter db: Database object to hold the data.
- - parameter expiration: Optional Date specifying when the data is to be automatically deleted. Default value is nil specifying no automatic deletion.
-
- - returns: Discardable Bool value of a successful save.
-*/
-@discardableResult
-public func save(to db: ALBNoSQLDB, autoDeleteAfter expiration: Date? = nil) -> Bool
-
-
-/**
- Asynchronously instantiate object and populate with values from the database before executing the passed block with object. If object could not be instantiated properly, block is not executed.
-
- - parameter db: Database object to hold the data.
- - parameter key: Key of the data entry.
- - parameter queue: DispatchQueue to run the execution block on. Default value is nil specifying the main queue.
- - parameter block: Block of code to execute with instantiated object.
-
- - returns: DBCommandToken that can be used to cancel the call before it executes. Nil is returned if database could not be opened.
-*/
-public static func loadObjectFromDB(_ db: ALBNoSQLDB, for key: String, queue: DispatchQueue? = nil, completion: @escaping (Self) -> Void) -> DBCommandToken?
-
-```
-
-### Sample Struct ###
-```swift
-import ALBNoSQLDB
-
-enum Table: String {
-	case categories = "Categories"
-    
-	var dbTable: DBTable {
-        return DBTable(name: self.rawValue)
-    }
-}
-
-struct Category: DBObject {
-	static var table: DBTable { return Table.categories.dbTable }
-	var key = UUID().uuidString
-	var accountKey = ""
-	var name = ""
-	var inSummary = true
-
-	private enum CategoryKey: String, CodingKey {
-		case key, accountKey, name, inSummary
-	}
-
-	init() { }
-
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CategoryKey.self)
-
-		key = try container.decode(String.self, forKey: .key)
-		accountKey = try container.decode(String.self, forKey: .accountKey)
-		name = try container.decode(String.self, forKey: .name)
-		inSummary = try container.decode(Bool.self, forKey: .inSummary)
-	}
-
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: CategoryKey.self)
-
-		try container.encode(accountKey, forKey: .accountKey)
-		try container.encode(name, forKey: .name)
-		try container.encode(inSummary, forKey: .inSummary)
-	}
-}
-
-// instantiate synchronously
-guard let category = Category(db: db, key: categoryKey) else { return }
-
-// instantiate asynchronously
-let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
-	// use category object
-}
-
-```

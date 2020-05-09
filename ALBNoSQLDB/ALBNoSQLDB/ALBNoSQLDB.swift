@@ -2,139 +2,14 @@
 // ALBNoSQLswift
 //
 // Created by Aaron Bratcher on 01/08/2015.
-// Copyright (c) 2015 – 2019 Aaron L Bratcher. All rights reserved.
+// Copyright (c) 2015 – 2020 Aaron L Bratcher. All rights reserved.
 //
 
 import Foundation
 import SQLite3
 
-// MARK: - Definitions
-public typealias BoolResults = Result<Bool, DBError>
-public typealias KeyResults = Result<[String], DBError>
-public typealias RowResults = Result<[DBRow], DBError>
-public typealias JsonResults = Result<String, DBError>
-public typealias DictResults = Result<[String: AnyObject], DBError>
-
-/**
-DBTable is used to identify the table data is stored in
-*/
-public struct DBTable: Equatable {
-	let name: String
-
-	public init(name: String) {
-		assert(name != "", "name cannot be empty")
-		assert(!ALBNoSQLDB.reservedTable(name), "reserved table")
-		self.name = name
-	}
-}
-
-extension DBTable: ExpressibleByStringLiteral {
-	public init(stringLiteral value: String) {
-		name = value
-	}
-}
-
-extension DBTable: CustomStringConvertible {
-	public var description: String {
-		return name
-	}
-}
-
-/**
-DBCommandToken is returned by asynchronous methods. Call the token's cancel method to cancel the command before it executes.
-*/
-public struct DBCommandToken {
-	private weak var database: ALBNoSQLDB?
-	private let identifier: UInt
-
-	public init() {
-		identifier = 0
-	}
-
-	fileprivate init(database: ALBNoSQLDB, identifier: UInt) {
-		self.database = database
-		self.identifier = identifier
-	}
-
-	/**
-	Cancel the asynchronous command before it executes
-	
-	- returns: Bool Returns if the cancel was successful.
-	*/
-	@discardableResult
-	public func cancel() -> Bool {
-		guard let database = database else { return false }
-		return database.dequeueCommand(identifier)
-	}
-}
-
-public enum DBConditionOperator: String {
-	case equal = "="
-	case notEqual = "<>"
-	case lessThan = "<"
-	case greaterThan = ">"
-	case lessThanOrEqual = "<="
-	case greaterThanOrEqual = ">="
-	case contains = "..."
-	case inList = "()"
-}
-
-public struct DBCondition {
-	public var set = 0
-	public var objectKey = ""
-	public var conditionOperator = DBConditionOperator.equal
-	public var value: AnyObject
-
-	public init(set: Int, objectKey: String, conditionOperator: DBConditionOperator, value: AnyObject) {
-		self.set = set
-		self.objectKey = objectKey
-		self.conditionOperator = conditionOperator
-		self.value = value
-	}
-}
-
-public struct DBRow {
-	public var values = [AnyObject?]()
-}
-
-public enum DBError: Error {
-	case cannotWriteToFile
-	case diskError
-	case damagedFile
-	case cannotOpenFile
-	case tableNotFound
-	case other(Int)
-}
-
-extension DBError: RawRepresentable {
-	public typealias RawValue = Int
-
-	public init(rawValue: RawValue) {
-		switch rawValue {
-		case 8: self = .cannotWriteToFile
-		case 10: self = .diskError
-		case 11: self = .damagedFile
-		case 14: self = .cannotOpenFile
-		case -1: self = .tableNotFound
-		default: self = .other(rawValue)
-		}
-	}
-
-	public var rawValue: RawValue {
-		switch self {
-		case .cannotWriteToFile: return 8
-		case .diskError: return 10
-		case .damagedFile: return 11
-		case .cannotOpenFile: return 14
-		case .tableNotFound: return -1
-		case .other(let value): return value
-		}
-	}
-}
-
-// MARK: - Class Definition
 public final class ALBNoSQLDB {
-	fileprivate enum ValueType: String {
+	enum ValueType: String {
 		case textArray = "stringArray"
 		case intArray
 		case doubleArray
@@ -166,7 +41,7 @@ public final class ALBNoSQLDB {
 	}
 
 	/**
-	The number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity.
+	The number of seconds to wait after inactivity before automatically closing the file. File is automatically opened for next activity. A value of 0 means never close automatically
 	*/
 	public var autoCloseTimeout = 0
 
@@ -209,23 +84,24 @@ public final class ALBNoSQLDB {
 			var exists = false
 
 			DBTables.tableQueue.sync {
-				exists = tables.filter({ $0 == table }).isNotEmpty
+				exists = tables.contains(table)
 			}
 
 			return exists
 		}
 	}
 
-	private var _SQLiteCore = SQLiteCore()
+	private let _SQLiteCore = SQLiteCore()
 	private var _lock = DispatchSemaphore(value: 0)
 	private var _dbFileLocation: URL?
 	private var _instanceKey = ""
 	private var _tables = DBTables()
 	private var _indexes = [String: [String]]()
 	private let _dbQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBQueue", qos: .userInitiated)
+	private let _publisherQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLPublisherQueue", qos: .userInitiated)
 	private var _syncingEnabled = false
 	private var _unsyncedTables = [String]()
-	private let _deletionQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBDeletionQueue", attributes: [])
+	private var _publishers = [UpdatablePublisher]()
 	private lazy var _autoDeleteTimer: RepeatingTimer = {
 		return RepeatingTimer(timeInterval: 60) {
 			self.autoDelete()
@@ -281,19 +157,6 @@ public final class ALBNoSQLDB {
 	}
 
 	// MARK: - Keys
-
-	/**
-	Checks if the given table contains the given key.
-	
-	- parameter table: The table to search.
-	- parameter key: The key to look for.
-	
-	- returns: Bool? Returns if the key exists in the table. Is nil when database could not be opened or other error occured.
-	*/
-	@available( *, deprecated, message: "use tableHasKey that accepts DBTable for first parameter")
-	public func tableHasKey(table: String, key: String) -> Bool? {
-		return tableHasKey(table: DBTable(name: table), key: key)
-	}
 
 	/**
 	Checks if the given table contains the given key.
@@ -375,32 +238,9 @@ public final class ALBNoSQLDB {
 	
 	let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
 	if let keys = ALBNoSQLkeysInTable("table1", sortOrder:nil, conditions:accountCondition) {
-	// use keys
+		// use keys
 	} else {
-	// handle error
-	}
-	
-	- parameter table: The table to return keys from.
-	- parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
-	- parameter conditions: Optional array of DBConditions that specify what conditions must be met.
-	
-	- returns: [String]? Returns an array of keys from the table. Is nil when database could not be opened or other error occured.
-	*/
-	@available( *, deprecated, message: "use keysInTable that accepts DBTable for first parameter")
-	public func keysInTable(_ table: String, sortOrder: String? = nil, conditions: [DBCondition]? = nil) -> [String]? {
-		return keysInTable(DBTable(name: table), sortOrder: sortOrder, conditions: conditions)
-	}
-
-	/**
-	Returns an array of keys from the given table sorted in the way specified matching the given conditions. All conditions in the same set are ANDed together. Separate sets are ORed against each other.  (set:0 AND set:0 AND set:0) OR (set:1 AND set:1 AND set:1) OR (set:2)
-	
-	Unsorted Example:
-	
-	let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
-	if let keys = ALBNoSQLkeysInTable("table1", sortOrder:nil, conditions:accountCondition) {
-	// use keys
-	} else {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The DBTable to return keys from.
@@ -438,9 +278,9 @@ public final class ALBNoSQLDB {
 	
 	let accountCondition = DBCondition(set:0,objectKey:"account",conditionOperator:.equal, value:"ACCT1")
 	if let keys = ALBNoSQLkeysInTable("table1", sortOrder:nil, conditions:accountCondition) {
-	// use keys
+		// use keys
 	} else {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The table to return keys from.
@@ -461,7 +301,7 @@ public final class ALBNoSQLDB {
 		}
 
 		if !_tables.hasTable(table) {
-			completion(KeyResults.success([]))
+			completion(.failure(.tableNotFound))
 			return DBCommandToken(database: self, identifier: 0)
 		}
 
@@ -487,26 +327,28 @@ public final class ALBNoSQLDB {
 		return DBCommandToken(database: self, identifier: blockReference)
 	}
 
-	// MARK: - Indexing
 	/**
-	Sets the indexes desired for a given table.
-	
-	Example:
-	
-	ALBNoSQLsetTableIndexes(table: kTransactionsTable, indexes: ["accountKey","date"]) // index accountKey and date each individually
-	
-	- parameter table: The table to return keys from.
-	- parameter indexes: An array of table properties to be indexed. An array entry can be compound.
-	*/
-	@available( *, deprecated, renamed: "setIndexesForTable")
-	public func setTableIndexes(table: String, indexes: [String]) {
-		_indexes[table] = indexes
-		let openResults = openDB()
-		if case .success(_) = openResults {
-			createIndexesForTable(DBTable(name: table))
+    Returns a  Publisher for generic DBResults.
+
+    - parameter table: The table to query against.
+    - parameter sortOrder: Optional string that gives a comma delimited list of properties to sort by.
+    - parameter conditions: Optional array of DBConditions that specify what conditions must be met.
+    - parameter validateObjects: Optional bool that condition sets will be validated against the table. Any set that refers to json objects that do not exist in the table will be ignored. Default value is false.
+
+    - returns: DBResultssPublisher
+    */
+
+	@discardableResult
+	public func publisher<T>(table: DBTable, sortOrder: String? = nil, conditions: [DBCondition]? = nil, validateObjects: Bool = false) -> DBResultsPublisher<T> {
+		let publisher = DBResultsPublisher<T>(db: self, table: table, sortOrder: sortOrder, conditions: conditions, validateObjects: validateObjects)
+		_dbQueue.sync {
+			_publishers.append(publisher)
 		}
+
+		return publisher
 	}
 
+	// MARK: - Indexing
 	/**
 	Sets the indexes desired for a given table.
 	
@@ -536,29 +378,7 @@ public final class ALBNoSQLDB {
 	Example:
 	
 	if !ALBNoSQLsetValue(table: "table5", key: "testKey1", value: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil) {
-	// handle error
-	}
-	
-	- parameter table: The table to return keys from.
-	- parameter key: The key for the entry.
-	- parameter value: A JSON string representing the value to be stored. Top level object provided must be a dictionary. If a key object is in the value, it will be ignored.
-	- parameter autoDeleteAfter: Optional date of when the value should be automatically deleted from the table.
-	
-	- returns: Bool If the value was set successfully.
-	*/
-	@discardableResult
-	@available( *, deprecated, renamed: "setValueInTable")
-	public func setValue(table: String, key: String, value: String, autoDeleteAfter: Date? = nil) -> Bool {
-		return setValueInTable(DBTable(name: table), for: key, to: value, autoDeleteAfter: autoDeleteAfter)
-	}
-
-	/**
-	Sets the value of an entry in the given table for a given key optionally deleted automatically after a given date. Supported values are dictionaries that consist of String, Int, Double and arrays of these. If more complex objects need to be stored, a string value of those objects need to be stored.
-	
-	Example:
-	
-	if !ALBNoSQLsetValue(table: "table5", key: "testKey1", value: "{\"numValue\":1,\"account\":\"ACCT1\",\"dateValue\":\"2014-8-19T18:23:42.434-05:00\",\"arrayValue\":[1,2,3,4,5]}", autoDeleteAfter: nil) {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The table to return keys from.
@@ -580,7 +400,13 @@ public final class ALBNoSQLDB {
 		let now = ALBNoSQLDB.stringValueForDate(Date())
 		let deleteDateTime = (autoDeleteAfter == nil ? "NULL" : "'" + ALBNoSQLDB.stringValueForDate(autoDeleteAfter!) + "'")
 
-		return setValue(table: table, key: key, objectValues: objectValues!, addedDateTime: now, updatedDateTime: now, deleteDateTime: deleteDateTime, sourceDB: _instanceKey, originalDB: _instanceKey)
+		let successful = setValue(table: table, key: key, objectValues: objectValues!, addedDateTime: now, updatedDateTime: now, deleteDateTime: deleteDateTime, sourceDB: _instanceKey, originalDB: _instanceKey)
+
+		if successful {
+			updatePublisherResults(for: key, in: table)
+		}
+
+		return successful
 	}
 
 	// MARK: - Return Values
@@ -589,29 +415,9 @@ public final class ALBNoSQLDB {
 	
 	Example:
 	if let jsonValue = ALBNoSQLvalueForKey(table: "table1", key: "58D200A048F9") {
-	// process JSON text
+		// process JSON text
 	} else {
-	// handle error
-	}
-	
-	- parameter table: The table to return keys from.
-	- parameter key: The key for the entry.
-	
-	- returns: JSON value of what was stored. Is nil when database could not be opened or other error occured.
-	*/
-	@available( *, deprecated, renamed: "valueFromTable")
-	public func valueForKey(table: String, key: String) -> String? {
-		return valueFromTable(DBTable(name: table), for: key)
-	}
-
-	/**
-	Returns the JSON value of what was stored for a given table and key.
-	
-	Example:
-	if let jsonValue = ALBNoSQLvalueForKey(table: "table1", key: "58D200A048F9") {
-	// process JSON text
-	} else {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The table to return keys from.
@@ -687,29 +493,9 @@ public final class ALBNoSQLDB {
 	
 	Example:
 	if let dictValue = ALBNoSQLdictValueForKey(table: "table1", key: "58D200A048F9") {
-	// process dictionary
+		// process dictionary
 	} else {
-	// handle error
-	}
-	
-	- parameter table: The table to return keys from.
-	- parameter key: The key for the entry.
-	
-	- returns: [String:AnyObject]? Dictionary value of what was stored. Is nil when database could not be opened or other error occured.
-	*/
-	@available( *, deprecated, renamed: "dictValueFromTable")
-	public func dictValueForKey(table: String, key: String) -> [String: AnyObject]? {
-		return dictValueFromTable(DBTable(name: table), for: key, includeDates: false)
-	}
-
-	/**
-	Returns the dictionary value of what was stored for a given table and key.
-	
-	Example:
-	if let dictValue = ALBNoSQLdictValueForKey(table: "table1", key: "58D200A048F9") {
-	// process dictionary
-	} else {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The table to return keys from.
@@ -726,9 +512,9 @@ public final class ALBNoSQLDB {
 	
 	Example:
 	if let dictValue = ALBNoSQLdictValueForKey(table: "table1", key: "58D200A048F9") {
-	// process dictionary
+		// process dictionary
 	} else {
-	// handle error
+		// handle error
 	}
 	
 	- parameter table: The table to return keys from.
@@ -785,26 +571,23 @@ public final class ALBNoSQLDB {
 	
 	- returns: Bool Value was successfuly removed.
 	*/
-	@available( *, deprecated, renamed: "deleteFromTable")
-	public func deleteForKey(table: String, key: String) -> Bool {
-		assert(key != "", "key must be provided")
-
-		return deleteForKey(table: DBTable(name: table), key: key, autoDelete: false, sourceDB: _instanceKey, originalDB: _instanceKey)
-	}
-
-	/**
-	Delete the value from the given table for the given key.
-	
-	- parameter table: The table to return keys from.
-	- parameter key: The key for the entry.
-	
-	- returns: Bool Value was successfuly removed.
-	*/
 	@discardableResult
 	public func deleteFromTable(_ table: DBTable, for key: String) -> Bool {
 		assert(key != "", "key must be provided")
+		var deleted = false
 
-		return deleteForKey(table: table, key: key, autoDelete: false, sourceDB: _instanceKey, originalDB: _instanceKey)
+		_publisherQueue.sync {
+			let publishers = publishersContaining(key: key, in: table)
+
+			deleted = deleteForKey(table: table, key: key, autoDelete: false, sourceDB: _instanceKey, originalDB: _instanceKey)
+			if deleted {
+				for publisher in publishers {
+					publisher.updateSubject()
+				}
+			}
+		}
+
+		return deleted
 	}
 
 	/**
@@ -841,6 +624,8 @@ public final class ALBNoSQLDB {
 				return false
 			}
 		}
+
+		clearPublisherResults(in: table)
 
 		return true
 	}
@@ -1078,7 +863,7 @@ public final class ALBNoSQLDB {
 		}
 
 		if !_syncingEnabled {
-			print("syncing must be enabled before creating sync file")
+			print("syncing must be enabled before processing sync file")
 			return (false, "", 0)
 		}
 
@@ -1137,6 +922,12 @@ public final class ALBNoSQLDB {
 							sqlExecute("delete from \(tableName)_arrayValues where key in (select key from __synclog where tableName = '\(tableName)' and timeStamp < '\(timeStamp)')")
 							sqlExecute("delete from __synclog where tableName = '\(tableName)' and timeStamp < '\(timeStamp)'")
 							sqlExecute("insert into __synclog(timestamp, sourceDB, originalDB, tableName, activity, key) values('\(now)','\(sourceDB)','\(originalDB)','\(tableName)','X',NULL)")
+						}
+					}
+
+					_publisherQueue.sync {
+						for publisher in _publishers {
+							publisher.updateSubject()
 						}
 					}
 
@@ -1306,9 +1097,51 @@ public final class ALBNoSQLDB {
 	}
 }
 
+// MARK: - Internal Publisher Updates
+extension ALBNoSQLDB {
+	func removePublisher(_ publisher: UpdatablePublisher) {
+		_publisherQueue.sync {
+			_publishers = _publishers.filter({ $0.id != publisher.id })
+		}
+	}
+
+	fileprivate func updatePublisherResults(for key: String, in table: DBTable) {
+		_publisherQueue.sync {
+			for publisher in publishersContaining(key: key, in: table) {
+				publisher.updateSubject()
+			}
+		}
+	}
+
+	fileprivate func clearPublisherResults(in table: DBTable) {
+		_publisherQueue.sync {
+			for publisher in _publishers {
+				publisher.clearResults(in: table)
+			}
+		}
+	}
+
+	fileprivate func publishersContaining(key: String, in table: DBTable) -> [UpdatablePublisher] {
+		var publishers = [UpdatablePublisher]()
+
+		for publisher in _publishers where publisher.table == table {
+			guard let sql = keysInTableSQL(table: table, sortOrder: nil, conditions: publisher.conditions, validateObjecs: publisher.validateObjects, testKey: key)
+				, let results = sqlSelect(sql)
+				else { continue }
+
+			let keys = results.map({ $0.values[0] as! String })
+			if keys.count > 0 {
+				publishers.append(publisher)
+			}
+		}
+
+		return publishers
+	}
+}
+
 // MARK: - Internal data handling methods
 extension ALBNoSQLDB {
-	fileprivate func keysInTableSQL(table: DBTable, sortOrder: String?, conditions: [DBCondition]?, validateObjecs: Bool) -> String? {
+	fileprivate func keysInTableSQL(table: DBTable, sortOrder: String?, conditions: [DBCondition]?, validateObjecs: Bool, testKey: String? = nil) -> String? {
 		var arrayColumns = [String]()
 		if let results = sqlSelect("select arrayColumns from __tableArrayColumns where tableName = '\(table)'") {
 			if results.isNotEmpty {
@@ -1320,7 +1153,12 @@ extension ALBNoSQLDB {
 
 		let tableColumns = columnsInTable(table).map({ $0.name }) + ["key"]
 		var selectClause = "select distinct a.key from \(table) a"
-		var whereClause = " where 1=1"
+		var whereClause: String
+		if let testKey = testKey {
+			whereClause = " where a.key = '\(testKey)'"
+		} else {
+			whereClause = " where 1=1"
+		}
 
 		// if we have the include operator on an array object, do a left outer join
 		if var conditionSet = conditions, let firstCondition = conditionSet.first {
@@ -1329,7 +1167,7 @@ extension ALBNoSQLDB {
 				let validConditions = conditionSet.filter({ !invalidSets.contains($0.set) })
 				conditionSet = validConditions
 			}
-			
+
 			for condition in conditionSet {
 				if condition.conditionOperator == .contains && arrayColumns.filter({ $0 == condition.objectKey }).count == 1 {
 					selectClause += " left outer join \(table)_arrayValues b on a.key = b.key"
@@ -1337,109 +1175,111 @@ extension ALBNoSQLDB {
 				}
 			}
 
-			whereClause += " AND ("
-			// order the conditions array by page
-			conditionSet.sort { $0.set < $1.set }
+			if conditionSet.count > 0 {
+				whereClause += " AND ("
+				// order the conditions array by page
+				conditionSet.sort { $0.set < $1.set }
 
-			// conditionDict: ObjectKey,operator,value
-			var currentSet = firstCondition.set
-			var inPage = true
-			var inMultiPage = false
-			var firstConditionInSet = true
-			let hasMultipleSets = conditionSet.filter({ $0.set != firstCondition.set }).isNotEmpty
+				// conditionDict: ObjectKey,operator,value
+				var currentSet = firstCondition.set
+				var inPage = true
+				var inMultiPage = false
+				var firstConditionInSet = true
+				let hasMultipleSets = conditionSet.filter({ $0.set != firstCondition.set }).isNotEmpty
 
-			for condition in conditionSet {
-				if tableColumns.filter({ $0 == condition.objectKey }).isEmpty && arrayColumns.filter({ $0 == condition.objectKey }).isEmpty {
-					if isDebugging {
-						print("table \(table) has no column named \(condition.objectKey)")
-					}
-					return nil
-				}
-
-				let valueType = SQLiteCore.typeOfValue(condition.value)
-
-				if currentSet != condition.set {
-					currentSet = condition.set
-					whereClause += ")"
-					if inMultiPage {
-						inMultiPage = false
-						whereClause += ")"
-					}
-					whereClause += " OR ("
-
-					inMultiPage = false
-				} else {
-					inPage = true
-					if firstConditionInSet {
-						firstConditionInSet = false
-						if hasMultipleSets {
-							whereClause += " ("
+				for condition in conditionSet {
+					if tableColumns.filter({ $0 == condition.objectKey }).isEmpty && arrayColumns.filter({ $0 == condition.objectKey }).isEmpty {
+						if isDebugging {
+							print("table \(table) has no column named \(condition.objectKey)")
 						}
-					} else {
+						return nil
+					}
+
+					let valueType = SQLiteCore.typeOfValue(condition.value)
+
+					if currentSet != condition.set {
+						currentSet = condition.set
+						whereClause += ")"
 						if inMultiPage {
+							inMultiPage = false
 							whereClause += ")"
 						}
+						whereClause += " OR ("
 
-						whereClause += " and key in (select key from \(table) where"
-						inMultiPage = true
-					}
-				}
+						inMultiPage = false
+					} else {
+						inPage = true
+						if firstConditionInSet {
+							firstConditionInSet = false
+							if hasMultipleSets {
+								whereClause += " ("
+							}
+						} else {
+							if inMultiPage {
+								whereClause += ")"
+							}
 
-				switch condition.conditionOperator {
-				case .contains:
-					if arrayColumns.contains(condition.objectKey) {
-						switch valueType {
-						case .text:
-							whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(esc(condition.value as! String))'"
-						case .int:
-							whereClause += "b.objectKey = '\(condition.objectKey)' and b.intValue = \(condition.value)"
-						case .double:
-							whereClause += "b.objectKey = '\(condition.objectKey)' and b.doubleValue = \(condition.value)"
-						default:
-							break
+							whereClause += " and key in (select key from \(table) where"
+							inMultiPage = true
 						}
-					} else {
-						whereClause += " \(condition.objectKey) like '%%\(esc(condition.value as! String))%%'"
 					}
-				case .inList:
-					whereClause += " \(condition.objectKey)  in ("
-					if let stringArray = condition.value as? [String] {
-						for value in stringArray {
-							whereClause += "'\(esc(value))'"
+
+					switch condition.conditionOperator {
+					case .contains:
+						if arrayColumns.contains(condition.objectKey) {
+							switch valueType {
+							case .text:
+								whereClause += "b.objectKey = '\(condition.objectKey)' and b.stringValue = '\(esc(condition.value as! String))'"
+							case .int:
+								whereClause += "b.objectKey = '\(condition.objectKey)' and b.intValue = \(condition.value)"
+							case .double:
+								whereClause += "b.objectKey = '\(condition.objectKey)' and b.doubleValue = \(condition.value)"
+							default:
+								break
+							}
+						} else {
+							whereClause += " \(condition.objectKey) like '%%\(esc(condition.value as! String))%%'"
 						}
-						whereClause += ")"
-					} else {
-						if let intArray = condition.value as? [Int] {
-							for value in intArray {
-								whereClause += "\(value)"
+					case .inList:
+						whereClause += " \(condition.objectKey)  in ("
+						if let stringArray = condition.value as? [String] {
+							for value in stringArray {
+								whereClause += "'\(esc(value))'"
 							}
 							whereClause += ")"
 						} else {
-							for value in condition.value as! [Double] {
-								whereClause += "\(value)"
+							if let intArray = condition.value as? [Int] {
+								for value in intArray {
+									whereClause += "\(value)"
+								}
+								whereClause += ")"
+							} else {
+								for value in condition.value as! [Double] {
+									whereClause += "\(value)"
+								}
+								whereClause += ")"
 							}
-							whereClause += ")"
+						}
+
+					default:
+						if let conditionValue = condition.value as? String {
+							whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(esc(conditionValue))'"
+						} else {
+							whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) \(condition.value)"
 						}
 					}
-
-				default:
-					if let conditionValue = condition.value as? String {
-						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) '\(esc(conditionValue))'"
-					} else {
-						whereClause += " \(condition.objectKey) \(condition.conditionOperator.rawValue) \(condition.value)"
-					}
 				}
-			}
 
-			whereClause += ")"
-
-			if inMultiPage {
 				whereClause += ")"
-			}
 
-			if inPage && hasMultipleSets {
-				whereClause += ")"
-				inPage = false
+				if inMultiPage {
+					whereClause += ")"
+				}
+
+				if inPage && hasMultipleSets {
+					whereClause += ")"
+					inPage = false
+				}
 			}
 		}
 
@@ -1493,7 +1333,7 @@ extension ALBNoSQLDB {
 				if objectKey == "key" {
 					continue
 				}
-				
+
 				let valueType = SQLiteCore.typeOfValue(objectValue)
 				if [.int, .double, .text, .bool].contains(valueType) {
 					sql += ",\(objectKey)"
@@ -1509,7 +1349,7 @@ extension ALBNoSQLDB {
 				if objectKey == "key" {
 					continue
 				}
-				
+
 				let valueType = SQLiteCore.typeOfValue(objectValue)
 				if [.int, .double, .text, .bool].contains(valueType) {
 					sql += ",\(objectKey)=?"
@@ -1771,7 +1611,7 @@ extension ALBNoSQLDB {
 		}
 	}
 
-	fileprivate static func reservedTable(_ table: String) -> Bool {
+	static func reservedTable(_ table: String) -> Bool {
 		return table.hasPrefix("__") || table.hasPrefix("sqlite_stat")
 	}
 
@@ -1843,7 +1683,7 @@ extension ALBNoSQLDB {
 			if objectKey == "key" {
 				continue
 			}
-			
+
 			assert(!reservedColumn(objectKey as String), "Reserved column")
 			assert((objectKey as String).range(of: "'") == nil, "Single quote not allowed in column names")
 
@@ -2002,7 +1842,6 @@ private extension ALBNoSQLDB {
 		private var _sqliteDB: OpaquePointer?
 		private var _threadLock = DispatchSemaphore(value: 0)
 		private var _queuedBlocks = [ExecutionBlock]()
-		private let _closeQueue = DispatchQueue(label: "com.AaronLBratcher.ALBNoSQLDBCloseQueue", attributes: [])
 		private var _autoCloseTimer: RepeatingTimer?
 		private var _dbFilePath = ""
 		private var _autoCloseTimeout: TimeInterval = 0
@@ -2245,7 +2084,7 @@ private extension ALBNoSQLDB {
 						if objectKey == "key" {
 							continue
 						}
-						
+
 						let valueType = SQLiteCore.typeOfValue(objectValue)
 						guard [.int, .double, .text, .bool].contains(valueType) else { continue }
 
@@ -2304,7 +2143,7 @@ private extension ALBNoSQLDB {
 
 		private func displaySQLError(_ sql: String) {
 			if !isDebugging { return }
-			
+
 			print("Error: \(dbErrorMessage)")
 			print("     on command - \(sql)")
 			print("")

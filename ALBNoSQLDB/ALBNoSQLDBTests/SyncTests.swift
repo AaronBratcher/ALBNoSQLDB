@@ -25,24 +25,29 @@ func pathForDB(className: String) -> String {
 	return dbFilePath
 }
 
+func removeDB(for className: String) {
+    let path = pathForDB(className: className)
+    let fileExists = FileManager.default.fileExists(atPath: path)
+    if fileExists {
+        try? FileManager.default.removeItem(atPath: path)
+    }
+}
+
 class SyncTests: XCTestCase {
 	lazy var db: ALBNoSQLDB = {
 		return dbForTestClass(className: String(describing: type(of: self)))
 	}()
 
-	override func setUp() {
+	override func setUpWithError() throws {
 		super.setUp()
 		db.dropAllTables()
 	}
 
-	override func tearDown() {
+	override func tearDownWithError() throws {
 		// Put teardown code here. This method is called after the invocation of each test method in the class.
 		super.tearDown()
-		let path = pathForDB(className: String(describing: type(of: self)))
-		let fileExists = FileManager.default.fileExists(atPath: path)
-		if fileExists {
-			try? FileManager.default.removeItem(atPath: path)
-		}
+        db.close()
+        removeDB(for: String(describing: type(of: self)))
 	}
 
 	func testEnableSyncing() {
@@ -127,7 +132,58 @@ class SyncTests: XCTestCase {
 		// this value will be updated
 		db.setValueInTable(DBTable(name: "table12"), for: "testKey5", to: "{\"numValue\":15,\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"arrayValue\":[21,22,23,24,25]}", autoDeleteAfter: nil)
 
-		let syncFileContents = "{\"sourceDB\":\"58D200A048F9\",\"lastSequence\":1000,\"logEntries\":[{\"timeStamp\":\"2020-01-15T16:22:55.231-05:00\",\"key\":\"testKey1\",\"activity\":\"D\",\"tableName\":\"table8\"},{\"timeStamp\":\"2010-01-15T16:22:55.262-05:00\",\"value\":{\"addedDateTime\":\"2015-01-15T16:22:55.246-05:00\",\"dateValue\":\"2014-10-19T18:23:42.434-05:00\",\"numValue\":3,\"updatedDateTime\":\"2015-01-15T16:22:55.258-05:00\",\"arrayValue\":[11,12]},\"key\":\"testKey3\",\"activity\":\"U\",\"tableName\":\"table10\"},{\"timeStamp\":\"2015-01-15T16:22:55.276-05:00\",\"key\":\"testKey4\",\"activity\":\"D\",\"tableName\":\"table11\"},{\"timeStamp\":\"2020-01-15T16:22:55.288-05:00\",\"value\":{\"addedDateTime\":\"2015-01-15T16:22:55.277-05:00\",\"account\":\"ACCT3\",\"dateValue\":\"2014-12-19T18:23:42.434-05:00\",\"numValue\":5,\"updatedDateTime\":\"2015-01-15T16:22:55.277-05:00\",\"arrayValue\":[21,22,23,24,25]},\"key\":\"testKey5\",\"activity\":\"U\",\"tableName\":\"table12\"},{\"tableName\":\"table9\",\"activity\":\"X\",\"timeStamp\":\"2020-01-15T16:22:55.290-05:00\"}]}"
+		let syncFileContents = """
+		{
+		  "sourceDB": "58D200A048F9",
+		  "lastSequence": 1000,
+		  "logEntries": [
+			{
+			  "timeStamp": "\(ALBNoSQLDB.stringValueForDate(Date()))",
+			  "key": "testKey1",
+			  "activity": "D",
+			  "tableName": "table8"
+			},
+			{
+			  "timeStamp": "2010-01-15T16:22:55.262-05:00",
+			  "value": {
+				"addedDateTime": "2015-01-15T16:22:55.246-05:00",
+				"dateValue": "2014-10-19T18:23:42.434-05:00",
+				"numValue": 3,
+				"updatedDateTime": "2015-01-15T16:22:55.258-05:00",
+				"arrayValue": [11,12]
+			  },
+			  "key": "testKey3",
+			  "activity": "U",
+			  "tableName": "table10"
+			},
+			{
+			  "timeStamp": "2015-01-15T16:22:55.276-05:00",
+			  "key": "testKey4",
+			  "activity": "D",
+			  "tableName": "table11"
+			},
+			{
+			  "timeStamp": "\(ALBNoSQLDB.stringValueForDate(Date()))",
+			  "value": {
+				"addedDateTime": "2015-01-15T16:22:55.277-05:00",
+				"account": "ACCT3",
+				"dateValue": "2014-12-19T18:23:42.434-05:00",
+				"numValue": 5,
+				"updatedDateTime": "2015-01-15T16:22:55.277-05:00",
+				"arrayValue": [21,22,23,24,25]
+			  },
+			  "key": "testKey5",
+			  "activity": "U",
+			  "tableName": "table12"
+			},
+			{
+			  "tableName": "table9",
+			  "activity": "X",
+			  "timeStamp": "\(ALBNoSQLDB.stringValueForDate(Date()))"
+			}
+		  ]
+		}
+		"""
 
 		let searchPaths = NSSearchPathForDirectoriesInDomains(.downloadsDirectory, .userDomainMask, true)
 		let documentFolderPath = searchPaths[0]

@@ -14,20 +14,19 @@ class AsyncTests: XCTestCase {
 		return dbForTestClass(className: String(describing: type(of: self)))
 	}()
 
-	override func setUp() {
+	override func setUpWithError() throws {
 		super.setUp()
+
 		db.dropAllTables()
 	}
 
-	override func tearDown() {
+	override func tearDownWithError() throws {
 		// Put teardown code here. This method is called after the invocation of each test method in the class.
 		super.tearDown()
-		let path = pathForDB(className: String(describing: type(of: self)))
-		let fileExists = FileManager.default.fileExists(atPath: path)
-		if fileExists {
-			try? FileManager.default.removeItem(atPath: path)
-		}
+		db.close()
+		removeDB(for: String(describing: type(of: self)))
 	}
+
 
 	func testAsync() {
 		let expectations = expectation(description: "AsyncExpectations")
