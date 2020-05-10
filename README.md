@@ -127,18 +127,18 @@ let token = Category.loadObjectFromDB(db, for: categoryKey) { (category) in
 
 ### Usage ###
 ```swift
-	guard let keys = db.keysInTable(Category.table) else { return }
+guard let keys = db.keysInTable(Category.table) else { return }
 
-	let categories = DBResults<Category>(db: db, keys: keys)
+let categories = DBResults<Category>(db: db, keys: keys)
 	
-	for category in categories {
-		// use category object
-	}
+for category in categories {
+	// use category object
+}
 	
-	for index in 0..<categories.count {
-		let category = categories[index]
-		// use category object
-	}
+for index in 0..<categories.count {
+	let category = categories[index]
+	// use category object
+}
 ```
 
 ## Publisher ##
