@@ -148,7 +148,7 @@ for index in 0..<categories.count {
 
 ### Usage ###
 ```swift
-	/**
+    /**
     Returns a  Publisher for generic DBResults. Uses the table of the DBObject for results.
 
     - parameter table: The table to query against.
