@@ -9,7 +9,7 @@
 import UIKit
 import ALBNoSQLDB
 
-let kDatesTable = "Dates"
+let datesTable: DBTable = "Dates"
 
 class MasterViewController: UITableViewController {
 
@@ -26,8 +26,8 @@ class MasterViewController: UITableViewController {
 		let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
 		self.navigationItem.rightBarButtonItem = addButton
 		if let split = self.splitViewController {
-		    let controllers = split.viewControllers
-		    self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+			let controllers = split.viewControllers
+			self.detailViewController = (controllers[controllers.count - 1] as! UINavigationController).topViewController as? DetailViewController
 		}
 	}
 
@@ -40,17 +40,17 @@ class MasterViewController: UITableViewController {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
 	}
-	
+
 	func loadEntries() {
-		if let dates = ALBNoSQLDB.shared.keysInTable(kDatesTable, sortOrder: "key desc") {
+		if let dates = ALBNoSQLDB.shared.keysInTable(datesTable, sortOrder: "key desc") {
 			objects = dates
 		}
 	}
 
-    @objc func insertNewObject(_ sender: Any) {
+	@objc func insertNewObject(_ sender: Any) {
 		let date = ALBNoSQLDB.stringValueForDate(Date())
 		objects.insert(date, at: 0)
-		let _ = ALBNoSQLDB.shared.setValue(table: kDatesTable, key: date, value: "{}")
+		ALBNoSQLDB.shared.setValueInTable(datesTable, for: date, to: "{}")
 		let indexPath = IndexPath(row: 0, section: 0)
 		self.tableView.insertRows(at: [indexPath], with: .automatic)
 	}
@@ -59,13 +59,13 @@ class MasterViewController: UITableViewController {
 
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "showDetail" {
-		    if let indexPath = self.tableView.indexPathForSelectedRow {
-		        let object = ALBNoSQLDB.dateValueForString(objects[indexPath.row])
-		        let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-		        controller.detailItem = object
-		        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-		        controller.navigationItem.leftItemsSupplementBackButton = true
-		    }
+			if let indexPath = self.tableView.indexPathForSelectedRow {
+				let object = ALBNoSQLDB.dateValueForString(objects[indexPath.row])
+				let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+				controller.detailItem = object
+				controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+				controller.navigationItem.leftItemsSupplementBackButton = true
+			}
 		}
 	}
 
@@ -92,12 +92,12 @@ class MasterViewController: UITableViewController {
 		return true
 	}
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
 		if editingStyle == .delete {
-		    objects.remove(at: indexPath.row)
-		    tableView.deleteRows(at: [indexPath], with: .fade)
+			objects.remove(at: indexPath.row)
+			tableView.deleteRows(at: [indexPath], with: .fade)
 		} else if editingStyle == .insert {
-		    // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+			// Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
 		}
 	}
 

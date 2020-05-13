@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		892471F41D93EA4300E3C870 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 892471F21D93EA4300E3C870 /* Main.storyboard */; };
 		892471F61D93EA4300E3C870 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 892471F51D93EA4300E3C870 /* Assets.xcassets */; };
 		892471F91D93EA4300E3C870 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 892471F71D93EA4300E3C870 /* LaunchScreen.storyboard */; };
+		8940F572246C84E900E3BF47 /* ALBNoSQLDB in Frameworks */ = {isa = PBXBuildFile; productRef = 8940F571246C84E900E3BF47 /* ALBNoSQLDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8940F572246C84E900E3BF47 /* ALBNoSQLDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +85,9 @@
 			dependencies = (
 			);
 			name = DBApp;
+			packageProductDependencies = (
+				8940F571246C84E900E3BF47 /* ALBNoSQLDB */,
+			);
 			productName = DBApp;
 			productReference = 892471E91D93EA4300E3C870 /* DBApp.app */;
 			productType = "com.apple.product-type.application";
@@ -94,25 +99,29 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = "Aaron Bratcher";
 				TargetAttributes = {
 					892471E81D93EA4300E3C870 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = BJL688BZ75;
+						LastSwiftMigration = 1140;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = 892471E41D93EA4300E3C870 /* Build configuration list for PBXProject "DBApp" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
 			mainGroup = 892471E01D93EA4300E3C870;
+			packageReferences = (
+				8940F570246C84E900E3BF47 /* XCRemoteSwiftPackageReference "ALBNoSQLDB" */,
+			);
 			productRefGroup = 892471EA1D93EA4300E3C870 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -172,6 +181,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -217,7 +227,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -231,6 +241,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -270,10 +281,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -285,10 +297,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = BJL688BZ75;
 				INFOPLIST_FILE = DBApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.AaronLBratcher.DBApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -298,10 +313,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = BJL688BZ75;
 				INFOPLIST_FILE = DBApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.AaronLBratcher.DBApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -327,6 +345,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8940F570246C84E900E3BF47 /* XCRemoteSwiftPackageReference "ALBNoSQLDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AaronBratcher/ALBNoSQLDB";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8940F571246C84E900E3BF47 /* ALBNoSQLDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8940F570246C84E900E3BF47 /* XCRemoteSwiftPackageReference "ALBNoSQLDB" */;
+			productName = ALBNoSQLDB;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 892471E11D93EA4300E3C870 /* Project object */;
 }
