@@ -54,7 +54,7 @@ class BasicTests: XCTestCase {
 		XCTAssert(jsonValue != nil, "No value returned")
 	}
 
-	func testSimpleInsert() {
+	func testSimpleInsert() throws {
 		let table: DBTable = "table1"
 		let key = "SIMPLEINSERTKEY"
 		let sample = "{\"numValue\":1,\"dateValue\":\"2014-11-19T18:23:42.434-05:00\",\"link\":true}"
@@ -64,21 +64,17 @@ class BasicTests: XCTestCase {
 
 		XCTAssert(successful, "setValueFailed")
 
-		let jsonValue = db.valueFromTable(table, for: key)
-
-		XCTAssert(jsonValue != nil, "No value returned")
+		let jsonValue = try XCTUnwrap(db.valueFromTable(table, for: key))
 
 		// compare dict values
-		if let jsonValue = jsonValue {
-			let dataValue = jsonValue.data(using: String.Encoding.utf8, allowLossyConversion: false)!
-			let objectValues = (try? JSONSerialization.jsonObject(with: dataValue, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
-			let equalDicts = objectValues?.count == sampleDict?.count
-			let linked = objectValues!["link"] as! Bool
+		let dataValue = jsonValue.data(using: String.Encoding.utf8, allowLossyConversion: false)!
+		let objectValues = (try? JSONSerialization.jsonObject(with: dataValue, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: AnyObject]
+		let equalDicts = objectValues?.count == sampleDict?.count
+		let linked = objectValues!["link"] as! Bool
 
-			XCTAssert(linked, "Should be link of true")
+		XCTAssert(linked, "Should be link of true")
 
-			XCTAssert(equalDicts, "Dictionaries don't match")
-		}
+		XCTAssert(equalDicts, "Dictionaries don't match")
 	}
 
 	func testArrayInsert() {
@@ -183,6 +179,10 @@ class BasicTests: XCTestCase {
 			XCTAssert(properArray, "improper keys")
 		} else {
 			XCTAssert(false, "keys not returned")
+		}
+
+		if let keys2 = db.keysInTable(table, conditions: []) {
+			XCTAssertEqual(keys2.count, 5)
 		}
 	}
 

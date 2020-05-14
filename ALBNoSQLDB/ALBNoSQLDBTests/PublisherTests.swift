@@ -54,7 +54,7 @@ class PublisherTests: XCTestCase {
 
 		}
 
-		waitForExpectations(timeout: 15, handler: nil)
+		waitForExpectations(timeout: 120, handler: nil)
 	}
 
 	func testUpdatedPublishers() throws {

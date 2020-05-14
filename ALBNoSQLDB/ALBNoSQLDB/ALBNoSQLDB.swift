@@ -1154,7 +1154,7 @@ extension ALBNoSQLDB {
 		var selectClause = "select distinct a.key from \(table) a"
 		var whereClause: String
 		if let testKey = testKey {
-			whereClause = " where a.key = '\(testKey)'"
+			whereClause = " where a.key = '\(esc(testKey))'"
 		} else {
 			whereClause = " where 1=1"
 		}
