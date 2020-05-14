@@ -21,7 +21,7 @@ public class DBResults<T: DBObject>: Identifiable {
 		keys = []
 	}
 
-	init(db: ALBNoSQLDB, keys: [String]) {
+	public init(db: ALBNoSQLDB, keys: [String]) {
 		self.db = db
 		self.keys = keys
 	}
