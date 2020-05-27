@@ -20,7 +20,7 @@ struct TransactionListView: View {
 					TextField("Search", text: $transactionListVM.searchText)
 				}
 				ForEach(transactionListVM.transactions, id: \.self) { transaction in
-					NavigationLink(destination: TransactionView(transactionVM: TransactionViewModel(transaction: transaction))) {
+					NavigationLink(destination: EditTransactionView(transactionVM: TransactionViewModel(transaction: transaction))) {
 						CellView(transaction: transaction!)
 					}
 				}.onDelete(perform: transactionListVM.remove(at:))
@@ -29,7 +29,7 @@ struct TransactionListView: View {
 				.navigationBarTitle("Transactions")
 				.navigationBarItems(leading: EditButton(), trailing: AddButton(addNewTransaction: $addNewTransaction))
 		}.sheet(isPresented: $addNewTransaction) {
-			TransactionView(transactionVM: TransactionViewModel())
+			AddTransactionView(transactionVM: TransactionViewModel())
 		}
 	}
 }
@@ -42,45 +42,6 @@ private struct AddButton: View {
 			self.addNewTransaction.toggle()
 		}) {
 			Image(systemName: "plus.circle")
-		}
-	}
-}
-
-private struct CellView: View {
-	var transaction: Transaction
-
-	var body: some View {
-		HStack {
-			DateView(transaction: transaction)
-				.padding(.trailing, 25.0)
-			AmountLocationView(transaction: transaction)
-		}
-	}
-}
-
-private struct DateView: View {
-	var transaction: Transaction
-
-	var body: some View {
-		VStack(alignment: .leading) {
-			Text(dayFormatter.string(from: transaction.date))
-				.font(.headline)
-			Text(yearFormatter.string(from: transaction.date))
-				.font(.footnote)
-		}
-	}
-}
-
-private struct AmountLocationView: View {
-	var transaction: Transaction
-
-	var body: some View {
-		HStack() {
-			Text(transaction.description)
-				.font(.headline)
-			Spacer()
-			Text(transaction.amount.formatted())
-				.font(.headline)
 		}
 	}
 }

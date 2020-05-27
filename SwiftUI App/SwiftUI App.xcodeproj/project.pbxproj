@@ -8,14 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		89255302246DE0370096D8A4 /* ALBNoSQLDB in Frameworks */ = {isa = PBXBuildFile; productRef = 89255301246DE0370096D8A4 /* ALBNoSQLDB */; };
-		89642E5D247E9BFC000D5534 /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89642E5C247E9BFC000D5534 /* Transactions.swift */; };
 		89740DA3246FFE2B00364255 /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DA2246FFE2B00364255 /* TransactionListView.swift */; };
 		89740DA9247000FD00364255 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DA5247000FC00364255 /* DateExtensions.swift */; };
 		89740DAA247000FD00364255 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DA6247000FC00364255 /* StringExtensions.swift */; };
 		89740DAB247000FD00364255 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DA7247000FD00364255 /* IntExtensions.swift */; };
-		89740DAE24700A1500364255 /* TransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DAD24700A1500364255 /* TransactionView.swift */; };
+		89740DAE24700A1500364255 /* EditTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DAD24700A1500364255 /* EditTransactionView.swift */; };
 		89740DB12471510900364255 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89740DB02471510900364255 /* TransactionViewModel.swift */; };
 		89B2B250246F1C7D000BFB2E /* TransactionListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2B24F246F1C7D000BFB2E /* TransactionListViewModel.swift */; };
+		89DA86F2247F27BC00A95510 /* AddTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA86F1247F27BC00A95510 /* AddTransactionView.swift */; };
+		89DA86F4247F283300A95510 /* TransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA86F3247F283300A95510 /* TransactionView.swift */; };
+		89DA86F6247F2EE700A95510 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DA86F5247F2EE700A95510 /* CellView.swift */; };
 		89E92C2F246C8A58008F07F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E92C2E246C8A58008F07F9 /* AppDelegate.swift */; };
 		89E92C31246C8A58008F07F9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E92C30246C8A58008F07F9 /* SceneDelegate.swift */; };
 		89E92C35246C8A5A008F07F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89E92C34246C8A5A008F07F9 /* Assets.xcassets */; };
@@ -26,14 +28,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		89642E5C247E9BFC000D5534 /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
 		89740DA2246FFE2B00364255 /* TransactionListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
 		89740DA5247000FC00364255 /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		89740DA6247000FC00364255 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		89740DA7247000FD00364255 /* IntExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
-		89740DAD24700A1500364255 /* TransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionView.swift; sourceTree = "<group>"; };
+		89740DAD24700A1500364255 /* EditTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTransactionView.swift; sourceTree = "<group>"; };
 		89740DB02471510900364255 /* TransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModel.swift; sourceTree = "<group>"; };
 		89B2B24F246F1C7D000BFB2E /* TransactionListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewModel.swift; sourceTree = "<group>"; };
+		89DA86F1247F27BC00A95510 /* AddTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTransactionView.swift; sourceTree = "<group>"; };
+		89DA86F3247F283300A95510 /* TransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionView.swift; sourceTree = "<group>"; };
+		89DA86F5247F2EE700A95510 /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
 		89E92C2B246C8A58008F07F9 /* SwiftUI App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUI App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		89E92C2E246C8A58008F07F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		89E92C30246C8A58008F07F9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -80,7 +84,10 @@
 			isa = PBXGroup;
 			children = (
 				89740DA2246FFE2B00364255 /* TransactionListView.swift */,
-				89740DAD24700A1500364255 /* TransactionView.swift */,
+				89740DAD24700A1500364255 /* EditTransactionView.swift */,
+				89DA86F1247F27BC00A95510 /* AddTransactionView.swift */,
+				89DA86F3247F283300A95510 /* TransactionView.swift */,
+				89DA86F5247F2EE700A95510 /* CellView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -131,7 +138,6 @@
 			isa = PBXGroup;
 			children = (
 				89E92C45246C8D33008F07F9 /* Transaction.swift */,
-				89642E5C247E9BFC000D5534 /* Transactions.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -219,10 +225,12 @@
 				89740DA9247000FD00364255 /* DateExtensions.swift in Sources */,
 				89740DB12471510900364255 /* TransactionViewModel.swift in Sources */,
 				89B2B250246F1C7D000BFB2E /* TransactionListViewModel.swift in Sources */,
-				89642E5D247E9BFC000D5534 /* Transactions.swift in Sources */,
+				89DA86F6247F2EE700A95510 /* CellView.swift in Sources */,
 				89E92C31246C8A58008F07F9 /* SceneDelegate.swift in Sources */,
+				89DA86F4247F283300A95510 /* TransactionView.swift in Sources */,
 				89E92C46246C8D33008F07F9 /* Transaction.swift in Sources */,
-				89740DAE24700A1500364255 /* TransactionView.swift in Sources */,
+				89740DAE24700A1500364255 /* EditTransactionView.swift in Sources */,
+				89DA86F2247F27BC00A95510 /* AddTransactionView.swift in Sources */,
 				89FE36E8246CAFE30052E6F3 /* SampleTransactions.swift in Sources */,
 				89740DA3246FFE2B00364255 /* TransactionListView.swift in Sources */,
 			);

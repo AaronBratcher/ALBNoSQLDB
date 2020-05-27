@@ -16,6 +16,10 @@ class TransactionViewModel: ObservableObject {
 
 	var transaction: Transaction!
 
+    var isValidAmount: Bool {
+        return amount.count > 0 && amount.isCurrencyString
+    }
+
 	init(transaction: Transaction? = nil) {
 		self.transaction = transaction
 		guard let transaction = transaction else { return }
