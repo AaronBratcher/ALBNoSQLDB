@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "ALBNoSQLDB",
+        "repositoryURL": "https://github.com/AaronBratcher/ALBNoSQLDB",
+        "state": {
+          "branch": null,
+          "revision": "a1ab7d5e9f896b8e8c13d462bd3a0b2943fea66e",
+          "version": "6.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
