@@ -16,7 +16,7 @@ class TransactionResults: Identifiable {
 	private let transactions = sampleTransactions
 }
 
-extension TransactionResults: RandomAccessCollection, MutableCollection {
+extension TransactionResults: RandomAccessCollection {
 	public var startIndex: CustomClassIndex { return transactions.startIndex }
 	public var endIndex: CustomClassIndex { return transactions.endIndex }
 
