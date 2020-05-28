@@ -10,26 +10,26 @@ import Foundation
 import SwiftUI
 
 struct AddTransactionView: View {
-    @ObservedObject var transactionVM: TransactionViewModel
-    @Environment(\.presentationMode) var presentationMode
+	@ObservedObject var transactionVM: TransactionViewModel
+	@Environment(\.presentationMode) var presentationMode
 
-    var body: some View {
-        NavigationView {
-            TransactionView(transactionVM: transactionVM)
-                .navigationBarTitle("New Transaction")
-                .navigationBarItems(trailing: Button("Save") {
-                    self.transactionVM.save()
-                    self.presentationMode.wrappedValue.dismiss()
-                }.disabled(!transactionVM.isValidAmount)
-            )
-        }
-    }
+	var body: some View {
+		NavigationView {
+			TransactionView(transactionVM: transactionVM)
+				.navigationBarTitle("New Transaction")
+				.navigationBarItems(trailing: Button("Save") {
+					self.transactionVM.save()
+					self.presentationMode.wrappedValue.dismiss()
+				}.disabled(!transactionVM.isValidAmount)
+				)
+		}
+	}
 }
 
 #if DEBUG
-struct AddTransactionView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddTransactionView(transactionVM: TransactionViewModel())
-    }
-}
+	struct AddTransactionView_Previews: PreviewProvider {
+		static var previews: some View {
+			AddTransactionView(transactionVM: TransactionViewModel())
+		}
+	}
 #endif

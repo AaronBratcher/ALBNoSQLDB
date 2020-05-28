@@ -10,23 +10,23 @@ import Foundation
 import SwiftUI
 
 struct TransactionView: View {
-    @ObservedObject var transactionVM: TransactionViewModel
+	@ObservedObject var transactionVM: TransactionViewModel
 
-    var body: some View {
-        Form {
-            DatePicker(selection: $transactionVM.date, displayedComponents: .date) {
-                Text("Date")
-            }
-            TextField("Description", text: $transactionVM.description)
-            TextField("Amount", text: $transactionVM.amount)
-        }
-    }
+	var body: some View {
+		Form {
+			DatePicker(selection: $transactionVM.date, displayedComponents: .date) {
+				Text("Date")
+			}
+			TextField("Description", text: $transactionVM.description)
+			TextField("Amount", text: $transactionVM.amount)
+		}
+	}
 }
 
 #if DEBUG
-struct TransactionView_Previews: PreviewProvider {
-    static var previews: some View {
-        TransactionView(transactionVM: TransactionViewModel())
-    }
-}
+	struct TransactionView_Previews: PreviewProvider {
+		static var previews: some View {
+			TransactionView(transactionVM: TransactionViewModel())
+		}
+	}
 #endif
